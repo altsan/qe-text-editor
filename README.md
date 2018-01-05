@@ -1,9 +1,9 @@
 # Quick Text Editor
 
   Quick Text Editor is a fast and simple text editor, modelled after
-  the IBM's OS/2 System Editor and Aaron Lawrence's AE.  It is written
-  using Qt4 and is intended to be cross-platform, although official
-  builds are only provided for OS/2.
+  IBM's OS/2 System Editor and Aaron Lawrence's AE.  It is written
+  using Qt4 and is intended to be cross-platform, although at present
+  official builds are only provided for OS/2.
 
 ## License
 

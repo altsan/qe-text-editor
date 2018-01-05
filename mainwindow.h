@@ -19,6 +19,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow();
+    bool loadFile( const QString &fileName );
 
 protected:
     void closeEvent( QCloseEvent *event );
@@ -40,6 +41,7 @@ private slots:
     void updateModeLabel();
     void updatePositionLabel();
     void updateModified();
+    void updateModified( bool isModified );
     void setEditorFont();
 
 private:
@@ -53,13 +55,13 @@ private:
 
     // Action methods
     bool okToContinue();
-    bool loadFile( const QString &fileName );
     bool saveFile( const QString &fileName );
 
     // Misc methods
     void setCurrentFile( const QString &fileName );
     void updateRecentFileActions();
     QString strippedName( const QString &fullFileName );
+    void showMessage( const QString &message );
 
     // GUI objects
     QTextEdit *editor;

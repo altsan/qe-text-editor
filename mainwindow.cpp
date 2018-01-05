@@ -202,6 +202,12 @@ void MainWindow::updateModified()
     setWindowModified( isModified );
     modifiedLabel->setText( isModified? tr("Modified"): "");
 }
+void MainWindow::updateModified( bool isModified )
+{
+    editor->document()->setModified( isModified );
+    setWindowModified( isModified );
+    modifiedLabel->setText( isModified? tr("Modified"): "");
+}
 
 
 void MainWindow::setEditorFont() {
@@ -232,12 +238,14 @@ void MainWindow::createActions()
     connect( openAction, SIGNAL( triggered() ), this, SLOT( open() ));
 
     saveAction = new QAction( tr("&Save"), this );
-    saveAction->setShortcut( QKeySequence::Save );
+    QList<QKeySequence> saveShortcuts;
+    saveShortcuts << QKeySequence("F2") << QKeySequence("Ctrl+S");
+    saveAction->setShortcuts( saveShortcuts );
     saveAction->setStatusTip( tr("Save the current file") );
     connect( saveAction, SIGNAL( triggered() ), this, SLOT( save() ));
 
     saveAsAction = new QAction( tr("Save &as..."), this );
-    saveAsAction->setShortcut( QKeySequence::Save );
+    saveAsAction->setShortcut( QKeySequence::SaveAs );
     saveAsAction->setStatusTip( tr("Save the current file under a new name") );
     connect( saveAsAction, SIGNAL( triggered() ), this, SLOT( saveAs() ));
 
@@ -452,6 +460,7 @@ bool MainWindow::loadFile( const QString &fileName )
     file.close();
 
     setCurrentFile( fileName );
+    showMessage( tr("Opened file: %1").arg( fileName ));
     return true;
 }
 
@@ -470,6 +479,7 @@ bool MainWindow::saveFile( const QString &fileName )
     file.close();
 
     setCurrentFile( fileName );
+    showMessage( tr("Saved file: %1").arg( fileName ));
     return true;
 }
 
@@ -490,7 +500,7 @@ bool MainWindow::print()
 void MainWindow::setCurrentFile( const QString &fileName )
 {
     currentFile = fileName;
-    updateModified();
+    updateModified( false );
     QString shownName = tr("Untitled");
     if ( !currentFile.isEmpty() ) {
         shownName = strippedName( currentFile );
@@ -532,3 +542,7 @@ QString MainWindow::strippedName( const QString &fullFileName )
 }
 
 
+void MainWindow::showMessage( const QString &message )
+{
+    messagesLabel->setText( message );
+}
