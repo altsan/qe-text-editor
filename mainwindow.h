@@ -20,6 +20,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow();
     bool loadFile( const QString &fileName );
+    void showUsage();
 
 protected:
     void closeEvent( QCloseEvent *event );

@@ -201,12 +201,14 @@ void MainWindow::updateModified()
     bool isModified = editor->document()->isModified();
     setWindowModified( isModified );
     modifiedLabel->setText( isModified? tr("Modified"): "");
+    messagesLabel->setText("");
 }
 void MainWindow::updateModified( bool isModified )
 {
     editor->document()->setModified( isModified );
     setWindowModified( isModified );
     modifiedLabel->setText( isModified? tr("Modified"): "");
+    messagesLabel->setText("");
 }
 
 
@@ -383,6 +385,11 @@ void MainWindow::createStatusBar()
     statusBar()->addWidget( modifiedLabel );
     statusBar()->setMinimumSize( statusBar()->sizeHint() );
 
+    messagesLabel->setForegroundRole( QPalette::ButtonText );
+    editModeLabel->setForegroundRole( QPalette::ButtonText );
+    positionLabel->setForegroundRole( QPalette::ButtonText );
+    modifiedLabel->setForegroundRole( QPalette::ButtonText );
+
     updateStatusBar();
 }
 
@@ -545,4 +552,13 @@ QString MainWindow::strippedName( const QString &fullFileName )
 void MainWindow::showMessage( const QString &message )
 {
     messagesLabel->setText( message );
+}
+
+
+void MainWindow::showUsage()
+{
+    QMessageBox::information( this, tr("Usage"),
+                              tr("qe [ <i>filename</i> [ /read ]] &nbsp; | &nbsp; [ /h | /? ]"),
+                              QMessageBox::Ok
+                            );
 }
