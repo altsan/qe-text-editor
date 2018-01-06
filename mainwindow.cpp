@@ -1,7 +1,7 @@
 #include <QtGui>
 #include <QPrinter>
 
-//#include "finddialog.h"
+#include "finddialog.h"
 #include "mainwindow.h"
 
 
@@ -24,14 +24,23 @@ MainWindow::MainWindow()
 
     readSettings();
 
-//    findDialog = 0;
+    findDialog = 0;
 
     connect( editor, SIGNAL( cursorPositionChanged() ), this, SLOT( updatePositionLabel() ));
     connect( editor->document(), SIGNAL( contentsChanged() ), this, SLOT( updateModified() ));
 
     setMinimumWidth( statusBar()->minimumWidth() + 20 );
-//    setWindowIcon( QIcon(":/images/editor.png"));
     setWindowTitle( tr("Text Editor") );
+    //setWindowIcon( QIcon(":/images/editor.png"));
+    /*
+    QIcon icon;
+    icon.addFile(":/images/editor.png", QSize( 40, 40 ), QIcon::Normal, QIcon::On );
+    icon.addFile(":/images/editor_mini.png", QSize( 20, 20 ), QIcon::Normal, QIcon::On );
+    icon.addFile(":/images/editor_vga.png", QSize( 32, 32 ), QIcon::Normal, QIcon::On );
+    icon.addFile(":/images/editor_vga_mini.png", QSize( 16, 16 ), QIcon::Normal, QIcon::On );
+    setWindowIcon( icon );
+    */
+
     setCurrentFile("");
 
 }
@@ -69,13 +78,34 @@ void MainWindow::newFile()
 void MainWindow::open()
 {
     if ( okToContinue() ) {
+#if 0
+        QFileDialog dialog( this );
+        dialog.setFileMode( QFileDialog::ExistingFile );
+        dialog.setAcceptMode( QFileDialog::AcceptOpen );
+        dialog.setNameFilter( tr( DEFAULT_FILENAME_FILTERS ));
+        dialog.setOption( QFileDialog::DontUseNativeDialog, false );
+        QFileInfoList drives = QDir::drives();
+        QList<QUrl> urls;
+        for ( int i = 0; i < drives.size(); i++ ) {
+            urls.append( QUrl::fromLocalFile( drives.at( i ).canonicalFilePath()));
+        }
+        urls.removeOne( tr(""));
+        urls.append( QUrl::fromLocalFile( QDir::homePath() ));
+        dialog.setSidebarUrls( urls );
+        if ( dialog.exec() ) {
+            QStringList fileNameList = dialog.selectedFiles();
+            if ( !fileNameList.isEmpty() )
+                loadFile( fileNameList.at( 0 ));
+        }
+#else
         QString fileName = QFileDialog::getOpenFileName( this,
                                                          tr("Open File"),
-                                                         ".",
-                                                         tr("All files (*)")
+                                                         tr("."),
+                                                         tr( DEFAULT_FILENAME_FILTERS )
                                                        );
         if ( !fileName.isEmpty() )
             loadFile( fileName );
+#endif
     }
 }
 
@@ -92,7 +122,8 @@ bool MainWindow::save()
 bool MainWindow::saveAs()
 {
     QString fileName = QFileDialog::getSaveFileName( this,
-                                                     tr("Save File"), ".",
+                                                     tr("Save File"),
+                                                     tr("."),
                                                      tr("All files (*)"));
     if ( fileName.isEmpty() )
         return false;
@@ -102,6 +133,32 @@ bool MainWindow::saveAs()
 
 void MainWindow::find()
 {
+    if ( !findDialog ) {
+        findDialog = new FindDialog( this );
+        connect( findDialog,
+                 SIGNAL( findNext( const QString &, Qt::CaseSensitivity, bool )),
+                 this,
+                 SLOT( findNext( const QString &, Qt::CaseSensitivity, bool )));
+        connect( findDialog,
+                 SIGNAL( findNextRegExp( const QString &, bool )),
+                 this,
+                 SLOT( findNextRegExp( const QString &, bool )));
+        connect( findDialog,
+                 SIGNAL( findPrevious( const QString &, Qt::CaseSensitivity, bool )),
+                 this,
+                 SLOT( findPrevious( const QString &, Qt::CaseSensitivity, bool )));
+        connect( findDialog,
+                 SIGNAL( findPreviousRegExp( const QString &, bool )),
+                 this,
+                 SLOT( findPreviousRegExp( const QString &, bool )));
+    }
+    if ( findDialog->isHidden() ) {
+        findDialog->show();
+    }
+    else {
+        findDialog->raise();
+        findDialog->activateWindow();
+    }
 }
 
 
@@ -167,9 +224,9 @@ void MainWindow::toggleWordWrap()
 }
 
 
-void MainWindow::toggleReadOnly( bool ovr )
+void MainWindow::toggleReadOnly( bool readOnly )
 {
-    setReadOnly( ovr );
+    setReadOnly( readOnly );
 }
 
 
@@ -226,6 +283,45 @@ void MainWindow::setEditorFont() {
     if ( fontSelected )
         editor->setFont( font );
 }
+
+
+void MainWindow::findNext( const QString &str, Qt::CaseSensitivity cs, bool fromStart )
+{
+    lastSearch = str;
+    QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
+    if ( cs == Qt::CaseSensitive )
+        flags |= QTextDocument::FindCaseSensitively;
+    int pos = fromStart ? 0 :
+                          editor->textCursor().selectionEnd();
+    showFindResult( editor->document()->find( str, pos, flags ));
+}
+
+
+void MainWindow::findNextRegExp( const QString &str, bool fromStart )
+{
+    lastSearch = str;
+    QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
+}
+
+
+void MainWindow::findPrevious( const QString &str, Qt::CaseSensitivity cs, bool fromEnd )
+{
+    lastSearch = str;
+    QTextDocument::FindFlags flags = QTextDocument::FindBackward;
+    if ( cs == Qt::CaseSensitive )
+        flags |= QTextDocument::FindCaseSensitively;
+    int pos = fromEnd ? editor->document()->characterCount() :
+                        editor->textCursor().selectionStart();
+    showFindResult( editor->document()->find( str, pos, flags ));
+}
+
+
+void MainWindow::findPreviousRegExp( const QString &str, bool fromEnd )
+{
+    lastSearch = str;
+    QTextDocument::FindFlags flags = QTextDocument::FindBackward;
+}
+
 
 
 // ---------------------------------------------------------------------------
@@ -310,9 +406,24 @@ void MainWindow::createActions()
     connect( pasteAction, SIGNAL( triggered() ), editor, SLOT( paste() ));
 
     selectAllAction = new QAction( tr("Select &all"), this );
-    selectAllAction->setShortcut( QKeySequence::SelectAll );
+    QList<QKeySequence> selectAllShortcuts;
+    selectAllShortcuts << QKeySequence::SelectAll << QKeySequence("Ctrl+/");
+    selectAllAction->setShortcuts( selectAllShortcuts );
     selectAllAction->setStatusTip( tr("Select all text in the edit window") );
     connect( selectAllAction, SIGNAL( triggered() ), editor, SLOT( selectAll() ));
+
+    findAction = new QAction( tr("&Find..."), this );
+    findAction->setShortcut( QKeySequence::Find );
+    findAction->setStatusTip( tr("Search for text") );
+    connect( findAction, SIGNAL( triggered() ), this, SLOT( find() ));
+
+    findAgainAction = new QAction( tr("Find &again"), this );
+    findAgainAction->setShortcut( tr("Ctrl+G"));
+    findAgainAction->setStatusTip( tr("Repeat the last search") );
+
+    replaceAction = new QAction( tr("&Replace..."), this );
+    replaceAction->setShortcut( QKeySequence::Replace );
+    replaceAction->setStatusTip( tr("Search and replace text") );
 
 
     // Options menu actions
@@ -378,6 +489,8 @@ void MainWindow::createMenus()
     editMenu->addAction( pasteAction );
     editMenu->addSeparator();
     editMenu->addAction( selectAllAction );
+    editMenu->addSeparator();
+    editMenu->addAction( findAction );
 
     optionsMenu = menuBar()->addMenu( tr("&Options") );
     optionsMenu->addAction( fontAction );
@@ -503,8 +616,7 @@ bool MainWindow::loadFile( const QString &fileName )
     file.close();
 
     setCurrentFile( fileName );
-    QString displayName = fileName;
-    showMessage( tr("Opened file: %1").arg( displayName.replace( QString("/"), QString("\\"))));
+    showMessage( tr("Opened file: %1").arg( QDir::toNativeSeparators( fileName )));
     return true;
 }
 
@@ -523,8 +635,7 @@ bool MainWindow::saveFile( const QString &fileName )
     file.close();
 
     setCurrentFile( fileName );
-    QString displayName = fileName;
-    showMessage( tr("Saved file: %1").arg( displayName.replace( QString("/"), QString("\\"))));
+    showMessage( tr("Saved file: %1").arg( QDir::toNativeSeparators( fileName )));
     return true;
 }
 
@@ -604,6 +715,21 @@ void MainWindow::showUsage()
 
 void MainWindow::setReadOnly( bool readOnly )
 {
-    editor->setReadOnly( readOnly );
+//   editor->setReadOnly( readOnly );
+    editor->setTextInteractionFlags( readOnly ?
+                                Qt::TextBrowserInteraction | Qt::TextSelectableByKeyboard :
+                                Qt::TextEditorInteraction
+                           );
     updateModeLabel();
+}
+
+
+void MainWindow::showFindResult( QTextCursor found )
+{
+    if ( found.isNull() )
+        showMessage( tr("No matches."));
+    else {
+        showMessage( tr("Found match at %1:%2").arg( found.blockNumber() + 1 ).arg( found.positionInBlock() ));
+        editor->setTextCursor( found );
+    }
 }

@@ -7,11 +7,23 @@
 #define SETTINGS_VENDOR "ATutils"
 #define SETTINGS_APP    "QuickEditor"
 
+#define DEFAULT_FILENAME_FILTERS                            \
+    "Text files (*.txt readme*);;"                          \
+    "All files (*);;"                                       \
+    "Assembler source code (*.asm);;"                       \
+    "BASIC source code (*.bas);;"                           \
+    "C/C++ source code (*.c *.h *.cpp *.hpp *.cc *.inc);;"  \
+    "Command files (*.cmd *.bat *.rex *.sh *.vrx);;"        \
+    "Java source code (*.jav *.java);;"                     \
+    "Pascal source code (*.pas);;"                          \
+    "Python files (*.py);;"                                 \
+    "WWW files (*.htm *.html *.css *.cgi *.js *.php )"
+
 class QAction;
 class QLabel;
 class FindDialog;
 class QTextEdit;
-
+class QTextCursor;
 
 class MainWindow : public QMainWindow
 {
@@ -46,6 +58,10 @@ private slots:
     void updateModified();
     void updateModified( bool isModified );
     void setEditorFont();
+    void findNext( const QString &str, Qt::CaseSensitivity cs, bool fromStart );
+    void findNextRegExp( const QString &str, bool fromStart );
+    void findPrevious( const QString &str, Qt::CaseSensitivity cs, bool fromEnd );
+    void findPreviousRegExp( const QString &str, bool fromEnd );
 
 private:
     // Setup methods
@@ -65,10 +81,11 @@ private:
     void updateRecentFileActions();
     QString strippedName( const QString &fullFileName );
     void showMessage( const QString &message );
+    void showFindResult( QTextCursor found );
 
     // GUI objects
     QTextEdit *editor;
-//    FindDialog *findDialog;
+    FindDialog *findDialog;
 
     QLabel *editModeLabel;
     QLabel *positionLabel;
@@ -98,6 +115,7 @@ private:
     QAction *findAction;
     QAction *findAgainAction;
     QAction *replaceAction;
+    QAction *gotoAction;
 
     QMenu   *optionsMenu;
     QAction *wrapAction;
@@ -114,6 +132,7 @@ private:
 
     QStringList recentFiles;
     QString     currentFile;
+    QString     lastSearch;
 
 };
 
