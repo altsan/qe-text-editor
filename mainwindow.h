@@ -21,6 +21,7 @@ public:
     MainWindow();
     bool loadFile( const QString &fileName );
     void showUsage();
+    void setReadOnly( bool readonly );
 
 protected:
     void closeEvent( QCloseEvent *event );
@@ -37,6 +38,7 @@ private slots:
     void openRecentFile();
     void clearRecentFiles();
     void toggleEditMode( bool ovr );
+    void toggleReadOnly( bool readOnly );
     void toggleWordWrap();
     void updateStatusBar();
     void updateModeLabel();
@@ -100,6 +102,7 @@ private:
     QMenu   *optionsMenu;
     QAction *wrapAction;
     QAction *editModeAction;
+    QAction *readOnlyAction;
     QAction *fontAction;
     QAction *coloursAction;
     QAction *autosaveAction;

@@ -167,6 +167,12 @@ void MainWindow::toggleWordWrap()
 }
 
 
+void MainWindow::toggleReadOnly( bool ovr )
+{
+    setReadOnly( ovr );
+}
+
+
 void MainWindow::updateStatusBar()
 {
     updateModeLabel();
@@ -176,7 +182,9 @@ void MainWindow::updateStatusBar()
 
 void MainWindow::updateModeLabel()
 {
-    if ( editor->overwriteMode() )
+    if ( editor->isReadOnly() )
+        editModeLabel->setText(" RO ");
+    else if ( editor->overwriteMode() )
         editModeLabel->setText(" OVR ");
     else
         editModeLabel->setText(" INS ");
@@ -286,10 +294,26 @@ void MainWindow::createActions()
     redoAction->setStatusTip( tr("Revert the previous undo operation") );
     connect( redoAction, SIGNAL( triggered() ), editor, SLOT( redo() ));
 
+    cutAction = new QAction( tr("&Cut"), this );
+    cutAction->setShortcut( QKeySequence::Cut );
+    cutAction->setStatusTip( tr("Move the selected text to the clipboard") );
+    connect( cutAction, SIGNAL( triggered() ), editor, SLOT( cut() ));
+
+    copyAction = new QAction( tr("&Copy"), this );
+    copyAction->setShortcut( QKeySequence::Copy );
+    copyAction->setStatusTip( tr("Copy the selected text to the clipboard") );
+    connect( copyAction, SIGNAL( triggered() ), editor, SLOT( copy() ));
+
+    pasteAction = new QAction( tr("&Paste"), this );
+    pasteAction->setShortcut( QKeySequence::Paste );
+    pasteAction->setStatusTip( tr("Insert the current clipboard text") );
+    connect( pasteAction, SIGNAL( triggered() ), editor, SLOT( paste() ));
+
     selectAllAction = new QAction( tr("Select &all"), this );
     selectAllAction->setShortcut( QKeySequence::SelectAll );
     selectAllAction->setStatusTip( tr("Select all text in the edit window") );
     connect( selectAllAction, SIGNAL( triggered() ), editor, SLOT( selectAll() ));
+
 
     // Options menu actions
 
@@ -309,6 +333,13 @@ void MainWindow::createActions()
     editModeAction->setShortcut( tr("Ins") );
     editModeAction->setStatusTip( tr("Toggle overwrite mode") );
     connect( editModeAction, SIGNAL( toggled( bool )), this, SLOT( toggleEditMode( bool )));
+
+    readOnlyAction = new QAction( tr("&Read-only mode"), this );
+    readOnlyAction->setCheckable( true );
+    readOnlyAction->setChecked( editor->isReadOnly() );
+    readOnlyAction->setShortcut( tr("Alt+R") );
+    readOnlyAction->setStatusTip( tr("Toggle read-only mode") );
+    connect( readOnlyAction, SIGNAL( toggled( bool )), this, SLOT( toggleReadOnly( bool )));
 
     fontAction = new QAction( tr("&Font..."), this );
     fontAction->setShortcut( tr("Alt+F") );
@@ -342,12 +373,17 @@ void MainWindow::createMenus()
     editMenu->addAction( undoAction );
     editMenu->addAction( redoAction );
     editMenu->addSeparator();
+    editMenu->addAction( cutAction );
+    editMenu->addAction( copyAction );
+    editMenu->addAction( pasteAction );
+    editMenu->addSeparator();
     editMenu->addAction( selectAllAction );
 
     optionsMenu = menuBar()->addMenu( tr("&Options") );
     optionsMenu->addAction( fontAction );
     optionsMenu->addAction( wrapAction );
     optionsMenu->addAction( editModeAction );
+    optionsMenu->addAction( readOnlyAction );
 
     menuBar()->addSeparator();
     helpMenu = menuBar()->addMenu( tr("&Help") );
@@ -467,7 +503,8 @@ bool MainWindow::loadFile( const QString &fileName )
     file.close();
 
     setCurrentFile( fileName );
-    showMessage( tr("Opened file: %1").arg( fileName ));
+    QString displayName = fileName;
+    showMessage( tr("Opened file: %1").arg( displayName.replace( QString("/"), QString("\\"))));
     return true;
 }
 
@@ -486,7 +523,8 @@ bool MainWindow::saveFile( const QString &fileName )
     file.close();
 
     setCurrentFile( fileName );
-    showMessage( tr("Saved file: %1").arg( fileName ));
+    QString displayName = fileName;
+    showMessage( tr("Saved file: %1").arg( displayName.replace( QString("/"), QString("\\"))));
     return true;
 }
 
@@ -561,4 +599,11 @@ void MainWindow::showUsage()
                               tr("qe [ <i>filename</i> [ /read ]] &nbsp; | &nbsp; [ /h | /? ]"),
                               QMessageBox::Ok
                             );
+}
+
+
+void MainWindow::setReadOnly( bool readOnly )
+{
+    editor->setReadOnly( readOnly );
+    updateModeLabel();
 }

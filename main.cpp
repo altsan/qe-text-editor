@@ -36,6 +36,7 @@ int main( int argc, char *argv[] )
     if ( !fileName.isNull() )
         qe->loadFile( fileName );
 
+    qe->setReadOnly( openReadOnly );
     qe->show();
     return app.exec();
 }
