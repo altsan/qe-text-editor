@@ -18,7 +18,7 @@ void FindDialog::on_findEdit_textChanged( const QString &text )
 
 void FindDialog::on_reCheckBox_toggled( bool checked )
 {
-    caseCheckBox->setEnabled( !checked );
+    wordCheckBox->setEnabled( !checked );
 }
 
 
@@ -31,18 +31,19 @@ void FindDialog::on_backCheckBox_toggled( bool checked )
 
 void FindDialog::on_findButton_clicked()
 {
-    QString text = findEdit->text();
-    Qt::CaseSensitivity cs = caseCheckBox->isChecked()? Qt::CaseSensitive :
-                                                        Qt::CaseInsensitive;
+    QString text  = findEdit->text();
+    bool cs       = caseCheckBox->isChecked();
+    bool words    = wordCheckBox->isChecked();
     bool absolute = startCheckBox->isChecked();
     if ( backCheckBox->isChecked() ) {
-        emit reCheckBox->isChecked() ? findPreviousRegExp( text, absolute ) :
-                                       findPrevious( text, cs, absolute );
+        emit reCheckBox->isChecked() ? findPreviousRegExp( text, cs, absolute ) :
+                                       findPrevious( text, cs, words, absolute );
     } else {
-        emit reCheckBox->isChecked() ? findNextRegExp( text, absolute ) :
-                                       findNext( text, cs, absolute );
+        emit reCheckBox->isChecked() ? findNextRegExp( text, cs, absolute ) :
+                                       findNext( text, cs, words, absolute );
     }
     startCheckBox->setChecked( false );
+    if ( !keepCheckBox->isChecked() ) close();
 }
 
 

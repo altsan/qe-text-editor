@@ -3,21 +3,29 @@
 
 #include <QMainWindow>
 
-#define PROGRAM_VERSION "0.9"
+
+#define PROGRAM_VERSION "0.9.1"
 #define SETTINGS_VENDOR "ATutils"
 #define SETTINGS_APP    "QuickEditor"
 
+#if 0
 #define DEFAULT_FILENAME_FILTERS                            \
     "Text files (*.txt readme*);;"                          \
-    "All files (*);;"                                       \
+    "Command files (*.cmd *.bat *.rex *.orx *.sh *.vrx);;"  \
+    "All files (*)"
+#else
+#define DEFAULT_FILENAME_FILTERS                            \
+    "Text files (*.txt readme*);;"                          \
     "Assembler source code (*.asm);;"                       \
     "BASIC source code (*.bas);;"                           \
-    "C/C++ source code (*.c *.h *.cpp *.hpp *.cc *.inc);;"  \
-    "Command files (*.cmd *.bat *.rex *.sh *.vrx);;"        \
+    "C/C++ source code (*.c *.h *.cpp *.hpp *.cc);;"        \
+    "Command files (*.cmd *.bat *.rex *.orx *.sh *.vrx);;"  \
     "Java source code (*.jav *.java);;"                     \
     "Pascal source code (*.pas);;"                          \
     "Python files (*.py);;"                                 \
-    "WWW files (*.htm *.html *.css *.cgi *.js *.php )"
+    "WWW files (*.htm *.html *.css *.cgi *.js *.php);;"     \
+    "All files (*)"
+#endif
 
 class QAction;
 class QLabel;
@@ -45,6 +53,7 @@ private slots:
     bool saveAs();
     bool print();
     void find();
+    void findAgain();
     void replace();
     void about();
     void openRecentFile();
@@ -58,10 +67,10 @@ private slots:
     void updateModified();
     void updateModified( bool isModified );
     void setEditorFont();
-    void findNext( const QString &str, Qt::CaseSensitivity cs, bool fromStart );
-    void findNextRegExp( const QString &str, bool fromStart );
-    void findPrevious( const QString &str, Qt::CaseSensitivity cs, bool fromEnd );
-    void findPreviousRegExp( const QString &str, bool fromEnd );
+    void findNext( const QString &str, bool cs, bool words, bool fromStart );
+    void findNextRegExp( const QString &str, bool cs, bool fromStart );
+    void findPrevious( const QString &str, bool cs, bool words, bool fromEnd );
+    void findPreviousRegExp( const QString &str, bool cs, bool fromEnd );
 
 private:
     // Setup methods
@@ -132,7 +141,15 @@ private:
 
     QStringList recentFiles;
     QString     currentFile;
-    QString     lastSearch;
+
+    struct EditorSearch {
+        QString string;
+        QRegExp regexp;
+        bool    matchCase;
+        bool    matchWord;
+        bool    absolute;
+        bool    backwards;
+    } lastSearch;
 
 };
 

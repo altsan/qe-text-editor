@@ -136,21 +136,21 @@ void MainWindow::find()
     if ( !findDialog ) {
         findDialog = new FindDialog( this );
         connect( findDialog,
-                 SIGNAL( findNext( const QString &, Qt::CaseSensitivity, bool )),
+                 SIGNAL( findNext( const QString &, bool, bool, bool )),
                  this,
-                 SLOT( findNext( const QString &, Qt::CaseSensitivity, bool )));
+                 SLOT( findNext( const QString &, bool, bool, bool )));
         connect( findDialog,
-                 SIGNAL( findNextRegExp( const QString &, bool )),
+                 SIGNAL( findNextRegExp( const QString &, bool, bool )),
                  this,
-                 SLOT( findNextRegExp( const QString &, bool )));
+                 SLOT( findNextRegExp( const QString &, bool, bool )));
         connect( findDialog,
-                 SIGNAL( findPrevious( const QString &, Qt::CaseSensitivity, bool )),
+                 SIGNAL( findPrevious( const QString &, bool, bool, bool )),
                  this,
-                 SLOT( findPrevious( const QString &, Qt::CaseSensitivity, bool )));
+                 SLOT( findPrevious( const QString &, bool, bool, bool )));
         connect( findDialog,
-                 SIGNAL( findPreviousRegExp( const QString &, bool )),
+                 SIGNAL( findPreviousRegExp( const QString &, bool, bool )),
                  this,
-                 SLOT( findPreviousRegExp( const QString &, bool )));
+                 SLOT( findPreviousRegExp( const QString &, bool, bool )));
     }
     if ( findDialog->isHidden() ) {
         findDialog->show();
@@ -159,6 +159,11 @@ void MainWindow::find()
         findDialog->raise();
         findDialog->activateWindow();
     }
+}
+
+
+void MainWindow::findAgain()
+{
 }
 
 
@@ -285,41 +290,77 @@ void MainWindow::setEditorFont() {
 }
 
 
-void MainWindow::findNext( const QString &str, Qt::CaseSensitivity cs, bool fromStart )
+void MainWindow::findNext( const QString &str, bool cs, bool words, bool fromStart )
 {
-    lastSearch = str;
+    lastSearch.string = str;
+    lastSearch.regexp.setPattern("");
+    lastSearch.matchCase = cs;
+    lastSearch.matchWord = words;
+    lastSearch.absolute  = fromStart;
+    lastSearch.backwards = false;
+
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
-    if ( cs == Qt::CaseSensitive )
+    if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
+    if ( words )
+        flags |= QTextDocument::FindWholeWords;
     int pos = fromStart ? 0 :
                           editor->textCursor().selectionEnd();
     showFindResult( editor->document()->find( str, pos, flags ));
 }
 
 
-void MainWindow::findNextRegExp( const QString &str, bool fromStart )
+void MainWindow::findNextRegExp( const QString &str, bool cs, bool fromStart )
 {
-    lastSearch = str;
+    lastSearch.string.clear();
+    lastSearch.regexp.setPattern( str );
+    lastSearch.regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
+    lastSearch.matchCase = cs;
+    lastSearch.matchWord = false;
+    lastSearch.absolute  = fromStart;
+    lastSearch.backwards = false;
+
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
+    int pos = fromStart ? 0 :
+                          editor->textCursor().selectionEnd();
+    showFindResult( editor->document()->find( lastSearch.regexp, pos, flags ));
 }
 
 
-void MainWindow::findPrevious( const QString &str, Qt::CaseSensitivity cs, bool fromEnd )
+void MainWindow::findPrevious( const QString &str, bool cs, bool words, bool fromEnd )
 {
-    lastSearch = str;
+    lastSearch.string = str;
+    lastSearch.regexp.setPattern("");
+    lastSearch.matchCase = cs;
+    lastSearch.matchWord = words;
+    lastSearch.absolute  = fromEnd;
+    lastSearch.backwards = true;
+
     QTextDocument::FindFlags flags = QTextDocument::FindBackward;
-    if ( cs == Qt::CaseSensitive )
+    if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
+    if ( words )
+        flags |= QTextDocument::FindWholeWords;
     int pos = fromEnd ? editor->document()->characterCount() :
                         editor->textCursor().selectionStart();
     showFindResult( editor->document()->find( str, pos, flags ));
 }
 
 
-void MainWindow::findPreviousRegExp( const QString &str, bool fromEnd )
+void MainWindow::findPreviousRegExp( const QString &str, bool cs, bool fromEnd )
 {
-    lastSearch = str;
+    lastSearch.string.clear();
+    lastSearch.regexp.setPattern( str );
+    lastSearch.regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
+    lastSearch.matchCase = cs;
+    lastSearch.matchWord = false;
+    lastSearch.absolute  = fromEnd;
+    lastSearch.backwards = true;
+
     QTextDocument::FindFlags flags = QTextDocument::FindBackward;
+    int pos = fromEnd ? editor->document()->characterCount() :
+                        editor->textCursor().selectionStart();
+    showFindResult( editor->document()->find( lastSearch.regexp, pos, flags ));
 }
 
 
@@ -715,7 +756,6 @@ void MainWindow::showUsage()
 
 void MainWindow::setReadOnly( bool readOnly )
 {
-//   editor->setReadOnly( readOnly );
     editor->setTextInteractionFlags( readOnly ?
                                 Qt::TextBrowserInteraction | Qt::TextSelectableByKeyboard :
                                 Qt::TextEditorInteraction

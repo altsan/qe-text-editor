@@ -11,7 +11,7 @@ int main( int argc, char *argv[] )
     bool showUsage     = false;
     QString fileName;
 
-    for ( int a = 1; ( a < argc ) && ( fileName.isNull() ); a++ ) {
+    for ( int a = 1; a < argc; a++ ) {
         char *psz = argv[ a ];
         if ( *psz == '/' || *psz == '-') {
             psz++;
@@ -23,7 +23,7 @@ int main( int argc, char *argv[] )
                 showUsage = true;
             }
         }
-        else {
+        else if ( fileName.isNull() ) {
             QFileInfo fileinfo( psz );
             fileName = fileinfo.canonicalFilePath();
         }

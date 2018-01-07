@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>362</width>
-    <height>169</height>
+    <width>386</width>
+    <height>199</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,8 +24,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>343</width>
-     <height>154</height>
+     <width>365</width>
+     <height>181</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -83,7 +83,21 @@
         <item row="1" column="1">
          <widget class="QCheckBox" name="startCheckBox">
           <property name="text">
-           <string>&amp;From start of file</string>
+           <string>Fro&amp;m start of file</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="wordCheckBox">
+          <property name="text">
+           <string>Match whole words</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QCheckBox" name="keepCheckBox">
+          <property name="text">
+           <string>&amp;Keep this dialog open</string>
           </property>
          </widget>
         </item>
@@ -97,7 +111,7 @@
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>10</height>
+          <height>5</height>
          </size>
         </property>
        </spacer>
@@ -151,10 +165,11 @@
   <tabstop>findEdit</tabstop>
   <tabstop>reCheckBox</tabstop>
   <tabstop>caseCheckBox</tabstop>
+  <tabstop>wordCheckBox</tabstop>
   <tabstop>backCheckBox</tabstop>
   <tabstop>startCheckBox</tabstop>
+  <tabstop>keepCheckBox</tabstop>
   <tabstop>findButton</tabstop>
-  <tabstop>cancelButton</tabstop>
  </tabstops>
  <resources/>
  <connections/>
