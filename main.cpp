@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QDir>
 #include <QFileInfo>
 
 #include "mainwindow.h"
@@ -8,7 +9,7 @@ int main( int argc, char *argv[] )
     QApplication app( argc, argv );
     MainWindow *qe = new MainWindow;
     bool openReadOnly = false;
-    bool showUsage     = false;
+    bool showUsage    = false;
     QString fileName;
 
     for ( int a = 1; a < argc; a++ ) {
@@ -25,7 +26,12 @@ int main( int argc, char *argv[] )
         }
         else if ( fileName.isNull() ) {
             QFileInfo fileinfo( psz );
-            fileName = fileinfo.canonicalFilePath();
+            if ( fileinfo.canonicalFilePath().isEmpty() ) {
+                QDir dir( QDir::currentPath() );
+                fileName = QDir::cleanPath( dir.filePath( psz ));
+            }
+            else
+                fileName = fileinfo.canonicalFilePath();
         }
     }
 
@@ -33,10 +39,12 @@ int main( int argc, char *argv[] )
         qe->showUsage();
         return 0;
     }
+
     if ( !fileName.isNull() )
-        qe->loadFile( fileName );
+        qe->loadFile( fileName, true );
 
     qe->setReadOnly( openReadOnly );
     qe->show();
+
     return app.exec();
 }

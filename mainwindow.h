@@ -39,7 +39,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow();
-    bool loadFile( const QString &fileName );
+    bool loadFile( const QString &fileName, bool createIfNew );
     void showUsage();
     void setReadOnly( bool readonly );
 
@@ -141,15 +141,6 @@ private:
 
     QStringList recentFiles;
     QString     currentFile;
-
-    struct EditorSearch {
-        QString string;
-        QRegExp regexp;
-        bool    matchCase;
-        bool    matchWord;
-        bool    absolute;
-        bool    backwards;
-    } lastSearch;
 
 };
 

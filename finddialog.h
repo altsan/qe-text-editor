@@ -10,6 +10,7 @@ class FindDialog : public QDialog, public Ui::FindDialog
 
 public:
     FindDialog( QWidget *parent = 0 );
+    void doFind();
 
 signals:
     void findNext( const QString &str, bool cs, bool words, bool absolute );

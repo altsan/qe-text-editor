@@ -10,6 +10,12 @@ FindDialog::FindDialog( QWidget *parent )
 }
 
 
+void FindDialog::doFind()
+{
+    on_findButton_clicked();
+}
+
+
 void FindDialog::on_findEdit_textChanged( const QString &text )
 {
     findButton->setEnabled( !text.isEmpty() );

@@ -95,7 +95,7 @@ void MainWindow::open()
         if ( dialog.exec() ) {
             QStringList fileNameList = dialog.selectedFiles();
             if ( !fileNameList.isEmpty() )
-                loadFile( fileNameList.at( 0 ));
+                loadFile( fileNameList.at( 0 ), false );
         }
 #else
         QString fileName = QFileDialog::getOpenFileName( this,
@@ -104,7 +104,7 @@ void MainWindow::open()
                                                          tr( DEFAULT_FILENAME_FILTERS )
                                                        );
         if ( !fileName.isEmpty() )
-            loadFile( fileName );
+            loadFile( fileName, false );
 #endif
     }
 }
@@ -164,6 +164,8 @@ void MainWindow::find()
 
 void MainWindow::findAgain()
 {
+    if ( findDialog )
+        findDialog->doFind();
 }
 
 
@@ -192,7 +194,7 @@ void MainWindow::openRecentFile()
     if ( okToContinue() ) {
         QAction *action = qobject_cast<QAction *>( sender() );
         if ( action )
-            loadFile( action->data().toString() );
+            loadFile( action->data().toString(), false );
     }
 }
 
@@ -271,14 +273,14 @@ void MainWindow::updateModified()
     bool isModified = editor->document()->isModified();
     setWindowModified( isModified );
     modifiedLabel->setText( isModified? tr("Modified"): "");
-    messagesLabel->setText("");
+    if ( isModified ) messagesLabel->setText("");
 }
 void MainWindow::updateModified( bool isModified )
 {
     editor->document()->setModified( isModified );
     setWindowModified( isModified );
     modifiedLabel->setText( isModified? tr("Modified"): "");
-    messagesLabel->setText("");
+    if ( isModified ) messagesLabel->setText("");
 }
 
 
@@ -292,13 +294,6 @@ void MainWindow::setEditorFont() {
 
 void MainWindow::findNext( const QString &str, bool cs, bool words, bool fromStart )
 {
-    lastSearch.string = str;
-    lastSearch.regexp.setPattern("");
-    lastSearch.matchCase = cs;
-    lastSearch.matchWord = words;
-    lastSearch.absolute  = fromStart;
-    lastSearch.backwards = false;
-
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
@@ -312,30 +307,18 @@ void MainWindow::findNext( const QString &str, bool cs, bool words, bool fromSta
 
 void MainWindow::findNextRegExp( const QString &str, bool cs, bool fromStart )
 {
-    lastSearch.string.clear();
-    lastSearch.regexp.setPattern( str );
-    lastSearch.regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
-    lastSearch.matchCase = cs;
-    lastSearch.matchWord = false;
-    lastSearch.absolute  = fromStart;
-    lastSearch.backwards = false;
+    QRegExp regexp( str );
+    regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
 
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     int pos = fromStart ? 0 :
                           editor->textCursor().selectionEnd();
-    showFindResult( editor->document()->find( lastSearch.regexp, pos, flags ));
+    showFindResult( editor->document()->find( regexp, pos, flags ));
 }
 
 
 void MainWindow::findPrevious( const QString &str, bool cs, bool words, bool fromEnd )
 {
-    lastSearch.string = str;
-    lastSearch.regexp.setPattern("");
-    lastSearch.matchCase = cs;
-    lastSearch.matchWord = words;
-    lastSearch.absolute  = fromEnd;
-    lastSearch.backwards = true;
-
     QTextDocument::FindFlags flags = QTextDocument::FindBackward;
     if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
@@ -349,18 +332,13 @@ void MainWindow::findPrevious( const QString &str, bool cs, bool words, bool fro
 
 void MainWindow::findPreviousRegExp( const QString &str, bool cs, bool fromEnd )
 {
-    lastSearch.string.clear();
-    lastSearch.regexp.setPattern( str );
-    lastSearch.regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
-    lastSearch.matchCase = cs;
-    lastSearch.matchWord = false;
-    lastSearch.absolute  = fromEnd;
-    lastSearch.backwards = true;
+    QRegExp regexp( str );
+    regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
 
     QTextDocument::FindFlags flags = QTextDocument::FindBackward;
     int pos = fromEnd ? editor->document()->characterCount() :
                         editor->textCursor().selectionStart();
-    showFindResult( editor->document()->find( lastSearch.regexp, pos, flags ));
+    showFindResult( editor->document()->find( regexp, pos, flags ));
 }
 
 
@@ -461,6 +439,7 @@ void MainWindow::createActions()
     findAgainAction = new QAction( tr("Find &again"), this );
     findAgainAction->setShortcut( tr("Ctrl+G"));
     findAgainAction->setStatusTip( tr("Repeat the last search") );
+    connect( findAgainAction, SIGNAL( triggered() ), this, SLOT( findAgain() ));
 
     replaceAction = new QAction( tr("&Replace..."), this );
     replaceAction->setShortcut( QKeySequence::Replace );
@@ -479,14 +458,14 @@ void MainWindow::createActions()
     wrapAction->setStatusTip( tr("Toggle word wrap") );
     connect( wrapAction, SIGNAL( toggled( bool )), this, SLOT( toggleWordWrap() ));
 
-    editModeAction = new QAction( tr("&Overwrite mode"), this );
+    editModeAction = new QAction( tr("&Overwrite"), this );
     editModeAction->setCheckable( true );
     editModeAction->setChecked( editor->overwriteMode() );
     editModeAction->setShortcut( tr("Ins") );
     editModeAction->setStatusTip( tr("Toggle overwrite mode") );
     connect( editModeAction, SIGNAL( toggled( bool )), this, SLOT( toggleEditMode( bool )));
 
-    readOnlyAction = new QAction( tr("&Read-only mode"), this );
+    readOnlyAction = new QAction( tr("&Read-only"), this );
     readOnlyAction->setCheckable( true );
     readOnlyAction->setChecked( editor->isReadOnly() );
     readOnlyAction->setShortcut( tr("Alt+R") );
@@ -532,12 +511,14 @@ void MainWindow::createMenus()
     editMenu->addAction( selectAllAction );
     editMenu->addSeparator();
     editMenu->addAction( findAction );
+    editMenu->addAction( findAgainAction );
 
     optionsMenu = menuBar()->addMenu( tr("&Options") );
-    optionsMenu->addAction( fontAction );
     optionsMenu->addAction( wrapAction );
     optionsMenu->addAction( editModeAction );
     optionsMenu->addAction( readOnlyAction );
+    optionsMenu->addSeparator();
+    optionsMenu->addAction( fontAction );
 
     menuBar()->addSeparator();
     helpMenu = menuBar()->addMenu( tr("&Help") );
@@ -644,20 +625,28 @@ bool MainWindow::okToContinue()
 }
 
 
-bool MainWindow::loadFile( const QString &fileName )
+bool MainWindow::loadFile( const QString &fileName, bool createIfNew )
 {
     QFile file( fileName );
     if ( !file.open( QIODevice::ReadOnly | QFile::Text )) {
-        QMessageBox::critical( this, tr("Error"), tr("The file could not be opened."));
-        return false;
+        if ( createIfNew ) {
+            editor->clear();
+            showMessage( tr("New file: %1").arg( QDir::toNativeSeparators( fileName )));
+        }
+        else {
+            QMessageBox::critical( this, tr("Error"), tr("The file could not be opened."));
+            return false;
+        }
     }
-    QTextStream in( &file );
-    QString text = in.readAll();
-    editor->setText( text );
-    file.close();
+    else {
+        QTextStream in( &file );
+        QString text = in.readAll();
+        editor->setText( text );
+        file.close();
+        showMessage( tr("Opened file: %1").arg( QDir::toNativeSeparators( fileName )));
+    }
 
     setCurrentFile( fileName );
-    showMessage( tr("Opened file: %1").arg( QDir::toNativeSeparators( fileName )));
     return true;
 }
 
@@ -722,6 +711,7 @@ void MainWindow::updateRecentFileActions()
             QString text = tr("&%1 %2").arg( j+1 ).arg( strippedName( recentFiles[ j ] ));
             recentFileActions[ j ]->setText( text );
             recentFileActions[ j ]->setData( recentFiles[ j ] );
+            recentFileActions[ j ]->setStatusTip( QDir::toNativeSeparators( recentFiles[ j ] ));
             recentFileActions[ j ]->setVisible( true );
         }
         else {
@@ -766,10 +756,13 @@ void MainWindow::setReadOnly( bool readOnly )
 
 void MainWindow::showFindResult( QTextCursor found )
 {
-    if ( found.isNull() )
+    if ( found.isNull() ) {
         showMessage( tr("No matches."));
+        found = editor->textCursor();
+        found.clearSelection();
+    }
     else {
         showMessage( tr("Found match at %1:%2").arg( found.blockNumber() + 1 ).arg( found.positionInBlock() ));
-        editor->setTextCursor( found );
     }
+    editor->setTextCursor( found );
 }
