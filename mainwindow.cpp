@@ -11,9 +11,13 @@
 
 MainWindow::MainWindow()
 {
-    editor = new QTextEdit;
-    editor->setLineWrapColumnOrWidth( QTextEdit::FixedColumnWidth );
-    editor->setAcceptRichText( false );
+    editor = new QPlainTextEdit;
+
+    editor->setBackgroundVisible( true );
+    QPalette p = editor->palette();
+    p.setColor( QPalette::Background, QColor("#F0F0F0"));
+    editor->setPalette(p);
+
     connect( newAction, SIGNAL( triggered() ), this, SLOT( newFile() ));
     setCentralWidget( editor );
 
@@ -100,7 +104,7 @@ void MainWindow::open()
 #else
         QString fileName = QFileDialog::getOpenFileName( this,
                                                          tr("Open File"),
-                                                         tr("."),
+                                                         currentDir,
                                                          tr( DEFAULT_FILENAME_FILTERS )
                                                        );
         if ( !fileName.isEmpty() )
@@ -123,7 +127,7 @@ bool MainWindow::saveAs()
 {
     QString fileName = QFileDialog::getSaveFileName( this,
                                                      tr("Save File"),
-                                                     tr("."),
+                                                     currentDir,
                                                      tr("All files (*)"));
     if ( fileName.isEmpty() )
         return false;
@@ -641,7 +645,7 @@ bool MainWindow::loadFile( const QString &fileName, bool createIfNew )
     else {
         QTextStream in( &file );
         QString text = in.readAll();
-        editor->setText( text );
+        editor->setPlainText( text );
         file.close();
         showMessage( tr("Opened file: %1").arg( QDir::toNativeSeparators( fileName )));
     }
@@ -686,10 +690,12 @@ bool MainWindow::print()
 void MainWindow::setCurrentFile( const QString &fileName )
 {
     currentFile = fileName;
+    currentDir = QDir::currentPath();
     updateModified( false );
     QString shownName = tr("Untitled");
     if ( !currentFile.isEmpty() ) {
-        shownName = strippedName( currentFile );
+        currentDir = QDir::cleanPath( QFileInfo( fileName ).absolutePath() );
+        shownName  = strippedName( currentFile );
         recentFiles.removeAll( currentFile );
         recentFiles.prepend( currentFile );
         updateRecentFileActions();

@@ -30,7 +30,7 @@
 class QAction;
 class QLabel;
 class FindDialog;
-class QTextEdit;
+class QPlainTextEdit;
 class QTextCursor;
 
 class MainWindow : public QMainWindow
@@ -93,7 +93,7 @@ private:
     void showFindResult( QTextCursor found );
 
     // GUI objects
-    QTextEdit *editor;
+    QPlainTextEdit *editor;
     FindDialog *findDialog;
 
     QLabel *editModeLabel;
@@ -141,6 +141,7 @@ private:
 
     QStringList recentFiles;
     QString     currentFile;
+    QString     currentDir;
 
 };
 
