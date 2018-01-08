@@ -95,9 +95,12 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QCheckBox" name="keepCheckBox">
+         <widget class="QCheckBox" name="verifyCheckBox">
           <property name="text">
-           <string>&amp;Keep this dialog open</string>
+           <string>&amp;Confirm replacement</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -192,7 +195,7 @@
   <tabstop>wordCheckBox</tabstop>
   <tabstop>backCheckBox</tabstop>
   <tabstop>startCheckBox</tabstop>
-  <tabstop>keepCheckBox</tabstop>
+  <tabstop>verifyCheckBox</tabstop>
   <tabstop>replaceButton</tabstop>
   <tabstop>replaceAllButton</tabstop>
   <tabstop>cancelButton</tabstop>

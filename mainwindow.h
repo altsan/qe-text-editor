@@ -29,9 +29,10 @@
 
 class QAction;
 class QLabel;
-class FindDialog;
 class QPlainTextEdit;
 class QTextCursor;
+class FindDialog;
+class ReplaceDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -71,6 +72,12 @@ private slots:
     void findNextRegExp( const QString &str, bool cs, bool fromStart );
     void findPrevious( const QString &str, bool cs, bool words, bool fromEnd );
     void findPreviousRegExp( const QString &str, bool cs, bool fromEnd );
+    void replaceNext( const QString &str, const QString &repl, bool cs, bool words, bool absolute, bool confirm );
+    void replaceNextRegExp( const QString &str, const QString &repl, bool cs, bool absolute, bool confirm );
+    void replacePrevious( const QString &str, const QString &repl, bool cs, bool words, bool absolute, bool confirm );
+    void replacePreviousRegExp( const QString &str, const QString &repl, bool cs, bool absolute, bool confirm );
+    void replaceAll( const QString &str, const QString &repl, bool cs, bool words, bool absolute, bool confirm, bool backwards );
+    void replaceAllRegExp( const QString &str, const QString &repl, bool cs, bool absolute, bool confirm, bool backwards );
 
 private:
     // Setup methods
@@ -90,11 +97,13 @@ private:
     void updateRecentFileActions();
     QString strippedName( const QString &fullFileName );
     void showMessage( const QString &message );
-    void showFindResult( QTextCursor found );
+    bool showFindResult( QTextCursor found );
+    bool replaceFindResult( QTextCursor found, const QString newText, bool confirm );
 
     // GUI objects
     QPlainTextEdit *editor;
     FindDialog *findDialog;
+    ReplaceDialog *replaceDialog;
 
     QLabel *editModeLabel;
     QLabel *positionLabel;

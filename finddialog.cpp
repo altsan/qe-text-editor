@@ -12,7 +12,8 @@ FindDialog::FindDialog( QWidget *parent )
 
 void FindDialog::doFind()
 {
-    on_findButton_clicked();
+    if ( !findEdit->text().isEmpty() )
+        on_findButton_clicked();
 }
 
 
@@ -30,8 +31,8 @@ void FindDialog::on_reCheckBox_toggled( bool checked )
 
 void FindDialog::on_backCheckBox_toggled( bool checked )
 {
-    startCheckBox->setText( checked? tr("&From end of file"):
-                                     tr("&From start of file") );
+    startCheckBox->setText( checked? tr("Fro&m end of file"):
+                                     tr("Fro&m start of file") );
 }
 
 

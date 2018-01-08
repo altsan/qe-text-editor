@@ -2,6 +2,7 @@
 #include <QPrinter>
 
 #include "finddialog.h"
+#include "replacedialog.h"
 #include "mainwindow.h"
 
 
@@ -29,6 +30,7 @@ MainWindow::MainWindow()
     readSettings();
 
     findDialog = 0;
+    replaceDialog = 0;
 
     connect( editor, SIGNAL( cursorPositionChanged() ), this, SLOT( updatePositionLabel() ));
     connect( editor->document(), SIGNAL( contentsChanged() ), this, SLOT( updateModified() ));
@@ -156,6 +158,12 @@ void MainWindow::find()
                  this,
                  SLOT( findPreviousRegExp( const QString &, bool, bool )));
     }
+
+    // Don't allow both find and replace dialogs to be visible at once
+    if ( replaceDialog && !replaceDialog->isHidden() ) {
+        replaceDialog->close();
+    }
+
     if ( findDialog->isHidden() ) {
         findDialog->show();
     }
@@ -175,6 +183,46 @@ void MainWindow::findAgain()
 
 void MainWindow::replace()
 {
+    if ( !replaceDialog ) {
+        replaceDialog = new ReplaceDialog( this );
+        connect( replaceDialog,
+                 SIGNAL( replaceNext( const QString &, const QString &, bool, bool, bool, bool )),
+                 this,
+                 SLOT( replaceNext( const QString &, const QString &, bool, bool, bool, bool )));
+        connect( replaceDialog,
+                 SIGNAL( replaceNextRegExp( const QString &, const QString &, bool, bool, bool )),
+                 this,
+                 SLOT( replaceNextRegExp( const QString &, const QString &, bool, bool, bool )));
+        connect( replaceDialog,
+                 SIGNAL( replacePrevious( const QString &, const QString &, bool, bool, bool, bool )),
+                 this,
+                 SLOT( replacePrevious( const QString &, const QString &, bool, bool, bool, bool )));
+        connect( replaceDialog,
+                 SIGNAL( replacePreviousRegExp( const QString &, const QString &, bool, bool, bool )),
+                 this,
+                 SLOT( replacePreviousRegExp( const QString &, const QString &, bool, bool, bool )));
+        connect( replaceDialog,
+                 SIGNAL( replaceAll( const QString &, const QString &, bool, bool, bool, bool, bool )),
+                 this,
+                 SLOT( replaceAll( const QString &, const QString &, bool, bool, bool, bool, bool )));
+        connect( replaceDialog,
+                 SIGNAL( replaceAllRegExp( const QString &, const QString &, bool, bool, bool, bool )),
+                 this,
+                 SLOT( replaceAllRegExp( const QString &, const QString &, bool, bool, bool, bool )));
+    }
+
+    // Don't allow both find and replace dialogs to be visible at once
+    if ( findDialog && !findDialog->isHidden() ) {
+        findDialog->close();
+    }
+
+    if ( replaceDialog->isHidden() ) {
+        replaceDialog->show();
+    }
+    else {
+        replaceDialog->raise();
+        replaceDialog->activateWindow();
+    }
 }
 
 
@@ -346,6 +394,184 @@ void MainWindow::findPreviousRegExp( const QString &str, bool cs, bool fromEnd )
 }
 
 
+void MainWindow::replaceNext( const QString &str, const QString &repl, bool cs, bool words, bool fromStart, bool confirm )
+{
+    QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
+    if ( cs )
+        flags |= QTextDocument::FindCaseSensitively;
+    if ( words )
+        flags |= QTextDocument::FindWholeWords;
+    int pos = fromStart ? 0 :
+                          editor->textCursor().selectionEnd();
+    QTextCursor found = editor->document()->find( str, pos, flags );
+    if ( showFindResult( found )) {
+        if ( ! replaceFindResult( editor->textCursor(), repl, confirm )) {
+            // Clear selection but keep the cursor position at its end
+            found = editor->textCursor();
+            found.clearSelection();
+            editor->setTextCursor( found );
+        }
+    }
+}
+
+
+void MainWindow::replaceNextRegExp( const QString &str, const QString &repl, bool cs, bool fromStart, bool confirm )
+{
+    QRegExp regexp( str );
+    regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
+
+    QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
+    int pos = fromStart ? 0 :
+                          editor->textCursor().selectionEnd();
+    QTextCursor found = editor->document()->find( regexp, pos, flags );
+    if ( showFindResult( found )) {
+        QString newText = found.selectedText();
+        newText.replace( regexp, repl );
+        if ( !replaceFindResult( editor->textCursor(), newText, confirm )) {
+            // Clear selection but keep the cursor position at its end
+            found = editor->textCursor();
+            found.clearSelection();
+            editor->setTextCursor( found );
+        }
+    }
+}
+
+
+void MainWindow::replacePrevious( const QString &str, const QString &repl, bool cs, bool words, bool fromEnd, bool confirm )
+{
+    QTextDocument::FindFlags flags = QTextDocument::FindBackward;
+    if ( cs )
+        flags |= QTextDocument::FindCaseSensitively;
+    if ( words )
+        flags |= QTextDocument::FindWholeWords;
+    int pos = fromEnd ? editor->document()->characterCount() :
+                        editor->textCursor().selectionStart();
+
+    QTextCursor found = editor->document()->find( str, pos, flags );
+    if ( showFindResult( found )) {
+        if ( ! replaceFindResult( editor->textCursor(), repl, confirm )) {
+            // Move the cursor to the selection start, then clear the selection
+            pos = found.selectionStart();
+            found = editor->textCursor();
+            found.clearSelection();
+            found.setPosition( pos );
+            editor->setTextCursor( found );
+        }
+    }
+}
+
+
+void MainWindow::replacePreviousRegExp( const QString &str, const QString &repl, bool cs, bool fromEnd, bool confirm )
+{
+    QRegExp regexp( str );
+    regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
+
+    QTextDocument::FindFlags flags = QTextDocument::FindBackward;
+    int pos = fromEnd ? editor->document()->characterCount() :
+                        editor->textCursor().selectionStart();
+    QTextCursor found = editor->document()->find( regexp, pos, flags );
+    if ( showFindResult( found )) {
+        QString newText = found.selectedText();
+        newText.replace( regexp, repl );
+        if ( !replaceFindResult( editor->textCursor(), newText, confirm )) {
+            // Move the cursor to the selection start, then clear the selection
+            pos = found.selectionStart();
+            found = editor->textCursor();
+            found.clearSelection();
+            found.setPosition( pos );
+            editor->setTextCursor( found );
+        }
+    }
+}
+
+
+void MainWindow::replaceAll( const QString &str, const QString &repl, bool cs, bool words, bool fromStart, bool confirm, bool backwards )
+{
+    QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
+    if ( cs )
+        flags |= QTextDocument::FindCaseSensitively;
+    if ( words )
+        flags |= QTextDocument::FindWholeWords;
+    if ( backwards )
+        flags = QTextDocument::FindBackward;
+
+    int pos = fromStart ? 0 :
+                          editor->textCursor().selectionEnd();
+    QTextCursor found = editor->document()->find( str, pos, flags );
+    if ( found.isNull() ) {
+        showMessage( tr("No matches."));
+        found = editor->textCursor();
+        found.clearSelection();
+        return;
+    }
+    if ( confirm ) {
+        int r = QMessageBox::question( this,
+                                       tr("Confirm"),
+                                       tr("Replace all occurences of \"%1\"?").arg( str ),
+                                       QMessageBox::Yes | QMessageBox::No,
+                                       QMessageBox::Yes
+                                    );
+        if ( r != QMessageBox::Yes )
+            return;
+    }
+    int count = 0;
+    while ( !found.isNull() ) {
+        count++;
+        found.insertText( repl );
+        found = editor->document()->find( str, found.selectionEnd(), flags );
+    }
+    showMessage( tr("%1 occurences replaced.").arg( count ));
+    found = editor->textCursor();
+    found.clearSelection();
+    editor->setTextCursor( found );
+}
+
+
+void MainWindow::replaceAllRegExp( const QString &str, const QString &repl, bool cs, bool fromStart, bool confirm, bool backwards )
+{
+    QRegExp regexp( str );
+    regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
+
+    QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
+    if ( cs )
+        flags |= QTextDocument::FindCaseSensitively;
+    if ( backwards )
+        flags = QTextDocument::FindBackward;
+    int pos = fromStart ? 0 :
+                          editor->textCursor().selectionEnd();
+    QTextCursor found = editor->document()->find( regexp, pos, flags );
+    if ( found.isNull() ) {
+        showMessage( tr("No matches."));
+        found = editor->textCursor();
+        found.clearSelection();
+        return;
+    }
+    if ( confirm ) {
+        int r = QMessageBox::question( this,
+                                       tr("Confirm"),
+                                       tr("Replace all occurences of text matching expression \"%1\"?").arg( str ),
+                                       QMessageBox::Yes | QMessageBox::No,
+                                       QMessageBox::Yes
+                                    );
+        if ( r != QMessageBox::Yes )
+            return;
+    }
+    int count = 0;
+    QString newText;
+    while ( !found.isNull() ) {
+        count++;
+        newText = found.selectedText();
+        newText.replace( regexp, repl );
+        found.insertText( repl );
+        found = editor->document()->find( regexp, found.selectionEnd(), flags );
+    }
+    showMessage( tr("%1 occurences replaced.").arg( count ));
+    found = editor->textCursor();
+    found.clearSelection();
+    editor->setTextCursor( found );
+}
+
+
 
 // ---------------------------------------------------------------------------
 // OTHER METHODS
@@ -446,9 +672,11 @@ void MainWindow::createActions()
     connect( findAgainAction, SIGNAL( triggered() ), this, SLOT( findAgain() ));
 
     replaceAction = new QAction( tr("&Replace..."), this );
-    replaceAction->setShortcut( QKeySequence::Replace );
+    QList<QKeySequence> replaceShortcuts;
+    replaceShortcuts << QKeySequence::Replace << QKeySequence("Ctrl+R");
+    replaceAction->setShortcuts( replaceShortcuts );
     replaceAction->setStatusTip( tr("Search and replace text") );
-
+    connect( replaceAction, SIGNAL( triggered() ), this, SLOT( replace() ));
 
     // Options menu actions
 
@@ -516,6 +744,7 @@ void MainWindow::createMenus()
     editMenu->addSeparator();
     editMenu->addAction( findAction );
     editMenu->addAction( findAgainAction );
+    editMenu->addAction( replaceAction );
 
     optionsMenu = menuBar()->addMenu( tr("&Options") );
     optionsMenu->addAction( wrapAction );
@@ -618,7 +847,8 @@ bool MainWindow::okToContinue()
                                       tr("Text Editor"),
                                       tr("There are unsaved changes. "
                                          "Do you want to save the changes?"),
-                                      QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel
+                                      QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
+                                      QMessageBox::Save
                                     );
         if ( r == QMessageBox::Save )
             return save();
@@ -760,8 +990,9 @@ void MainWindow::setReadOnly( bool readOnly )
 }
 
 
-void MainWindow::showFindResult( QTextCursor found )
+bool MainWindow::showFindResult( QTextCursor found )
 {
+    bool isFound = false;
     if ( found.isNull() ) {
         showMessage( tr("No matches."));
         found = editor->textCursor();
@@ -769,6 +1000,30 @@ void MainWindow::showFindResult( QTextCursor found )
     }
     else {
         showMessage( tr("Found match at %1:%2").arg( found.blockNumber() + 1 ).arg( found.positionInBlock() ));
+        isFound = true;
     }
     editor->setTextCursor( found );
+    return isFound;
+}
+
+
+bool MainWindow::replaceFindResult( QTextCursor found, const QString newText, bool confirm )
+{
+    if ( confirm ) {
+        replaceDialog->close();
+        int r = QMessageBox::question( this,
+                                       tr("Confirm"),
+                                       tr("Replace this text?"),
+                                       QMessageBox::Yes | QMessageBox::No,
+                                       QMessageBox::Yes
+                                    );
+        replaceDialog->show();
+        if ( r != QMessageBox::Yes ) {
+            return false;
+        }
+    }
+    found.insertText( newText );
+    showMessage( tr("Replaced text at %1:%2").arg( found.blockNumber() + 1 ).arg( found.positionInBlock() ));
+
+    return true;
 }
