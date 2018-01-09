@@ -4,7 +4,7 @@
 #include <QMainWindow>
 
 
-#define PROGRAM_VERSION "0.9.1"
+#define PROGRAM_VERSION "0.9.2"
 #define SETTINGS_VENDOR "ATutils"
 #define SETTINGS_APP    "QuickEditor"
 
@@ -59,9 +59,9 @@ private slots:
     void about();
     void openRecentFile();
     void clearRecentFiles();
-    void toggleEditMode( bool ovr );
-    void toggleReadOnly( bool readOnly );
-    void toggleWordWrap();
+    bool toggleEditMode( bool ovr );
+    bool toggleReadOnly( bool readOnly );
+    bool toggleWordWrap( bool bWrap );
     void updateStatusBar();
     void updateModeLabel();
     void updatePositionLabel();

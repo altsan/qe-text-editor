@@ -19,6 +19,7 @@ void ReplaceDialog::doReplace()
 void ReplaceDialog::on_findEdit_textChanged( const QString &text )
 {
     replaceButton->setEnabled( !text.isEmpty() );
+    replaceAllButton->setEnabled( !text.isEmpty() );
 }
 
 

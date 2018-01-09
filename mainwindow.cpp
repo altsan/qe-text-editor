@@ -265,27 +265,28 @@ void MainWindow::clearRecentFiles()
 }
 
 
-void MainWindow::toggleEditMode( bool ovr )
+bool MainWindow::toggleEditMode( bool ovr )
 {
     editor->setOverwriteMode( ovr );
     updateModeLabel();
+    return ovr;
 }
 
 
-void MainWindow::toggleWordWrap()
+bool MainWindow::toggleWordWrap( bool bWrap )
 {
-    QTextOption::WrapMode mode = editor->wordWrapMode();
-    if ( mode == QTextOption::WrapAtWordBoundaryOrAnywhere )
-        mode = QTextOption::NoWrap;
-    else
-        mode = QTextOption::WrapAtWordBoundaryOrAnywhere;
+    QTextOption::WrapMode mode;
+    mode = bWrap ? QTextOption::WrapAtWordBoundaryOrAnywhere :
+                   QTextOption::NoWrap;
     editor->setWordWrapMode( mode );
+    return bWrap;
 }
 
 
-void MainWindow::toggleReadOnly( bool readOnly )
+bool MainWindow::toggleReadOnly( bool readOnly )
 {
     setReadOnly( readOnly );
+    return readOnly;
 }
 
 
@@ -682,30 +683,23 @@ void MainWindow::createActions()
 
     wrapAction = new QAction( tr("&Word wrap"), this );
     wrapAction->setCheckable( true );
-    wrapAction->setChecked(
-        (editor->wordWrapMode() == QTextOption::WrapAtWordBoundaryOrAnywhere)?
-        true: false
-    );
     wrapAction->setShortcut( tr("Alt+W") );
     wrapAction->setStatusTip( tr("Toggle word wrap") );
-    connect( wrapAction, SIGNAL( toggled( bool )), this, SLOT( toggleWordWrap() ));
+    connect( wrapAction, SIGNAL( toggled( bool )), this, SLOT( toggleWordWrap( bool )));
 
     editModeAction = new QAction( tr("&Overwrite"), this );
     editModeAction->setCheckable( true );
-    editModeAction->setChecked( editor->overwriteMode() );
     editModeAction->setShortcut( tr("Ins") );
     editModeAction->setStatusTip( tr("Toggle overwrite mode") );
     connect( editModeAction, SIGNAL( toggled( bool )), this, SLOT( toggleEditMode( bool )));
 
     readOnlyAction = new QAction( tr("&Read-only"), this );
     readOnlyAction->setCheckable( true );
-    readOnlyAction->setChecked( editor->isReadOnly() );
     readOnlyAction->setShortcut( tr("Alt+R") );
     readOnlyAction->setStatusTip( tr("Toggle read-only mode") );
     connect( readOnlyAction, SIGNAL( toggled( bool )), this, SLOT( toggleReadOnly( bool )));
 
     fontAction = new QAction( tr("&Font..."), this );
-    fontAction->setShortcut( tr("Alt+F") );
     fontAction->setStatusTip( tr("Change the edit window font") );
     connect( fontAction, SIGNAL( triggered() ), this, SLOT( setEditorFont() ));
 
@@ -808,9 +802,11 @@ void MainWindow::readSettings()
     updateRecentFileActions();
 
     toggleEditMode( settings.value("overwrite", false ).toBool() );
+    editModeAction->setChecked( editor->overwriteMode() );
 
-    bool wrap = settings.value("wrapMode", QTextOption::WrapAtWordBoundaryOrAnywhere ).toBool();
-    editor->setWordWrapMode( wrap? QTextOption::WrapAtWordBoundaryOrAnywhere: QTextOption::NoWrap );
+    bool wrap = settings.value("wrapMode", true ).toBool();
+    toggleWordWrap( wrap );
+    wrapAction->setChecked( wrap );
 
     QString defaultFont;
     QFontDatabase fontdb;
@@ -822,6 +818,8 @@ void MainWindow::readSettings()
     QFont font("");
     font.fromString( settings.value("editorFont", defaultFont ).toString() );
     editor->setFont( font );
+
+    readOnlyAction->setChecked( editor->isReadOnly() );
 }
 
 
@@ -999,7 +997,9 @@ bool MainWindow::showFindResult( QTextCursor found )
         found.clearSelection();
     }
     else {
-        showMessage( tr("Found match at %1:%2").arg( found.blockNumber() + 1 ).arg( found.positionInBlock() ));
+        QTextCursor temp( found );
+        temp.setPosition( temp.selectionStart() );
+        showMessage( tr("Found match at %1:%2").arg( temp.blockNumber() + 1 ).arg( temp.positionInBlock() ));
         isFound = true;
     }
     editor->setTextCursor( found );
@@ -1022,8 +1022,11 @@ bool MainWindow::replaceFindResult( QTextCursor found, const QString newText, bo
             return false;
         }
     }
+    QTextCursor temp( found );
+    temp.setPosition( temp.selectionStart() );
+    int column = temp.positionInBlock();
     found.insertText( newText );
-    showMessage( tr("Replaced text at %1:%2").arg( found.blockNumber() + 1 ).arg( found.positionInBlock() ));
+    showMessage( tr("Replaced text at %1:%2").arg( found.blockNumber() + 1 ).arg( column ));
 
     return true;
 }
