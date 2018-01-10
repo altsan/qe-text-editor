@@ -78,6 +78,7 @@ private slots:
     void replacePreviousRegExp( const QString &str, const QString &repl, bool cs, bool absolute, bool confirm );
     void replaceAll( const QString &str, const QString &repl, bool cs, bool words, bool absolute, bool confirm, bool backwards );
     void replaceAllRegExp( const QString &str, const QString &repl, bool cs, bool absolute, bool confirm, bool backwards );
+    void goToLine();
 
 private:
     // Setup methods
@@ -133,7 +134,7 @@ private:
     QAction *findAction;
     QAction *findAgainAction;
     QAction *replaceAction;
-    QAction *gotoAction;
+    QAction *goToAction;
 
     QMenu   *optionsMenu;
     QAction *wrapAction;
@@ -151,6 +152,7 @@ private:
     QStringList recentFiles;
     QString     currentFile;
     QString     currentDir;
+    int         lastGoTo;
 
 };
 

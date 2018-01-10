@@ -3,6 +3,7 @@
 
 #include "finddialog.h"
 #include "replacedialog.h"
+#include "gotolinedialog.h"
 #include "mainwindow.h"
 
 
@@ -31,6 +32,7 @@ MainWindow::MainWindow()
 
     findDialog = 0;
     replaceDialog = 0;
+    lastGoTo = 1;
 
     connect( editor, SIGNAL( cursorPositionChanged() ), this, SLOT( updatePositionLabel() ));
     connect( editor->document(), SIGNAL( contentsChanged() ), this, SLOT( updateModified() ));
@@ -222,6 +224,21 @@ void MainWindow::replace()
     else {
         replaceDialog->raise();
         replaceDialog->activateWindow();
+    }
+}
+
+void MainWindow::goToLine()
+{
+    int min = 1;
+    int max = editor->document()->blockCount() + 1;
+    GoToLineDialog dialog( this, min, max, lastGoTo );
+    if ( dialog.exec() ) {
+        QString str = dialog.lineEdit->text();
+        lastGoTo = str.toInt();
+        if (( lastGoTo < 1 ) || ( lastGoTo >= max ))
+            lastGoTo = 1;
+        QTextCursor cursor( editor->document()->findBlockByLineNumber( lastGoTo - 1 ));
+        editor->setTextCursor( cursor );
     }
 }
 
@@ -679,6 +696,11 @@ void MainWindow::createActions()
     replaceAction->setStatusTip( tr("Search and replace text") );
     connect( replaceAction, SIGNAL( triggered() ), this, SLOT( replace() ));
 
+    goToAction = new QAction( tr("Go to &line..."), this );
+    goToAction->setShortcut( tr("Ctrl+L"));
+    goToAction->setStatusTip( tr("Go to the specified line of the file") );
+    connect( goToAction, SIGNAL( triggered() ), this, SLOT( goToLine() ));
+
     // Options menu actions
 
     wrapAction = new QAction( tr("&Word wrap"), this );
@@ -735,6 +757,8 @@ void MainWindow::createMenus()
     editMenu->addAction( pasteAction );
     editMenu->addSeparator();
     editMenu->addAction( selectAllAction );
+    editMenu->addSeparator();
+    editMenu->addAction( goToAction );
     editMenu->addSeparator();
     editMenu->addAction( findAction );
     editMenu->addAction( findAgainAction );
