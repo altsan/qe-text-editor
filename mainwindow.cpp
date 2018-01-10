@@ -230,13 +230,13 @@ void MainWindow::replace()
 void MainWindow::goToLine()
 {
     int min = 1;
-    int max = editor->document()->blockCount() + 1;
+    int max = editor->document()->blockCount();
+    if (( lastGoTo < 1 ) || ( lastGoTo > max ))
+        lastGoTo = 1;
     GoToLineDialog dialog( this, min, max, lastGoTo );
     if ( dialog.exec() ) {
         QString str = dialog.lineEdit->text();
         lastGoTo = str.toInt();
-        if (( lastGoTo < 1 ) || ( lastGoTo >= max ))
-            lastGoTo = 1;
         QTextCursor cursor( editor->document()->findBlockByLineNumber( lastGoTo - 1 ));
         editor->setTextCursor( cursor );
     }
