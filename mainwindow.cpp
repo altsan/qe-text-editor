@@ -691,7 +691,7 @@ void MainWindow::createActions()
 
     replaceAction = new QAction( tr("&Replace..."), this );
     QList<QKeySequence> replaceShortcuts;
-    replaceShortcuts << QKeySequence::Replace << QKeySequence("Ctrl+R");
+    replaceShortcuts << QKeySequence("Ctrl+R") << QKeySequence::Replace;
     replaceAction->setShortcuts( replaceShortcuts );
     replaceAction->setStatusTip( tr("Search and replace text") );
     connect( replaceAction, SIGNAL( triggered() ), this, SLOT( replace() ));
