@@ -4,7 +4,7 @@
 #include <QMainWindow>
 
 
-#define PROGRAM_VERSION "0.9.2"
+#define PROGRAM_VERSION "0.9.3"
 #define SETTINGS_VENDOR "ATutils"
 #define SETTINGS_APP    "QuickEditor"
 
@@ -28,11 +28,22 @@
 #endif
 
 class QAction;
+class QActionGroup;
 class QLabel;
 class QPlainTextEdit;
 class QTextCursor;
 class FindDialog;
 class ReplaceDialog;
+
+typedef struct _FindParams_t
+{
+    QString text;
+    bool bCase;
+    bool bWords;
+    bool bBackward;
+    bool bRe;
+} FindParams;
+
 
 class MainWindow : public QMainWindow
 {
@@ -63,6 +74,7 @@ private slots:
     bool toggleReadOnly( bool readOnly );
     bool toggleWordWrap( bool bWrap );
     void updateStatusBar();
+    void updateEncodingLabel();
     void updateModeLabel();
     void updatePositionLabel();
     void updateModified();
@@ -79,10 +91,12 @@ private slots:
     void replaceAll( const QString &str, const QString &repl, bool cs, bool words, bool absolute, bool confirm, bool backwards );
     void replaceAllRegExp( const QString &str, const QString &repl, bool cs, bool absolute, bool confirm, bool backwards );
     void goToLine();
+    void setTextEncoding();
 
 private:
     // Setup methods
     void createActions();
+    void createEncodingActions();
     void createMenus();
     void createContextMenu();
     void createStatusBar();
@@ -98,6 +112,7 @@ private:
     void updateRecentFileActions();
     QString strippedName( const QString &fullFileName );
     void showMessage( const QString &message );
+    void updateEncoding();
     bool showFindResult( QTextCursor found );
     bool replaceFindResult( QTextCursor found, const QString newText, bool confirm );
 
@@ -107,9 +122,10 @@ private:
     ReplaceDialog *replaceDialog;
 
     QLabel *editModeLabel;
+    QLabel *messagesLabel;
+    QLabel *encodingLabel;
     QLabel *positionLabel;
     QLabel *modifiedLabel;
-    QLabel *messagesLabel;
 
     enum { MaxRecentFiles = 5 };
 
@@ -123,6 +139,75 @@ private:
     QAction *clearRecentAction;
     QAction *separatorAction;
     QAction *exitAction;
+
+    QMenu   *encodingMenu;
+    QAction *localeAction;      // Default encoding for locale
+
+    // Central/Eastern European
+    QMenu   *centEuroMenu;
+    QAction *iso88592Action;    // ISO 8859-2 (Latin-2)
+    QAction *win1250Action;     // Windows-1250 (MS Latin-2)
+
+    // Cyrillic
+    QMenu   *cyrillicMenu;
+    QAction *ibm866Action;      // IBM-866 (Russian)
+    QAction *iso88595Action;    // ISO 8859-5 (Cyrillic)
+    QAction *koi8rAction;       // KOI8-R (Russian Internet encoding)
+    QAction *koi8uAction;       // KOI8-U (Ukrainian Internet encoding)
+    QAction *win1251Action;     // Windows-1251 (Cyrillic)
+
+    // East Asian
+    QMenu   *eastAsiaMenu;
+    QAction *big5Action;        // Big-5
+    QAction *gbAction;          // GBK/GB18030
+    QAction *eucJpAction;       // EUC-JP
+    QAction *iso2022JpAction;   // ISO-2022-JP (Japanese mail encoding)
+    QAction *sjisAction;        // Shift-JIS (codepage 932)
+    QAction *eucKrAction;       // EUC-KR
+
+    // Middle Eastern
+    QMenu   *midEastMenu;
+    QAction *iso88596Action;    // ISO 8859-6 (Arabic)
+    QAction *iso88598Action;    // ISO 8859-8 (Hebrew)
+    QAction *win1255Action;     // Windows-1255 (MS Hebrew)
+    QAction *win1256Action;     // Windows-1256 (MS Arabic)
+
+    // Northern European
+    QMenu   *northEuroMenu;
+    QAction *iso88594Action;    // ISO 8859-4 (Latin-4)
+    QAction *iso885910Action;   // ISO 8859-10 (Latin-6)
+    QAction *iso885913Action;   // ISO 8859-13 (Latin-7)
+    QAction *win1257Action;     // Windows-1257 (Baltic)
+    QAction *iso885914Action;   // ISO 8859-14 (Latin-8)
+
+    // South Asian
+    QMenu   *southAsiaMenu;
+    QAction *tsciiAction;       // TSCII (Tamil)
+    QAction *ibm874Action;      // IBM-874 (Thai TIS-620)
+    QAction *win1258Action;     // Windows-1258 (Vietnamese)
+
+    // Southern European
+    QMenu   *southEuroMenu;
+    QAction *iso88593Action;    // ISO 8859-3 (Latin-3)
+    QAction *iso88597Action;    // ISO 8859-7 (Greek)
+    QAction *win1253Action;     // Windows-1253 (MS Greek)
+    QAction *win1254Action;     // Windows-1254 (MS Latin-5)
+    QAction *iso885916Action;   // ISO 8859-16 (Latin-10)
+
+    // Western European
+    QMenu   *westEuroMenu;
+    QAction *aromanAction;      // Apple Roman
+    QAction *ibm850Action;      // IBM-850 (PC Latin-1)
+    QAction *iso88591Action;    // ISO 8859-1 (Latin-1)
+    QAction *iso885915Action;   // ISO 8859-15 (Latin-9)
+    QAction *win1252Action;     // Windows-1252 (MS Latin-1)
+
+    QMenu   *unicodeMenu;
+    QAction *utf16Action;       // UTF-16 (LE)
+    QAction *utf16beAction;     // UTF-16 (BE)
+    QAction *utf8Action;        // UTF-8
+
+    QActionGroup *encodingGroup;
 
     QMenu   *editMenu;
     QAction *undoAction;
@@ -152,7 +237,9 @@ private:
     QStringList recentFiles;
     QString     currentFile;
     QString     currentDir;
+    QString     currentEncoding;
     int         lastGoTo;
+    FindParams  lastFind;
 
 };
 

@@ -49,6 +49,7 @@ MainWindow::MainWindow()
     setWindowIcon( icon );
     */
 
+    currentEncoding = "";
     setCurrentFile("");
 
 }
@@ -111,8 +112,11 @@ void MainWindow::open()
                                                          currentDir,
                                                          tr( DEFAULT_FILENAME_FILTERS )
                                                        );
-        if ( !fileName.isEmpty() )
+        if ( !fileName.isEmpty() ) {
+            // always reset the encoding when explicitly opening a file
+            currentEncoding = "";
             loadFile( fileName, false );
+        }
 #endif
     }
 }
@@ -178,8 +182,23 @@ void MainWindow::find()
 
 void MainWindow::findAgain()
 {
-    if ( findDialog )
-        findDialog->doFind();
+    /* if ( findDialog ) findDialog->doFind(); */
+    if ( lastFind.text.isNull() || lastFind.text.isEmpty() )
+        return;
+
+    // N.B. Start/end of file option makes no sense for Find Again operations, so always set false
+
+    if ( lastFind.bBackward ) {
+        if ( lastFind.bRe )
+            findPreviousRegExp( lastFind.text, lastFind.bCase, false );
+        else
+            findPrevious( lastFind.text, lastFind.bCase, lastFind.bWords, false );
+    } else {
+        if ( lastFind.bRe )
+            findNextRegExp( lastFind.text, lastFind.bCase, false );
+        else
+            findNext( lastFind.text, lastFind.bCase, lastFind.bWords, false );
+    }
 }
 
 
@@ -262,8 +281,11 @@ void MainWindow::openRecentFile()
 {
     if ( okToContinue() ) {
         QAction *action = qobject_cast<QAction *>( sender() );
-        if ( action )
+        if ( action ) {
+            // always reset the encoding when explicitly opening a file
+            currentEncoding = "";
             loadFile( action->data().toString(), false );
+        }
     }
 }
 
@@ -311,6 +333,16 @@ void MainWindow::updateStatusBar()
 {
     updateModeLabel();
     updatePositionLabel();
+    updateEncodingLabel();
+}
+
+
+void MainWindow::updateEncodingLabel()
+{
+    if ( currentEncoding.isEmpty() )
+        encodingLabel->setText( tr("System locale"));
+    else
+        encodingLabel->setText( currentEncoding );
 }
 
 
@@ -364,6 +396,12 @@ void MainWindow::setEditorFont() {
 
 void MainWindow::findNext( const QString &str, bool cs, bool words, bool fromStart )
 {
+    lastFind.text      = str;
+    lastFind.bCase     = cs;
+    lastFind.bWords    = words;
+    lastFind.bBackward = false;
+    lastFind.bRe       = false;
+
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
@@ -371,12 +409,19 @@ void MainWindow::findNext( const QString &str, bool cs, bool words, bool fromSta
         flags |= QTextDocument::FindWholeWords;
     int pos = fromStart ? 0 :
                           editor->textCursor().selectionEnd();
+
     showFindResult( editor->document()->find( str, pos, flags ));
 }
 
 
 void MainWindow::findNextRegExp( const QString &str, bool cs, bool fromStart )
 {
+    lastFind.text      = str;
+    lastFind.bCase     = cs;
+    lastFind.bWords    = false;
+    lastFind.bBackward = false;
+    lastFind.bRe       = true;
+
     QRegExp regexp( str );
     regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
 
@@ -389,6 +434,12 @@ void MainWindow::findNextRegExp( const QString &str, bool cs, bool fromStart )
 
 void MainWindow::findPrevious( const QString &str, bool cs, bool words, bool fromEnd )
 {
+    lastFind.text      = str;
+    lastFind.bCase     = cs;
+    lastFind.bWords    = words;
+    lastFind.bBackward = true;
+    lastFind.bRe       = false;
+
     QTextDocument::FindFlags flags = QTextDocument::FindBackward;
     if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
@@ -402,6 +453,12 @@ void MainWindow::findPrevious( const QString &str, bool cs, bool words, bool fro
 
 void MainWindow::findPreviousRegExp( const QString &str, bool cs, bool fromEnd )
 {
+    lastFind.text      = str;
+    lastFind.bCase     = cs;
+    lastFind.bWords    = false;
+    lastFind.bBackward = true;
+    lastFind.bRe       = true;
+
     QRegExp regexp( str );
     regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
 
@@ -590,6 +647,40 @@ void MainWindow::replaceAllRegExp( const QString &str, const QString &repl, bool
 }
 
 
+void MainWindow::setTextEncoding()
+{
+    QAction *action = qobject_cast<QAction *>( sender() );
+    QString newEncoding = action->data().toString();
+    if ( newEncoding.compare( currentEncoding ) != 0 ) {
+        currentEncoding = newEncoding;
+
+        if ( isWindowModified() ) {
+            QMessageBox::warning( this,
+                                  tr("Encoding Changed"),
+                                  tr("You have changed the text encoding for this file. "
+                                     "Because the file has been modified, it cannot be refreshed from disk "
+                                     "using the new encoding.  The new encoding will be applied to this file "
+                                     "the next time it is saved."),
+                                  QMessageBox::Ok
+                    );
+        }
+        else if ( !currentFile.isEmpty() ) {
+            // Ask whether to re-parse the file with the new encoding
+            int r = QMessageBox::question( this,
+                                           tr("Re-load File?"),
+                                           tr("You have changed the text encoding for this file. "
+                                              "Do you want to refresh the file from disk using the new encoding?"),
+                                           QMessageBox::Yes | QMessageBox::No,
+                                           QMessageBox::Yes
+                                        );
+            if ( r == QMessageBox::Yes )
+                loadFile( currentFile, false );
+        }
+        updateEncodingLabel();
+    }
+    action->setChecked( true );
+}
+
 
 // ---------------------------------------------------------------------------
 // OTHER METHODS
@@ -644,6 +735,8 @@ void MainWindow::createActions()
     exitAction->setStatusTip( tr("Exit the program") );
     connect( exitAction, SIGNAL( triggered() ), this, SLOT( close() ));
 
+    createEncodingActions();
+
 
     // Edit menu actions
 
@@ -687,6 +780,7 @@ void MainWindow::createActions()
     findAgainAction = new QAction( tr("Find &again"), this );
     findAgainAction->setShortcut( tr("Ctrl+G"));
     findAgainAction->setStatusTip( tr("Repeat the last search") );
+    findAgainAction->setEnabled( false );
     connect( findAgainAction, SIGNAL( triggered() ), this, SLOT( findAgain() ));
 
     replaceAction = new QAction( tr("&Replace..."), this );
@@ -732,15 +826,323 @@ void MainWindow::createActions()
 }
 
 
+void MainWindow::createEncodingActions()
+{
+    encodingGroup = new QActionGroup( this );
+
+    localeAction = new QAction( tr("Use &system encoding"), this );
+    encodingGroup->addAction( localeAction );
+    localeAction->setCheckable( true );
+    localeAction->setData("");
+    localeAction->setStatusTip( tr("Use the default encoding associated with the current system locale or codepage."));
+    connect( localeAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    // Western Europe
+
+    ibm850Action = new QAction( tr("Western European (IBM-850)"), this );
+    encodingGroup->addAction( ibm850Action );
+    ibm850Action->setCheckable( true );
+    ibm850Action->setData("IBM-850");
+    ibm850Action->setStatusTip( tr("IBM-850 is commonly used for Western European languages under OS/2 and DOS."));
+    connect( ibm850Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    win1252Action = new QAction( tr("Western European (Windows-1252)"), this );
+    encodingGroup->addAction( win1252Action );
+    win1252Action->setCheckable( true );
+    win1252Action->setData("Windows-1252");
+    win1252Action->setStatusTip( tr("Microsoft Latin-1 encoding for Western European languages (a superset of ISO-8859-1)."));
+    connect( win1252Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    iso88591Action = new QAction( tr("Latin-1 (ISO-8859-1)"), this );
+    encodingGroup->addAction( iso88591Action );
+    iso88591Action->setCheckable( true );
+    iso88591Action->setData("ISO 8859-15");
+    iso88591Action->setStatusTip( tr("ISO Latin-1 encoding for Western European languages."));
+    connect( iso88591Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    iso885915Action = new QAction( tr("Latin-9 (ISO-8859-15)"), this );
+    encodingGroup->addAction( iso885915Action );
+    iso885915Action->setCheckable( true );
+    iso885915Action->setData("ISO 8859-15");
+    iso885915Action->setStatusTip( tr("ISO Latin-9 encoding for Western European languages."));
+    connect( iso885915Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    aromanAction = new QAction( tr("Mac OS Roman"), this );
+    encodingGroup->addAction( aromanAction );
+    aromanAction->setCheckable( true );
+    aromanAction->setData("Apple Roman");
+    aromanAction->setStatusTip( tr("A legacy text encoding used under Mac OS 9 and older."));
+    connect( aromanAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    // East Asia
+
+    big5Action = new QAction( tr("Chinese (Big-5)"), this );
+    encodingGroup->addAction( big5Action );
+    big5Action->setCheckable( true );
+    big5Action->setData("Big5-HKSCS");
+    big5Action->setStatusTip( tr("Big-5 (with HKSCS supplement) is a Chinese text encoding used in Taiwan and Hong Kong."));
+    connect( big5Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    gbAction = new QAction( tr("Chinese (GBK)"), this );
+    encodingGroup->addAction( gbAction );
+    gbAction->setCheckable( true );
+    gbAction->setData("GB18030-0");
+    gbAction->setStatusTip( tr("GBK is used for Chinese text encoding in mainland China."));
+    connect( gbAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    eucJpAction = new QAction( tr("Japanese (EUC-JP)"), this );
+    encodingGroup->addAction( eucJpAction );
+    eucJpAction->setCheckable( true );
+    eucJpAction->setData("EUC-JP");
+    eucJpAction->setStatusTip( tr("EUC-JP is an encoding for Japanese text which is often used under Unix."));
+    connect( eucJpAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    iso2022JpAction = new QAction( tr("Japanese (ISO-2022-JP)"), this );
+    encodingGroup->addAction( iso2022JpAction );
+    iso2022JpAction->setCheckable( true );
+    iso2022JpAction->setData("ISO 2022-JP");
+    iso2022JpAction->setStatusTip( tr("ISO-2022-JP is an older encoding sometimes still used for Japanese text, especially in e-mail."));
+    connect( iso2022JpAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    sjisAction = new QAction( tr("Japanese (Shift-JIS)"), this );
+    encodingGroup->addAction( sjisAction );
+    sjisAction->setCheckable( true );
+    sjisAction->setData("Shift-JIS");
+    sjisAction->setStatusTip( tr("Shift-JIS is a common encoding for Japanese text under Windows and OS/2."));
+    connect( sjisAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    eucKrAction = new QAction( tr("Korean (EUC-KR)"), this );
+    encodingGroup->addAction( eucKrAction );
+    eucKrAction->setCheckable( true );
+    eucKrAction->setData("EUC-KR");
+    eucKrAction->setStatusTip( tr("EUC-KR is an encoding for Korean text which is often used under Unix."));
+    connect( eucKrAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    // Cyrillic
+
+    iso88595Action = new QAction( tr("Cyrillic (ISO-8859-5)"), this );
+    encodingGroup->addAction( iso88595Action );
+    iso88595Action->setCheckable( true );
+    iso88595Action->setData("ISO 8859-5");
+    iso88595Action->setStatusTip( tr("ISO encoding for Cyrillic languages."));
+    connect( iso88595Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    win1251Action = new QAction( tr("Cyrillic (Windows-1251)"), this );
+    encodingGroup->addAction( win1251Action );
+    win1251Action->setCheckable( true );
+    win1251Action->setData("Windows-1251");
+    win1251Action->setStatusTip( tr("Microsoft encoding for Cyrillic languages."));
+    connect( win1251Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    ibm866Action = new QAction( tr("Russian (IBM-866)"), this );
+    encodingGroup->addAction( ibm866Action );
+    ibm866Action->setCheckable( true );
+    ibm866Action->setData("IBM-866");
+    ibm866Action->setStatusTip( tr("IBM-866 is commonly used for Russian text under OS/2 and DOS."));
+    connect( ibm866Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    koi8rAction = new QAction( tr("Russian (KOI8-R)"), this );
+    encodingGroup->addAction( koi8rAction );
+    koi8rAction->setCheckable( true );
+    koi8rAction->setData("KOI8-R");
+    koi8rAction->setStatusTip( tr("KOI8-R is a common Cyrillic encoding for Russian text."));
+    connect( koi8rAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    koi8uAction = new QAction( tr("Ukrainian (KOI8-U)"), this );
+    encodingGroup->addAction( koi8uAction );
+    koi8uAction->setCheckable( true );
+    koi8uAction->setData("KOI8-U");
+    koi8uAction->setStatusTip( tr("KOI8-U is a common Cyrillic encoding for Ukrainian text."));
+    connect( koi8uAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    // South Asia
+
+    tsciiAction = new QAction( tr("Tamil (TSCII)"), this );
+    encodingGroup->addAction( tsciiAction  );
+    tsciiAction->setCheckable( true );
+    tsciiAction->setData("TSCII");
+    tsciiAction->setStatusTip( tr("TSCII is an encoding for Tamil text."));
+    connect( tsciiAction , SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    ibm874Action = new QAction( tr("Thai (IBM-874)"), this );
+    encodingGroup->addAction( ibm874Action );
+    ibm874Action->setCheckable( true );
+    ibm874Action->setData("IBM-874");
+    ibm874Action->setStatusTip( tr("IBM-874 (a superset of TIS-620) is commonly used for Thai text under Windows and OS/2."));
+    connect( ibm874Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    win1258Action = new QAction( tr("Vietnamese (Windows-1258)"), this );
+    encodingGroup->addAction( win1258Action );
+    win1258Action->setCheckable( true );
+    win1258Action->setData("Windows-1258");
+    win1258Action->setStatusTip( tr("Microsoft encoding for Vietnamese."));
+    connect( win1258Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    // Central/Eastern Europe
+
+    iso88592Action = new QAction( tr("Latin-2 (ISO-8859-2)"), this );
+    encodingGroup->addAction( iso88592Action );
+    iso88592Action->setCheckable( true );
+    iso88592Action->setData("ISO 8859-2");
+    iso88592Action->setStatusTip( tr("ISO Latin-2 encoding for Central/Eastern European languages including Polish, Hungarian, Czech, Slovakian, and the Balkan languages."));
+    connect( iso88592Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    win1250Action = new QAction( tr("Windows Latin-2 (Windows-1250)"), this );
+    encodingGroup->addAction( win1250Action );
+    win1250Action->setCheckable( true );
+    win1250Action->setData("Windows-1250");
+    win1250Action->setStatusTip( tr("Microsoft Latin-2 encoding for Central/Eastern European languages."));
+    connect( win1250Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    // Northern Europe
+
+    win1257Action = new QAction( tr("Baltic (Windows-1257)"), this );
+    encodingGroup->addAction( win1257Action );
+    win1257Action->setCheckable( true );
+    win1257Action->setData("Windows-1257");
+    win1257Action->setStatusTip( tr("Microsoft encoding for Baltic languages."));
+    connect( win1257Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    iso88594Action = new QAction( tr("Latin-4 (ISO-8859-4)"), this );
+    encodingGroup->addAction( iso88594Action );
+    iso88594Action->setCheckable( true );
+    iso88594Action->setData("ISO 8859-4");
+    iso88594Action->setStatusTip( tr("ISO Latin-4 encoding for languages such as Sami and Greenlandic; also sometimes used for Baltic languages."));
+    connect( iso88594Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    iso885910Action = new QAction( tr("Latin-6 (ISO-8859-10)"), this );
+    encodingGroup->addAction( iso885910Action );
+    iso885910Action->setCheckable( true );
+    iso885910Action->setData("ISO 8859-10");
+    iso885910Action->setStatusTip( tr("ISO Latin-6 encoding for Nordic languages."));
+    connect( iso885910Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    iso885913Action = new QAction( tr("Latin-7 (ISO-8859-13)"), this );
+    encodingGroup->addAction( iso885913Action );
+    iso885913Action->setCheckable( true );
+    iso885913Action->setData("ISO 8859-13");
+    iso885913Action->setStatusTip( tr("ISO Latin-7 encoding for Baltic languages, ."));
+
+    iso885914Action = new QAction( tr("Latin-8 (ISO-8859-14)"), this );
+    encodingGroup->addAction( iso885914Action );
+    iso885914Action->setCheckable( true );
+    iso885914Action->setData("ISO 8859-14");
+    iso885914Action->setStatusTip( tr("ISO Latin-8 encoding for Celtic languages, primarily Gaelic and Breton."));
+    connect( iso885914Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    // Middle East
+
+    iso88596Action = new QAction( tr("Arabic (ISO-8859-6)"), this );
+    encodingGroup->addAction( iso88596Action );
+    iso88596Action->setCheckable( true );
+    iso88596Action->setData("ISO 8859-6");
+    iso88596Action->setStatusTip( tr("ISO encoding for Arabic."));
+    connect( iso88596Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    win1256Action = new QAction( tr("Arabic (Windows-1256)"), this );
+    encodingGroup->addAction( win1256Action );
+    win1256Action->setCheckable( true );
+    win1256Action->setData("Windows-1256");
+    win1256Action->setStatusTip( tr("Microsoft encoding for Arabic."));
+    connect( win1256Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    iso88598Action = new QAction( tr("Hebrew (ISO-8859-8)"), this );
+    encodingGroup->addAction( iso88598Action );
+    iso88598Action->setCheckable( true );
+    iso88598Action->setData("ISO 8859-8");
+    iso88598Action->setStatusTip( tr("ISO Hebrew encoding."));
+    connect( iso88598Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    win1255Action = new QAction( tr("Hebrew (Windows-1255)"), this );
+    encodingGroup->addAction( win1255Action );
+    win1255Action->setCheckable( true );
+    win1255Action->setData("Windows-1255");
+    win1255Action->setStatusTip( tr("Microsoft encoding for Hebrew."));
+    connect( win1255Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    // Southern Europe
+
+    iso88597Action = new QAction( tr("Greek (ISO-8859-7)"), this );
+    encodingGroup->addAction( iso88597Action );
+    iso88597Action->setCheckable( true );
+    iso88597Action->setData("ISO 8859-7");
+    iso88597Action->setStatusTip( tr("ISO Greek encoding."));
+    connect( iso88597Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    win1253Action = new QAction( tr("Greek (Windows-1253)"), this );
+    encodingGroup->addAction( win1253Action );
+    win1253Action->setCheckable( true );
+    win1253Action->setData("Windows-1253");
+    win1253Action->setStatusTip( tr("Microsoft encoding for Greek."));
+    connect( win1253Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    iso88593Action = new QAction( tr("Latin-3 (ISO-8859-3)"), this );
+    encodingGroup->addAction( iso88593Action );
+    iso88593Action->setCheckable( true );
+    iso88593Action->setData("ISO 8859-3");
+    iso88593Action->setStatusTip( tr("ISO Latin-3 encoding for Turkish, Maltese and Esperanto."));
+    connect( iso88593Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    iso885916Action = new QAction( tr("Latin-10 (ISO-8859-16)"), this );
+    encodingGroup->addAction( iso885916Action );
+    iso885916Action->setCheckable( true );
+    iso885916Action->setData("ISO 8859-16");
+    iso885916Action->setStatusTip( tr("ISO Latin-10 encoding for South-Eastern European languages."));
+    connect( iso885916Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    win1254Action = new QAction( tr("Turkish (Windows-1254)"), this );
+    encodingGroup->addAction( win1254Action );
+    win1254Action->setCheckable( true );
+    win1254Action->setData("Windows-1254");
+    win1254Action->setStatusTip( tr("Microsoft Latin-5 encoding for Turkish (a superset of ISO-8859-9)"));
+    connect( win1254Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    // Unicode
+
+    utf16Action = new QAction( tr("Unicode UTF-16"), this );
+    encodingGroup->addAction( utf16Action );
+    utf16Action->setCheckable( true );
+    utf16Action->setData("UTF-16LE");
+    utf16Action->setStatusTip( tr("UTF-16 (little endian) is a multiple-byte Unicode encoding.  It is rarely used for text files."));
+    connect( utf16Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    utf16beAction = new QAction( tr("Unicode UTF-16 BE"), this );
+    encodingGroup->addAction( utf16beAction );
+    utf16beAction->setCheckable( true );
+    utf16beAction->setData("UTF-16BE");
+    utf16beAction->setStatusTip( tr("UTF-16 (big endian) is a multiple-byte Unicode encoding.  It is rarely used for text files."));
+    connect( utf16beAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    utf8Action = new QAction( tr("&Unicode UTF-8"), this );
+    encodingGroup->addAction( utf8Action );
+    utf8Action->setCheckable( true );
+    utf8Action->setData("UTF-8");
+    utf8Action->setStatusTip( tr("UTF-8 is the recommended format for Unicode text files."));
+    connect( utf8Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+/*
+ = new QAction( tr(""), this );
+    encodingGroup->addAction(  );
+    connect( , SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+->setCheckable( true );
+->setData("");
+->setStatusTip( tr(""));
+*/
+
+}
+
+
 void MainWindow::createMenus()
 {
-    fileMenu = menuBar()->addMenu( tr("&File") );
+    fileMenu = menuBar()->addMenu( tr("&File"));
     fileMenu->addAction( newAction );
     fileMenu->addAction( openAction );
     fileMenu->addAction( saveAction );
     fileMenu->addAction( saveAsAction );
     fileMenu->addSeparator();
     fileMenu->addAction( printAction );
+    fileMenu->addSeparator();
+    encodingMenu = fileMenu->addMenu( tr("&Encoding"));
     separatorAction = fileMenu->addSeparator();
     for ( int i = 0; i < MaxRecentFiles; i++ )
         fileMenu->addAction( recentFileActions[ i ] );
@@ -748,7 +1150,68 @@ void MainWindow::createMenus()
     fileMenu->addSeparator();
     fileMenu->addAction( exitAction );
 
-    editMenu = menuBar()->addMenu( tr("&Edit") );
+    // Encoding menu actions
+    encodingMenu->addAction( localeAction );
+    encodingMenu->addSeparator();
+
+    centEuroMenu = encodingMenu->addMenu( tr("&Central/Eastern European"));
+    centEuroMenu->addAction( iso88592Action );
+    centEuroMenu->addAction( win1250Action );
+
+    cyrillicMenu = encodingMenu->addMenu( tr("&Cyrillic"));
+    cyrillicMenu->addAction( iso88595Action );
+    cyrillicMenu->addAction( win1251Action );
+    cyrillicMenu->addAction( ibm866Action );
+    cyrillicMenu->addAction( koi8rAction );
+    cyrillicMenu->addAction( koi8uAction );
+
+    eastAsiaMenu = encodingMenu->addMenu( tr("&East Asian"));
+    eastAsiaMenu->addAction( big5Action );
+    eastAsiaMenu->addAction( gbAction );
+    eastAsiaMenu->addAction( eucJpAction );
+    eastAsiaMenu->addAction( iso2022JpAction );
+    eastAsiaMenu->addAction( sjisAction );
+    eastAsiaMenu->addAction( eucKrAction );
+
+    midEastMenu = encodingMenu->addMenu( tr("&Middle Eastern"));
+    midEastMenu->addAction( iso88596Action );
+    midEastMenu->addAction( win1256Action );
+    midEastMenu->addAction( iso88598Action );
+    midEastMenu->addAction( win1255Action );
+
+    northEuroMenu = encodingMenu->addMenu( tr("&Northern European"));
+    northEuroMenu->addAction( win1257Action );
+    northEuroMenu->addAction( iso88594Action );
+    northEuroMenu->addAction( iso885910Action );
+    northEuroMenu->addAction( iso885913Action );
+    northEuroMenu->addAction( iso885914Action );
+
+    southAsiaMenu = encodingMenu->addMenu( tr("South &Asian"));
+    southAsiaMenu->addAction( tsciiAction );
+    southAsiaMenu->addAction( ibm874Action );
+    southAsiaMenu->addAction( win1258Action );
+
+    southEuroMenu = encodingMenu->addMenu( tr("&Southern European"));
+    southEuroMenu->addAction( iso88597Action );
+    southEuroMenu->addAction( win1253Action );
+    southEuroMenu->addAction( iso88593Action );
+    southEuroMenu->addAction( iso885916Action );
+    southEuroMenu->addAction( win1254Action );
+
+    westEuroMenu = encodingMenu->addMenu( tr("&Western European"));
+    westEuroMenu->addAction( iso88591Action );
+    westEuroMenu->addAction( iso885915Action );
+    westEuroMenu->addAction( aromanAction );
+    westEuroMenu->addAction( ibm850Action );
+    westEuroMenu->addAction( win1252Action );
+
+    encodingMenu->addSeparator();
+    unicodeMenu = encodingMenu->addMenu( tr("&Unicode"));
+    unicodeMenu->addAction( utf16Action );
+    unicodeMenu->addAction( utf16beAction );
+    unicodeMenu->addAction( utf8Action );
+
+    editMenu = menuBar()->addMenu( tr("&Edit"));
     editMenu->addAction( undoAction );
     editMenu->addAction( redoAction );
     editMenu->addSeparator();
@@ -764,7 +1227,7 @@ void MainWindow::createMenus()
     editMenu->addAction( findAgainAction );
     editMenu->addAction( replaceAction );
 
-    optionsMenu = menuBar()->addMenu( tr("&Options") );
+    optionsMenu = menuBar()->addMenu( tr("&Options"));
     optionsMenu->addAction( wrapAction );
     optionsMenu->addAction( editModeAction );
     optionsMenu->addAction( readOnlyAction );
@@ -772,7 +1235,7 @@ void MainWindow::createMenus()
     optionsMenu->addAction( fontAction );
 
     menuBar()->addSeparator();
-    helpMenu = menuBar()->addMenu( tr("&Help") );
+    helpMenu = menuBar()->addMenu( tr("&Help"));
     helpMenu->addAction( aboutAction );
 
 }
@@ -793,6 +1256,10 @@ void MainWindow::createStatusBar()
     positionLabel->setAlignment( Qt::AlignHCenter );
     positionLabel->setMinimumSize( positionLabel->sizeHint() );
 
+    encodingLabel = new QLabel( tr(" System locale "));
+    encodingLabel->setAlignment( Qt::AlignHCenter );
+    encodingLabel->setMinimumSize( positionLabel->sizeHint() );
+
     messagesLabel = new QLabel("                                       ");
     messagesLabel->setIndent( 3 );
     messagesLabel->setMinimumSize( messagesLabel->sizeHint() );
@@ -802,12 +1269,14 @@ void MainWindow::createStatusBar()
     modifiedLabel->setMinimumSize( modifiedLabel->sizeHint() );
 
     statusBar()->addWidget( messagesLabel, 1 );
+    statusBar()->addWidget( encodingLabel );
     statusBar()->addWidget( editModeLabel );
     statusBar()->addWidget( positionLabel );
     statusBar()->addWidget( modifiedLabel );
     statusBar()->setMinimumSize( statusBar()->sizeHint() );
 
     messagesLabel->setForegroundRole( QPalette::ButtonText );
+    encodingLabel->setForegroundRole( QPalette::ButtonText );
     editModeLabel->setForegroundRole( QPalette::ButtonText );
     positionLabel->setForegroundRole( QPalette::ButtonText );
     modifiedLabel->setForegroundRole( QPalette::ButtonText );
@@ -896,6 +1365,15 @@ bool MainWindow::loadFile( const QString &fileName, bool createIfNew )
     }
     else {
         QTextStream in( &file );
+        // currentEncoding is always reset to "" when doing an explicit open
+        if ( currentEncoding.isEmpty() ) {
+            // TODO under OS/2, check the file for .CODEPAGE EA and use that if it's set and recognized
+            in.setCodec( QTextCodec::codecForLocale() );
+        }
+        else {
+            // This will only be used if we're doing a reload of the current file:
+            in.setCodec( QTextCodec::codecForName( currentEncoding.toLatin1().data() ));
+        }
         QString text = in.readAll();
         editor->setPlainText( text );
         file.close();
@@ -915,6 +1393,7 @@ bool MainWindow::saveFile( const QString &fileName )
         return false;
     }
     QTextStream out( &file );
+    // TODO under OS/2 if currentEncoding is non-Empty, write the .CODEPAGE EA to the file
     QString text = editor->toPlainText();
     out << text;
     file.flush();
@@ -952,6 +1431,7 @@ void MainWindow::setCurrentFile( const QString &fileName )
         recentFiles.prepend( currentFile );
         updateRecentFileActions();
     }
+    updateEncoding();
     setWindowTitle( tr("Text Editor - %1 [*]").arg( shownName ));
 }
 
@@ -1005,16 +1485,30 @@ void MainWindow::showUsage()
 void MainWindow::setReadOnly( bool readOnly )
 {
     editor->setTextInteractionFlags( readOnly ?
-                                Qt::TextBrowserInteraction | Qt::TextSelectableByKeyboard :
-                                Qt::TextEditorInteraction
-                           );
+                                        Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard :
+                                        Qt::TextEditorInteraction
+                                   );
     updateModeLabel();
+}
+
+
+void MainWindow::updateEncoding()
+{
+    QList<QAction *> actions = encodingGroup->actions();
+    for ( int i = 0; i < actions.size(); i++ ) {
+        if ( QString::compare( actions.at( i )->data().toString(), currentEncoding ) == 0 ) {
+            actions.at( i )->setChecked( true );
+            break;
+        }
+    }
+    updateEncodingLabel();
 }
 
 
 bool MainWindow::showFindResult( QTextCursor found )
 {
     bool isFound = false;
+    findAgainAction->setEnabled( true );
     if ( found.isNull() ) {
         showMessage( tr("No matches."));
         found = editor->textCursor();
