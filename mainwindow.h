@@ -198,7 +198,7 @@ private:
     QMenu   *westEuroMenu;
     QAction *aromanAction;      // Apple Roman
     QAction *ibm850Action;      // IBM-850 (PC Latin-1)
-    QAction *iso88591Action;    // ISO 8859-1 (Latin-1)
+//    QAction *iso88591Action;    // ISO 8859-1 (Latin-1)
     QAction *iso885915Action;   // ISO 8859-15 (Latin-9)
     QAction *win1252Action;     // Windows-1252 (MS Latin-1)
 
