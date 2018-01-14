@@ -9,9 +9,36 @@
 
 #ifdef __OS2__
 
+/* We tag a file with a non-default encoding under OS/2 by setting its .CODEPAGE
+ * extended attribute. This (standardized but rarely-used) EA is meant to store
+ * the OS/2 codepage number for the file's encoding.  What we do is use a lookup
+ * table to map each character encoding to a codepage number.  In the rare event
+ * that there isn't an OS/2 codepage number for the encoding, we use the official
+ * IBM-registered codepage (CCSID) number from:
+ *   https://www-01.ibm.com/software/globalization/ccsid/ccsid_registered.html
+ * However, there are a couple of encodings that don't have even those.  In
+ * those cases we simply assign an otherwise unused number ourselves (currently
+ * all in the 1090-1096 range, since IBM seems not to have assigned those).
+ *
+ * If we somehow missed assigning a codepage number to an encoding, the fallback
+ * logic is to simply write the encoding name as a string, verbatim; but this
+ * should never actually happen in practice.
+ *
+ * In all honesty, the actual value shouldn't matter much, as long as it's
+ * unique.  Using the actual OS/2 codepage number is for the sake of other
+ * applications that might check this field; QE itself simply uses it as a
+ * unique identifier (it could be anything).  If it finds an unrecognized value
+ * in this EA, it treats it the same as if it's absent (i.e. use the locale
+ * default encoding).
+ *
+ * Any other (well-written) OS/2 applications that actually check the .CODEPAGE
+ * (if there are any - I don't know of one) should, similarly, simply ignore
+ * values that they don't recognize or cannot parse.
+ */
+
 // The following two structs must be kept in sync!
 
-unsigned int Codepage_CCIDs[] = {
+unsigned int Codepage_CCSIDs[] = {
      813,  // "ISO 8859-7"
      819,  // "Windows-1252"
      850,  // "IBM-850"
@@ -33,6 +60,9 @@ unsigned int Codepage_CCIDs[] = {
      954,  // "EUC-JP"
      970,  // "EUC-KR"
     1089,  // "ISO 8859-6"
+    1090,  // "ISO 8859-14"
+    1091,  // "ISO 8859-16"
+    1092,  // "TSCII"
     1168,  // "KOI8-U"
     1200,  // "UTF-16BE"
     1202,  // "UTF-16LE"
@@ -74,6 +104,9 @@ QString Codepage_Mappings[] = {
     "EUC-JP",
     "EUC-KR",
     "ISO 8859-6",
+    "ISO 8859-14",
+    "ISO 8859-16",
+    "TSCII",
     "KOI8-U",
     "UTF-16BE",
     "UTF-16LE",
@@ -743,6 +776,7 @@ void MainWindow::setTextEncoding()
         currentEncoding = newEncoding;
 
         if ( isWindowModified() ) {
+#if 0
             QMessageBox::warning( this,
                                   tr("Encoding Changed"),
                                   tr("You have changed the text encoding for this file. "
@@ -750,7 +784,9 @@ void MainWindow::setTextEncoding()
                                      "using the new encoding.  The new encoding will be applied to this file "
                                      "the next time it is saved."),
                                   QMessageBox::Ok
-                    );
+                                );
+#endif
+            encodingChanged = true;
         }
         else if ( !currentFile.isEmpty() ) {
             // Ask whether to re-parse the file with the new encoding
@@ -761,8 +797,13 @@ void MainWindow::setTextEncoding()
                                            QMessageBox::Yes | QMessageBox::No,
                                            QMessageBox::Yes
                                         );
-            if ( r == QMessageBox::Yes )
+            if ( r == QMessageBox::Yes ) {
+                // Change empty to "Default" temporarily to get the right logic path in loadFile
+                if ( currentEncoding == "") currentEncoding = "Default";
                 loadFile( currentFile, false );
+            }
+            else
+                encodingChanged = true;
         }
         updateEncodingLabel();
     }
@@ -1347,7 +1388,7 @@ void MainWindow::createStatusBar()
 
     encodingLabel = new QLabel( tr(" Unknown encoding "));
     encodingLabel->setAlignment( Qt::AlignHCenter );
-    encodingLabel->setMinimumSize( positionLabel->sizeHint() );
+    encodingLabel->setMinimumSize( encodingLabel->sizeHint() );
 
     messagesLabel = new QLabel("                                       ");
     messagesLabel->setIndent( 3 );
@@ -1449,6 +1490,7 @@ bool MainWindow::loadFile( const QString &fileName, bool createIfNew )
         }
         else {
             QMessageBox::critical( this, tr("Error"), tr("The file could not be opened."));
+            if ( currentEncoding == "Default") currentEncoding = "";
             return false;
         }
     }
@@ -1463,8 +1505,13 @@ bool MainWindow::loadFile( const QString &fileName, bool createIfNew )
                 in.setCodec( QTextCodec::codecForLocale() );
         }
         else {
-            // This will only be used if we're doing a reload of the current file:
-            in.setCodec( QTextCodec::codecForName( currentEncoding.toLatin1().data() ));
+            // This will only be used if we're doing a reload of the current file
+            if ( currentEncoding == "Default") {
+                in.setCodec( QTextCodec::codecForLocale() );
+                currentEncoding = "";
+            }
+            else
+                in.setCodec( QTextCodec::codecForName( currentEncoding.toLatin1().data() ));
         }
         QString text = in.readAll();
         editor->setPlainText( text );
@@ -1479,14 +1526,29 @@ bool MainWindow::loadFile( const QString &fileName, bool createIfNew )
 
 bool MainWindow::saveFile( const QString &fileName )
 {
+    if ( encodingChanged && ( !currentEncoding.startsWith("UTF-"))) {
+        int r = QMessageBox::warning( this,
+                                      tr("Encoding Changed"),
+                                      tr("The text encoding for this file has been changed to %1."
+                                         "<p>If the file contains characters which are not supported "
+                                         "by this encoding, they may not be preserved when the file "
+                                         "is saved.<p>Save the file now?").arg(
+                                            currentEncoding.isEmpty() ? tr("Default") : currentEncoding
+                                          ),
+                                      QMessageBox::Yes | QMessageBox::No,
+                                      QMessageBox::Yes
+                                    );
+        if ( r == QMessageBox::No )
+            return false;
+    }
+
     QFile file( fileName );
     if ( !file.open( QIODevice::WriteOnly | QFile::Text )) {
         QMessageBox::critical( this, tr("Error"), tr("Error writing file"));
         return false;
     }
     QTextStream out( &file );
-    if ( !currentEncoding.isEmpty() )
-        out.setCodec( QTextCodec::codecForName( currentEncoding.toLatin1().data() ));
+    out.setCodec( QTextCodec::codecForName( currentEncoding.toLatin1().data() ));
     QString text = editor->toPlainText();
     out << text;
     file.flush();
@@ -1520,6 +1582,7 @@ void MainWindow::setCurrentFile( const QString &fileName )
     currentFile = fileName;
     currentDir = QDir::currentPath();
     updateModified( false );
+    encodingChanged = false;
     QString shownName = tr("Untitled");
     if ( !currentFile.isEmpty() ) {
         currentDir = QDir::cleanPath( QFileInfo( fileName ).absolutePath() );
@@ -1654,33 +1717,40 @@ QString MainWindow::getFileCodepage( const QString &fileName )
 #ifdef __OS2__
     char szBuf[ 32 ] = {'\0'};
 
+    // See if the file has a .CODEPAGE extended attribute
     EAQueryString( (PSZ) fileName.toLocal8Bit().data(), (PSZ) ENCODING_EA_NAME,
                    sizeof( szBuf ), (PSZ) szBuf );
     encoding = QString::fromLatin1( szBuf );
 
-    bool bOK = false;
-    unsigned int iCP = encoding.toUInt( &bOK );
-    if ( bOK ) {
-        int iMax = sizeof( Codepage_CCIDs ) / sizeof ( int );
-        for ( int i = 0; i < iMax; i++ ) {
-            if ( iCP == Codepage_CCIDs[ i ] ) {
-                encoding = Codepage_Mappings[ i ];
-                bOK = true;
-                break;
+    if ( !encoding.isEmpty() ) {
+        // We found a value, now try and map it to something meaningful
+
+        bool bOK = false;
+        // First we try to interpret it as a numeric codepage number
+        unsigned int iCP = encoding.toUInt( &bOK );
+        if ( bOK ) {
+            int iMax = sizeof( Codepage_CCSIDs ) / sizeof ( int );
+            for ( int i = 0; i < iMax; i++ ) {
+                if ( iCP == Codepage_CCSIDs[ i ] ) {
+                    encoding = Codepage_Mappings[ i ];
+                    bOK = true;
+                    break;
+                }
             }
         }
-    }
-    else {
-        QList<QAction *> actions = encodingGroup->actions();
-        for ( int i = 0; i < actions.size(); i++ ) {
-            if ( QString::compare( actions.at( i )->data().toString(), encoding ) == 0 ) {
-                bOK = true;
-                break;
+        // If that didn't work, see if it matches one of our encoding names verbatim
+        else {
+            QList<QAction *> actions = encodingGroup->actions();
+            for ( int i = 0; i < actions.size(); i++ ) {
+                if ( QString::compare( actions.at( i )->data().toString(), encoding ) == 0 ) {
+                    bOK = true;
+                    break;
+                }
             }
         }
+        if ( !bOK )
+            encoding = "";
     }
-    if ( !bOK )
-        encoding = "";
 #endif
 
     return encoding;
@@ -1692,20 +1762,23 @@ void MainWindow::setFileCodepage( const QString &fileName, const QString &encodi
 #ifdef __OS2__
     QString encoding("");
 
-    int iMax = sizeof( Codepage_CCIDs ) / sizeof ( int );
+    // Look up the codepage number (official or otherwise) for this encoding.
+    int iMax = sizeof( Codepage_CCSIDs ) / sizeof ( int );
     int iCP = 0;
     for ( int i = 0; i < iMax; i++ ) {
         if ( QString::compare( encoding, Codepage_Mappings[ i ] ) == 0 ) {
-            iCP = Codepage_CCIDs[ i ];
+            iCP = Codepage_CCSIDs[ i ];
             encoding.setNum( iCP );
             break;
         }
     }
+
+    // The encoding isn't in our lookup table - in this case just use the name verbatim.
     if ( encoding.isEmpty() ) {
         encoding = encodingName;
     }
 
-    if ( ! encoding.isEmpty() ) {
+    if ( !encoding.isEmpty() ) {
         APIRET rc = EASetString( (PSZ) fileName.toLocal8Bit().data(),
                                  (PSZ) ENCODING_EA_NAME,
                                  (PSZ) encoding.toLatin1().data() );
