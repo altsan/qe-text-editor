@@ -8,9 +8,9 @@ DEPENDPATH += .
 INCLUDEPATH += G:/github/altsan/qe/. .
 
 # Input
-HEADERS += finddialog.h replacedialog.h gotolinedialog.h mainwindow.h
+HEADERS += finddialog.h replacedialog.h gotolinedialog.h eastring.h mainwindow.h
 FORMS += finddialog.ui replacedialog.ui gotolinedialog.ui
-SOURCES += finddialog.cpp replacedialog.cpp gotolinedialog.cpp main.cpp mainwindow.cpp
+SOURCES += eastring.cpp finddialog.cpp replacedialog.cpp gotolinedialog.cpp main.cpp mainwindow.cpp
 RESOURCES += qe.qrc
 RC_FILE = qe.rc
 

@@ -5,7 +5,95 @@
 #include "replacedialog.h"
 #include "gotolinedialog.h"
 #include "mainwindow.h"
+#include "eastring.h"
 
+#ifdef __OS2__
+
+// The following two structs must be kept in sync!
+
+unsigned int Codepage_CCIDs[] = {
+     813,  // "ISO 8859-7"
+     819,  // "Windows-1252"
+     850,  // "IBM-850"
+     859,  // "IBM-850"
+     866,  // "IBM-866"
+     874,  // "TIS-620"
+     878,  // "KOI8-R"
+     912,  // "ISO 8859-2"
+     913,  // "ISO 8859-3"
+     914,  // "ISO 8859-4"
+     915,  // "ISO 8859-5"
+     916,  // "ISO 8859-8"
+     919,  // "ISO 8859-10"
+     921,  // "ISO 8859-13"
+     923,  // "ISO 8859-15"
+     932,  // "Shift-JIS"
+     943,  // "Shift-JIS"
+     950,  // "Big5-HKSCS"
+     954,  // "EUC-JP"
+     970,  // "EUC-KR"
+    1089,  // "ISO 8859-6"
+    1168,  // "KOI8-U"
+    1200,  // "UTF-16BE"
+    1202,  // "UTF-16LE"
+    1208,  // "UTF-8"
+    1250,  // "Windows-1250"
+    1251,  // "Windows-1251"
+    1252,  // "Windows-1252"
+    1253,  // "Windows-1253"
+    1254,  // "Windows-1254"
+    1255,  // "Windows-1255"
+    1256,  // "Windows-1256"
+    1257,  // "Windows-1257"
+    1258,  // "Windows-1258"
+    1275,  // "Apple Roman"
+    1381,  // "GB18030-0"
+    1386,  // "GB18030-0"
+    4992   // "ISO-2022-JP"
+};
+
+QString Codepage_Mappings[] = {
+    "ISO 8859-7",
+    "Windows-1252",
+    "IBM-850",
+    "IBM-850",
+    "IBM-866",
+    "TIS-620",
+    "KOI8-R",
+    "ISO 8859-2",
+    "ISO 8859-3",
+    "ISO 8859-4",
+    "ISO 8859-5",
+    "ISO 8859-8",
+    "ISO 8859-10",
+    "ISO 8859-13",
+    "ISO 8859-15",
+    "Shift-JIS",
+    "Shift-JIS",
+    "Big5-HKSCS",
+    "EUC-JP",
+    "EUC-KR",
+    "ISO 8859-6",
+    "KOI8-U",
+    "UTF-16BE",
+    "UTF-16LE",
+    "UTF-8",
+    "Windows-1250",
+    "Windows-1251",
+    "Windows-1252",
+    "Windows-1253",
+    "Windows-1254",
+    "Windows-1255",
+    "Windows-1256",
+    "Windows-1257",
+    "Windows-1258",
+    "Apple Roman",
+    "GB18030-0",
+    "GB18030-0",
+    "ISO-2022-JP"
+};
+
+#endif
 
 // ---------------------------------------------------------------------------
 // PUBLIC CONSTRUCTOR
@@ -340,7 +428,7 @@ void MainWindow::updateStatusBar()
 void MainWindow::updateEncodingLabel()
 {
     if ( currentEncoding.isEmpty() )
-        encodingLabel->setText( tr("System locale"));
+        encodingLabel->setText( tr("Default"));
     else
         encodingLabel->setText( currentEncoding );
 }
@@ -830,11 +918,11 @@ void MainWindow::createEncodingActions()
 {
     encodingGroup = new QActionGroup( this );
 
-    localeAction = new QAction( tr("Use &system encoding"), this );
+    localeAction = new QAction( tr("Use &default encoding"), this );
     encodingGroup->addAction( localeAction );
     localeAction->setCheckable( true );
     localeAction->setData("");
-    localeAction->setStatusTip( tr("Use the default encoding associated with the current system locale or codepage."));
+    localeAction->setStatusTip( tr("Use the default encoding for the current environment."));
     connect( localeAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     // Western Europe
@@ -1100,14 +1188,14 @@ void MainWindow::createEncodingActions()
 
     // Unicode
 
-    utf16Action = new QAction( tr("Unicode UTF-16"), this );
+    utf16Action = new QAction( tr("Unicode UTF-16 LE"), this );
     encodingGroup->addAction( utf16Action );
     utf16Action->setCheckable( true );
     utf16Action->setData("UTF-16LE");
     utf16Action->setStatusTip( tr("UTF-16 (little endian) is a multi-byte Unicode encoding.  It is rarely used for text files, and is not directly compatible with basic ASCII."));
     connect( utf16Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
-    utf16beAction = new QAction( tr("Unicode UTF-16 (big endian)"), this );
+    utf16beAction = new QAction( tr("Unicode UTF-16 BE"), this );
     encodingGroup->addAction( utf16beAction );
     utf16beAction->setCheckable( true );
     utf16beAction->setData("UTF-16BE");
@@ -1257,7 +1345,7 @@ void MainWindow::createStatusBar()
     positionLabel->setAlignment( Qt::AlignHCenter );
     positionLabel->setMinimumSize( positionLabel->sizeHint() );
 
-    encodingLabel = new QLabel( tr(" System locale "));
+    encodingLabel = new QLabel( tr(" Unknown encoding "));
     encodingLabel->setAlignment( Qt::AlignHCenter );
     encodingLabel->setMinimumSize( positionLabel->sizeHint() );
 
@@ -1368,8 +1456,11 @@ bool MainWindow::loadFile( const QString &fileName, bool createIfNew )
         QTextStream in( &file );
         // currentEncoding is always reset to "" when doing an explicit open
         if ( currentEncoding.isEmpty() ) {
-            // TODO under OS/2, check the file for .CODEPAGE EA and use that if it's set and recognized
-            in.setCodec( QTextCodec::codecForLocale() );
+            currentEncoding = getFileCodepage( fileName );
+            if ( !currentEncoding.isEmpty() )
+                in.setCodec( QTextCodec::codecForName( currentEncoding.toLatin1().data() ));
+            else
+                in.setCodec( QTextCodec::codecForLocale() );
         }
         else {
             // This will only be used if we're doing a reload of the current file:
@@ -1394,7 +1485,8 @@ bool MainWindow::saveFile( const QString &fileName )
         return false;
     }
     QTextStream out( &file );
-    // TODO under OS/2 if currentEncoding is non-Empty, write the .CODEPAGE EA to the file
+    if ( !currentEncoding.isEmpty() )
+        out.setCodec( QTextCodec::codecForName( currentEncoding.toLatin1().data() ));
     QString text = editor->toPlainText();
     out << text;
     file.flush();
@@ -1402,6 +1494,10 @@ bool MainWindow::saveFile( const QString &fileName )
 
     setCurrentFile( fileName );
     showMessage( tr("Saved file: %1").arg( QDir::toNativeSeparators( fileName )));
+
+    if ( !currentEncoding.isEmpty() ) {
+        setFileCodepage( fileName, currentEncoding );
+    }
     return true;
 }
 
@@ -1549,3 +1645,74 @@ bool MainWindow::replaceFindResult( QTextCursor found, const QString newText, bo
 
     return true;
 }
+
+
+QString MainWindow::getFileCodepage( const QString &fileName )
+{
+    QString encoding("");
+
+#ifdef __OS2__
+    char szBuf[ 32 ] = {'\0'};
+
+    EAQueryString( (PSZ) fileName.toLocal8Bit().data(), (PSZ) ENCODING_EA_NAME,
+                   sizeof( szBuf ), (PSZ) szBuf );
+    encoding = QString::fromLatin1( szBuf );
+
+    bool bOK = false;
+    unsigned int iCP = encoding.toUInt( &bOK );
+    if ( bOK ) {
+        int iMax = sizeof( Codepage_CCIDs ) / sizeof ( int );
+        for ( int i = 0; i < iMax; i++ ) {
+            if ( iCP == Codepage_CCIDs[ i ] ) {
+                encoding = Codepage_Mappings[ i ];
+                bOK = true;
+                break;
+            }
+        }
+    }
+    else {
+        QList<QAction *> actions = encodingGroup->actions();
+        for ( int i = 0; i < actions.size(); i++ ) {
+            if ( QString::compare( actions.at( i )->data().toString(), encoding ) == 0 ) {
+                bOK = true;
+                break;
+            }
+        }
+    }
+    if ( !bOK )
+        encoding = "";
+#endif
+
+    return encoding;
+}
+
+
+void MainWindow::setFileCodepage( const QString &fileName, const QString &encodingName )
+{
+#ifdef __OS2__
+    QString encoding("");
+
+    int iMax = sizeof( Codepage_CCIDs ) / sizeof ( int );
+    int iCP = 0;
+    for ( int i = 0; i < iMax; i++ ) {
+        if ( QString::compare( encoding, Codepage_Mappings[ i ] ) == 0 ) {
+            iCP = Codepage_CCIDs[ i ];
+            encoding.setNum( iCP );
+            break;
+        }
+    }
+    if ( encoding.isEmpty() ) {
+        encoding = encodingName;
+    }
+
+    if ( ! encoding.isEmpty() ) {
+        APIRET rc = EASetString( (PSZ) fileName.toLocal8Bit().data(),
+                                 (PSZ) ENCODING_EA_NAME,
+                                 (PSZ) encoding.toLatin1().data() );
+        if ( rc ) {
+//            showMessage( tr("Failed to update EA: %1").arg( rc ));
+        }
+    }
+#endif
+}
+
