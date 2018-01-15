@@ -166,14 +166,19 @@ private:
     QMenu   *encodingMenu;
     QAction *localeAction;      // Default encoding for locale
 
-    // Central/Eastern European
+    // Central/East European
     QMenu   *centEuroMenu;
+    QAction *ibm922Action;      // IBM-922 (Estonia)                    (codepage 922)
+    QAction *ibm852Action;      // IBM-852 (Latin-2)                    (codepage 852)
     QAction *iso88592Action;    // ISO 8859-2 (Latin-2)                 (codepage 912)
     QAction *win1250Action;     // Windows-1250 (MS Latin-2)            (codepage 1250)
 
     // Cyrillic
     QMenu   *cyrillicMenu;
+    QAction *ibm855Action;      // IBM-855 (Cyrillic)                   (codepage 852)
     QAction *ibm866Action;      // IBM-866 (Russian)                    (codepage 866)
+    QAction *ibm1125Action;     // IBM-1125 (Ukrainian)                 (codepage 1125)
+    QAction *ibm1131Action;     // IBM-1131 (Belarusian)                (codepage 1131)
     QAction *iso88595Action;    // ISO 8859-5 (Cyrillic)                (codepage 915)
     QAction *koi8rAction;       // KOI8-R (Russian Internet encoding)   (codepage 878)
     QAction *koi8uAction;       // KOI8-U (Ukrainian Internet encoding) (codepage 1168)
@@ -195,12 +200,13 @@ private:
     QAction *ibm864Action;      // IBM-864 (Arabic)                     (codepage 864)
     QAction *iso88596Action;    // ISO 8859-6 (Arabic)                  (codepage 1089)
     QAction *iso88598Action;    // ISO 8859-8 (Hebrew)                  (codepage 916)
-    QAction *ibm862Action;      // IBM-862 (Hebrew)                     (codepage 862)
+    QAction *ibm862Action;      // IBM-867 (Hebrew)                     (codepage 867)
     QAction *win1255Action;     // Windows-1255 (MS Hebrew)             (codepage 1255)
     QAction *win1256Action;     // Windows-1256 (MS Arabic)             (codepage 1256)
 
-    // Northern European
+    // North European
     QMenu   *northEuroMenu;
+    QAction *ibm861Action;      // IBM-861 (PC Icelandic)               (codepage 861)
     QAction *ibm865Action;      // IBM-865 (PC Nordic)                  (codepage 865)
     QAction *iso88594Action;    // ISO 8859-4 (Latin-4)                 (codepage 914)
     QAction *iso885910Action;   // ISO 8859-10 (Latin-6)                (codepage 919)
@@ -214,8 +220,9 @@ private:
     QAction *ibm874Action;      // IBM-874 (Thai TIS-620)               (codepage 874)
     QAction *win1258Action;     // Windows-1258 (Vietnamese)            (codepage 1258)
 
-    // Southern European
+    // South European
     QMenu   *southEuroMenu;
+    QAction *ibm857Action;      // IBM-857 (PC Latin-5)                 (codepage 857)
     QAction *ibm869Action;      // IBM-869 (PC Greek)                   (codepage 869)
     QAction *iso88593Action;    // ISO 8859-3 (Latin-3)                 (codepage 913)
     QAction *iso88597Action;    // ISO 8859-7 (Greek)                   (codepage 813)
@@ -230,6 +237,7 @@ private:
     QAction *ibm850Action;      // IBM-850 (PC Latin-1)                 (codepage 850)
     QAction *ibm858Action;      // IBM-858 (PC Latin-1 w/Euro)          (codepage 858)
     QAction *ibm859Action;      // IBM-859 (PC Latin-9)                 (codepage 859)
+    QAction *ibm860Action;      // IBM-860 (PC Portuguese)              (codepage 860)
     QAction *ibm863Action;      // IBM-863 (PC Canadian French)         (codepage 863)
     QAction *iso885915Action;   // ISO 8859-15 (Latin-9)                (codepage 923)
     QAction *win1252Action;     // Windows-1252 (MS Latin-1)            (codepage 1252)
