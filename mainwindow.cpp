@@ -207,23 +207,6 @@ MainWindow::MainWindow()
 
     currentEncoding = "";
     setCurrentFile("");
-
-    QList<int> mibs = QTextCodec::availableMibs();
-    for ( int i = 0; i < mibs.size(); i++ ) {
-        QTextCodec *codec = QTextCodec::codecForMib( mibs.at( i ));
-        QString info( codec->name() );
-        QList<QByteArray> aliases = codec->aliases();
-        if ( aliases.size() > 0 ) {
-            info.append("\t(");
-            for ( int j = 0; j < aliases.size(); j++ ) {
-                info.append( aliases.at(j) );
-                if ( j+1 < aliases.size() ) info.append(" ");
-            }
-            info.append(") ");
-        }
-        editor->appendPlainText( info );
-    }
-
 }
 
 
