@@ -5,6 +5,7 @@
 #include "replacedialog.h"
 #include "gotolinedialog.h"
 #include "mainwindow.h"
+#include "os2codec.h"
 #include "eastring.h"
 
 #ifdef __OS2__
@@ -39,12 +40,19 @@
 // The following two structs must be kept in sync!
 
 unsigned int Codepage_CCSIDs[] = {
+     437,  // "IBM-437"
      813,  // "ISO 8859-7"
      819,  // "Windows-1252"
      850,  // "IBM-850"
-     859,  // "IBM-850"
+     858,  // "IBM-858"
+     859,  // "IBM-859"
+     862,  // "IBM-862"
+     863,  // "IBM-863"
+     864,  // "IBM-864"
+     865,  // "IBM-865"
      866,  // "IBM-866"
-     874,  // "TIS-620"
+     869,  // "IBM-869"
+     874,  // "IBM-874"
      878,  // "KOI8-R"
      912,  // "ISO 8859-2"
      913,  // "ISO 8859-3"
@@ -77,18 +85,26 @@ unsigned int Codepage_CCSIDs[] = {
     1257,  // "Windows-1257"
     1258,  // "Windows-1258"
     1275,  // "Apple Roman"
-    1381,  // "GB18030-0"
+    1363,  // "cp949"
+    1381,  // "GB2312"
     1386,  // "GB18030-0"
     4992   // "ISO-2022-JP"
 };
 
 QString Codepage_Mappings[] = {
+    "IBM-437",
     "ISO 8859-7",
     "Windows-1252",
     "IBM-850",
-    "IBM-850",
+    "IBM-858",
+    "IBM-859",
+    "IBM-862",
+    "IBM-863",
+    "IBM-864",
+    "IBM-865",
     "IBM-866",
-    "TIS-620",
+    "IBM-869",
+    "IBM-874",
     "KOI8-R",
     "ISO 8859-2",
     "ISO 8859-3",
@@ -121,7 +137,8 @@ QString Codepage_Mappings[] = {
     "Windows-1257",
     "Windows-1258",
     "Apple Roman",
-    "GB18030-0",
+    "cp949",
+    "GB2312",
     "GB18030-0",
     "ISO-2022-JP"
 };
@@ -135,6 +152,24 @@ QString Codepage_Mappings[] = {
 MainWindow::MainWindow()
 {
     editor = new QPlainTextEdit;
+    QeOS2Codec *codec437 = new QeOS2Codec( QeOS2Codec::IBM437 );
+    QeOS2Codec *codec858 = new QeOS2Codec( QeOS2Codec::IBM858 );
+    QeOS2Codec *codec859 = new QeOS2Codec( QeOS2Codec::IBM859 );
+    QeOS2Codec *codec862 = new QeOS2Codec( QeOS2Codec::IBM862 );
+    QeOS2Codec *codec863 = new QeOS2Codec( QeOS2Codec::IBM863 );
+    QeOS2Codec *codec864 = new QeOS2Codec( QeOS2Codec::IBM864 );
+    QeOS2Codec *codec865 = new QeOS2Codec( QeOS2Codec::IBM865 );
+    QeOS2Codec *codec869 = new QeOS2Codec( QeOS2Codec::IBM869 );
+
+    // Keep the compiler happy
+    if ( codec437 ) {;}
+    if ( codec858 ) {;}
+    if ( codec859 ) {;}
+    if ( codec862 ) {;}
+    if ( codec863 ) {;}
+    if ( codec864 ) {;}
+    if ( codec865 ) {;}
+    if ( codec869 ) {;}
 
     editor->setBackgroundVisible( true );
     QPalette p = editor->palette();
@@ -172,6 +207,22 @@ MainWindow::MainWindow()
 
     currentEncoding = "";
     setCurrentFile("");
+
+    QList<int> mibs = QTextCodec::availableMibs();
+    for ( int i = 0; i < mibs.size(); i++ ) {
+        QTextCodec *codec = QTextCodec::codecForMib( mibs.at( i ));
+        QString info( codec->name() );
+        QList<QByteArray> aliases = codec->aliases();
+        if ( aliases.size() > 0 ) {
+            info.append("\t(");
+            for ( int j = 0; j < aliases.size(); j++ ) {
+                info.append( aliases.at(j) );
+                if ( j+1 < aliases.size() ) info.append(" ");
+            }
+            info.append(") ");
+        }
+        editor->appendPlainText( info );
+    }
 
 }
 
@@ -963,19 +1014,18 @@ void MainWindow::createEncodingActions()
     encodingGroup->addAction( localeAction );
     localeAction->setCheckable( true );
     localeAction->setData("");
-    localeAction->setStatusTip( tr("Use the default encoding for the current environment."));
+    localeAction->setStatusTip( tr("Use the system's current default encoding."));
     connect( localeAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     // Western Europe
 
-/*
-    iso88591Action = new QAction( tr("Latin-1 (ISO-8859-1)"), this );
-    encodingGroup->addAction( iso88591Action );
-    iso88591Action->setCheckable( true );
-    iso88591Action->setData("ISO 8859-15");
-    iso88591Action->setStatusTip( tr("ISO Latin-1 encoding for Western European languages."));
-    connect( iso88591Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
-*/
+    ibm863Action = new QAction( tr("Canadian French (IBM-863)"), this );
+    encodingGroup->addAction( ibm863Action );
+    ibm863Action->setCheckable( true );
+    ibm863Action->setData("IBM-863");
+    ibm863Action->setStatusTip( tr("An encoding for Canadian French under OS/2 and DOS."));
+    connect( ibm863Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
     win1252Action = new QAction( tr("Latin-1 (Windows-1252)"), this );
     encodingGroup->addAction( win1252Action );
     win1252Action->setCheckable( true );
@@ -1001,8 +1051,29 @@ void MainWindow::createEncodingActions()
     encodingGroup->addAction( ibm850Action );
     ibm850Action->setCheckable( true );
     ibm850Action->setData("IBM-850");
-    ibm850Action->setStatusTip( tr("Commonly used for Western languages under OS/2 and DOS; it also includes line drawing and other graphical symbols."));
+    ibm850Action->setStatusTip( tr("Encoding for Western languages under DOS and older versions of OS/2. Generally superseded by IBM-850+euro."));
     connect( ibm850Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    ibm858Action = new QAction( tr("Multilingual (IBM-850+euro)"), this );
+    encodingGroup->addAction( ibm858Action );
+    ibm858Action->setCheckable( true );
+    ibm858Action->setData("IBM-858");
+    ibm858Action->setStatusTip( tr("Commonly used for Western languages under OS/2 (post-1997); this is an updated version of IBM-850 (official designation IBM-858)."));
+    connect( ibm858Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    ibm859Action = new QAction( tr("Western European (IBM-859)"), this );
+    encodingGroup->addAction( ibm859Action );
+    ibm859Action->setCheckable( true );
+    ibm859Action->setData("IBM-859");
+    ibm859Action->setStatusTip( tr("IBM encoding of the Latin-9 character set for OS/2 systems. It is not compatible with ISO-8859-15, and is rarely used."));
+    connect( ibm859Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    ibm437Action = new QAction( tr("United States (IBM-437)"), this );
+    encodingGroup->addAction( ibm437Action );
+    ibm437Action->setCheckable( true );
+    ibm437Action->setData("IBM-437");
+    ibm437Action->setStatusTip( tr("Classic text encoding for DOS and OS/2. Considered obsolete but sometimes still encountered."));
+    connect( ibm437Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     // Central Europe
 
@@ -1056,6 +1127,13 @@ void MainWindow::createEncodingActions()
     iso885914Action->setStatusTip( tr("ISO Latin-8 encoding for Celtic languages, such as Irish, Scottish Gaelic, and Welsh."));
     connect( iso885914Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
+    ibm865Action = new QAction( tr("Nordic (IBM-865)"), this );
+    encodingGroup->addAction( ibm865Action );
+    ibm865Action->setCheckable( true );
+    ibm865Action->setData("IBM-865");
+    ibm865Action->setStatusTip( tr("IBM encoding for Nordic languages, used on OS/2 and DOS systems."));
+    connect( ibm865Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
     // South Europe
 
     iso88597Action = new QAction( tr("Greek (ISO-8859-7)"), this );
@@ -1092,6 +1170,13 @@ void MainWindow::createEncodingActions()
     iso885916Action->setData("ISO 8859-16");
     iso885916Action->setStatusTip( tr("ISO Latin-10 encoding for South-Eastern European languages."));
     connect( iso885916Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    ibm869Action = new QAction( tr("Greek (IBM-869)"), this );
+    encodingGroup->addAction( ibm869Action );
+    ibm869Action->setCheckable( true );
+    ibm869Action->setData("IBM-869");
+    ibm869Action->setStatusTip( tr("IBM encoding for Greek, used under OS/2 and DOS."));
+    connect( ibm869Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     // Cyrillic
 
@@ -1139,11 +1224,18 @@ void MainWindow::createEncodingActions()
     big5Action->setStatusTip( tr("Big-5 (with HKSCS supplement) is a Chinese text encoding used in Taiwan and Hong Kong."));
     connect( big5Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
-    gbAction = new QAction( tr("Chinese (GB18030)"), this );
+    gbkAction = new QAction( tr("Chinese (GB18030)"), this );
+    encodingGroup->addAction( gbkAction );
+    gbkAction->setCheckable( true );
+    gbkAction->setData("GB18030-0");
+    gbkAction->setStatusTip( tr("This is used for Chinese text encoding in mainland China; it is a superset of the older GBK standard."));
+    connect( gbkAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    gbAction = new QAction( tr("Chinese (GB2312)"), this );
     encodingGroup->addAction( gbAction );
     gbAction->setCheckable( true );
-    gbAction->setData("GB18030-0");
-    gbAction->setStatusTip( tr("This is used for Chinese text encoding in mainland China; it is a superset of the older GBK standard."));
+    gbAction->setData("GB2312");
+    gbAction->setStatusTip( tr("This is an older standard for Chinese text in mainland China; it has been largely superseded by GB18030."));
     connect( gbAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     eucJpAction = new QAction( tr("Japanese (EUC-JP)"), this );
@@ -1174,6 +1266,13 @@ void MainWindow::createEncodingActions()
     eucKrAction->setStatusTip( tr("An encoding for Korean text which is often used under Unix."));
     connect( eucKrAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
+    uhcAction = new QAction( tr("Korean (Windows-949)"), this );
+    encodingGroup->addAction( uhcAction );
+    uhcAction->setCheckable( true );
+    uhcAction->setData("cp949");
+    uhcAction->setStatusTip( tr("Windows Unified Hangul Code for Korean."));
+    connect( uhcAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
     // South Asia
 
     tsciiAction = new QAction( tr("Tamil (TSCII)"), this );
@@ -1199,6 +1298,13 @@ void MainWindow::createEncodingActions()
 
     // Middle East
 
+    ibm864Action = new QAction( tr("Arabic (IBM-864)"), this );
+    encodingGroup->addAction( ibm864Action );
+    ibm864Action->setCheckable( true );
+    ibm864Action->setData("IBM-864");
+    ibm864Action->setStatusTip( tr("Arabic text encoding used under OS/2 and DOS."));
+    connect( ibm864Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
     iso88596Action = new QAction( tr("Arabic (ISO-8859-6)"), this );
     encodingGroup->addAction( iso88596Action );
     iso88596Action->setCheckable( true );
@@ -1212,6 +1318,13 @@ void MainWindow::createEncodingActions()
     win1256Action->setData("Windows-1256");
     win1256Action->setStatusTip( tr("Microsoft encoding for Arabic text; it is not compatible with ISO-8859-6."));
     connect( win1256Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    ibm862Action = new QAction( tr("Hebrew (IBM-862)"), this );
+    encodingGroup->addAction( ibm862Action );
+    ibm862Action->setCheckable( true );
+    ibm862Action->setData("IBM-862");
+    ibm862Action->setStatusTip( tr("Hebrew text encoding used under OS/2 and DOS."));
+    connect( ibm862Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     iso88598Action = new QAction( tr("Hebrew (ISO-8859-8)"), this );
     encodingGroup->addAction( iso88598Action );
@@ -1297,15 +1410,21 @@ void MainWindow::createMenus()
 
     eastAsiaMenu = encodingMenu->addMenu( tr("&East Asian"));
     eastAsiaMenu->addAction( big5Action );
-    eastAsiaMenu->addAction( gbAction );
+    eastAsiaMenu->addAction( gbkAction );
+    if ( QTextCodec::codecForName("GB2312") != 0 )
+        eastAsiaMenu->addAction( gbAction );
     eastAsiaMenu->addAction( eucJpAction );
     eastAsiaMenu->addAction( iso2022JpAction );
     eastAsiaMenu->addAction( sjisAction );
     eastAsiaMenu->addAction( eucKrAction );
+    if ( QTextCodec::codecForName("cp949") != 0 )
+        eastAsiaMenu->addAction( uhcAction );
 
     midEastMenu = encodingMenu->addMenu( tr("&Middle Eastern"));
+    midEastMenu->addAction( ibm864Action );
     midEastMenu->addAction( iso88596Action );
     midEastMenu->addAction( win1256Action );
+    midEastMenu->addAction( ibm862Action );
     midEastMenu->addAction( iso88598Action );
     midEastMenu->addAction( win1255Action );
 
@@ -1315,6 +1434,7 @@ void MainWindow::createMenus()
     northEuroMenu->addAction( iso885910Action );
     northEuroMenu->addAction( iso885913Action );
     northEuroMenu->addAction( iso885914Action );
+    northEuroMenu->addAction( ibm865Action );
 
     southAsiaMenu = encodingMenu->addMenu( tr("South &Asian"));
     southAsiaMenu->addAction( tsciiAction );
@@ -1322,6 +1442,7 @@ void MainWindow::createMenus()
     southAsiaMenu->addAction( win1258Action );
 
     southEuroMenu = encodingMenu->addMenu( tr("S&outh European"));
+    southEuroMenu->addAction( ibm869Action );
     southEuroMenu->addAction( iso88597Action );
     southEuroMenu->addAction( win1253Action );
     southEuroMenu->addAction( iso88593Action );
@@ -1329,11 +1450,14 @@ void MainWindow::createMenus()
     southEuroMenu->addAction( iso885916Action );
 
     westEuroMenu = encodingMenu->addMenu( tr("&Western"));
-//    westEuroMenu->addAction( iso88591Action );
+    westEuroMenu->addAction( ibm863Action );
     westEuroMenu->addAction( win1252Action );
     westEuroMenu->addAction( iso885915Action );
     westEuroMenu->addAction( aromanAction );
     westEuroMenu->addAction( ibm850Action );
+    westEuroMenu->addAction( ibm858Action );
+    westEuroMenu->addAction( ibm437Action );
+    westEuroMenu->addAction( ibm859Action );
 
     encodingMenu->addSeparator();
     unicodeMenu = encodingMenu->addMenu( tr("&Unicode"));

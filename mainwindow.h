@@ -162,21 +162,26 @@ private:
     // East Asian
     QMenu   *eastAsiaMenu;
     QAction *big5Action;        // Big-5                                (codepage 950)
-    QAction *gbAction;          // GBK/GB18030                          (codepage 1386)
+    QAction *gbkAction;         // GBK/GB18030                          (codepage 1386)
+    QAction *gbAction;          // GB2312                               (codepage 1381)
     QAction *eucJpAction;       // EUC-JP                               (codepage 954)
     QAction *iso2022JpAction;   // ISO-2022-JP (Japanese mail encoding) (codepage 4992)
     QAction *sjisAction;        // Shift-JIS (codepage 932)             (codepage 932)
     QAction *eucKrAction;       // EUC-KR                               (codepage 970)
+    QAction *uhcAction;         // Unified Hangul Code                  (codepage 1363)
 
     // Middle Eastern
     QMenu   *midEastMenu;
+    QAction *ibm864Action;      // IBM-864 (Arabic)                     (codepage 864)
     QAction *iso88596Action;    // ISO 8859-6 (Arabic)                  (codepage 1089)
     QAction *iso88598Action;    // ISO 8859-8 (Hebrew)                  (codepage 916)
+    QAction *ibm862Action;      // IBM-862 (Hebrew)                     (codepage 862)
     QAction *win1255Action;     // Windows-1255 (MS Hebrew)             (codepage 1255)
     QAction *win1256Action;     // Windows-1256 (MS Arabic)             (codepage 1256)
 
     // Northern European
     QMenu   *northEuroMenu;
+    QAction *ibm865Action;      // IBM-865 (PC Nordic)                  (codepage 865)
     QAction *iso88594Action;    // ISO 8859-4 (Latin-4)                 (codepage 914)
     QAction *iso885910Action;   // ISO 8859-10 (Latin-6)                (codepage 919)
     QAction *iso885913Action;   // ISO 8859-13 (Latin-7)                (codepage 921)
@@ -191,6 +196,7 @@ private:
 
     // Southern European
     QMenu   *southEuroMenu;
+    QAction *ibm869Action;      // IBM-869 (PC Greek)                   (codepage 869)
     QAction *iso88593Action;    // ISO 8859-3 (Latin-3)                 (codepage 913)
     QAction *iso88597Action;    // ISO 8859-7 (Greek)                   (codepage 813)
     QAction *win1253Action;     // Windows-1253 (MS Greek)              (codepage 1253)
@@ -200,8 +206,11 @@ private:
     // Western European
     QMenu   *westEuroMenu;
     QAction *aromanAction;      // Apple Roman                          (codepage 1275)
+    QAction *ibm437Action;      // IBM-437 (PC United States)           (codepage 437)
     QAction *ibm850Action;      // IBM-850 (PC Latin-1)                 (codepage 850)
-//    QAction *iso88591Action;    // ISO 8859-1 (Latin-1)                 (codepage 819)
+    QAction *ibm858Action;      // IBM-858 (PC Latin-1 w/Euro)          (codepage 858)
+    QAction *ibm859Action;      // IBM-859 (PC Latin-9)                 (codepage 859)
+    QAction *ibm863Action;      // IBM-863 (PC Canadian French)         (codepage 863)
     QAction *iso885915Action;   // ISO 8859-15 (Latin-9)                (codepage 923)
     QAction *win1252Action;     // Windows-1252 (MS Latin-1)            (codepage 1252)
 
