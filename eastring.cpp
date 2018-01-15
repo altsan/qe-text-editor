@@ -1,9 +1,11 @@
-/* EAString.cpp - functions to read and write single-valued ASCII EA
- *
- * Public domain code from:
- * http://www.edm2.com/index.php/Extended_Attributes_-_what_are_they_and_how_can_you_use_them
- * by Roger Orr
- */
+/******************************************************************************
+** EAString.cpp - functions to read and write single-valued ASCII EA
+**
+**  Public domain code by Roger Orr:
+**  http://www.edm2.com/index.php/Extended_Attributes_-_what_are_they_and_how_can_you_use_them
+**
+******************************************************************************/
+
 #ifdef __OS2__
 
 #define INCL_DOS

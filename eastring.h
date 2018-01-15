@@ -1,12 +1,13 @@
-/* Header file for EAString.c module
- *
- * Public domain code from:
- * http://www.edm2.com/index.php/Extended_Attributes_-_what_are_they_and_how_can_you_use_them
- * by Roger Orr
- */
+/******************************************************************************
+** Header file for EAString.cpp module
+**
+**  Public domain code by Roger Orr:
+**  http://www.edm2.com/index.php/Extended_Attributes_-_what_are_they_and_how_can_you_use_them
+**
+******************************************************************************/
+
 #ifndef EASTRING_H
 #define EASTRING_H
-
 #ifdef __OS2__
 
 #include <os2.h>

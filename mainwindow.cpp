@@ -1,3 +1,23 @@
+/******************************************************************************
+** QE - mainwindow.cpp
+**
+**  Copyright (C) 2018 Alexander Taylor
+**
+**  This program is free software: you can redistribute it and/or modify
+**  it under the terms of the GNU General Public License as published by
+**  the Free Software Foundation, either version 3 of the License, or
+**  (at your option) any later version.
+**
+**  This program is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**  GNU General Public License for more details.
+**
+**  You should have received a copy of the GNU General Public License
+**  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+**
+******************************************************************************/
+
 #include <QtGui>
 #include <QPrinter>
 
@@ -46,11 +66,12 @@ unsigned int Codepage_CCSIDs[] = {
      850,  // "IBM-850"
      858,  // "IBM-858"
      859,  // "IBM-859"
-     862,  // "IBM-862"
+     862,  // "IBM-867"
      863,  // "IBM-863"
      864,  // "IBM-864"
      865,  // "IBM-865"
      866,  // "IBM-866"
+     867,  // "IBM-867"
      869,  // "IBM-869"
      874,  // "IBM-874"
      878,  // "KOI8-R"
@@ -98,11 +119,12 @@ QString Codepage_Mappings[] = {
     "IBM-850",
     "IBM-858",
     "IBM-859",
-    "IBM-862",
+    "IBM-867",
     "IBM-863",
     "IBM-864",
     "IBM-865",
     "IBM-866",
+    "IBM-867",
     "IBM-869",
     "IBM-874",
     "KOI8-R",
@@ -151,25 +173,27 @@ QString Codepage_Mappings[] = {
 
 MainWindow::MainWindow()
 {
-    editor = new QPlainTextEdit;
+    // Instantiate our new text codecs (must be created on the heap)
     QeOS2Codec *codec437 = new QeOS2Codec( QeOS2Codec::IBM437 );
     QeOS2Codec *codec858 = new QeOS2Codec( QeOS2Codec::IBM858 );
     QeOS2Codec *codec859 = new QeOS2Codec( QeOS2Codec::IBM859 );
-    QeOS2Codec *codec862 = new QeOS2Codec( QeOS2Codec::IBM862 );
     QeOS2Codec *codec863 = new QeOS2Codec( QeOS2Codec::IBM863 );
     QeOS2Codec *codec864 = new QeOS2Codec( QeOS2Codec::IBM864 );
     QeOS2Codec *codec865 = new QeOS2Codec( QeOS2Codec::IBM865 );
+    QeOS2Codec *codec867 = new QeOS2Codec( QeOS2Codec::IBM867 );
     QeOS2Codec *codec869 = new QeOS2Codec( QeOS2Codec::IBM869 );
 
     // Keep the compiler happy
-    if ( codec437 ) {;}
-    if ( codec858 ) {;}
-    if ( codec859 ) {;}
-    if ( codec862 ) {;}
-    if ( codec863 ) {;}
-    if ( codec864 ) {;}
-    if ( codec865 ) {;}
-    if ( codec869 ) {;}
+    if ( codec437 );
+    if ( codec858 );
+    if ( codec859 );
+    if ( codec863 );
+    if ( codec864 );
+    if ( codec865 );
+    if ( codec867 );
+    if ( codec869 );
+
+    editor = new QPlainTextEdit;
 
     editor->setBackgroundVisible( true );
     QPalette p = editor->palette();
@@ -1302,11 +1326,11 @@ void MainWindow::createEncodingActions()
     win1256Action->setStatusTip( tr("Microsoft encoding for Arabic text; it is not compatible with ISO-8859-6."));
     connect( win1256Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
-    ibm862Action = new QAction( tr("Hebrew (IBM-862)"), this );
+    ibm862Action = new QAction( tr("Hebrew (IBM-867)"), this );
     encodingGroup->addAction( ibm862Action );
     ibm862Action->setCheckable( true );
-    ibm862Action->setData("IBM-862");
-    ibm862Action->setStatusTip( tr("Hebrew text encoding used under OS/2 and DOS."));
+    ibm862Action->setData("IBM-867");
+    ibm862Action->setStatusTip( tr("Hebrew text encoding used under OS/2 and DOS; OS/2 refers to it as codepage 862."));
     connect( ibm862Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     iso88598Action = new QAction( tr("Hebrew (ISO-8859-8)"), this );

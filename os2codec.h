@@ -1,3 +1,26 @@
+/******************************************************************************
+** (C) 2018 Alexander Taylor
+** (C) 2015 The Qt Company Ltd.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 3.0 as published by the Free Software
+** Foundation and appearing in the file LICENSE.GPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU General Public License version 3.0 requirements will be
+** met: http://www.gnu.org/copyleft/gpl.html.
+**
+*******************************************************************************/
+
 #ifndef QEOS2CODEC_H
 #define QEOS2CODEC_H
 
@@ -9,7 +32,7 @@ class QeOS2Codec : public QTextCodec
 {
     public:
         enum { numCodecs = 8 };
-        enum { IBM437, IBM858, IBM859, IBM862, IBM863, IBM864, IBM865, IBM869 };
+        enum { IBM437, IBM858, IBM859, IBM863, IBM864, IBM865, IBM867, IBM869 };
         QeOS2Codec( int );
         ~QeOS2Codec();
         QList<QByteArray> aliases() const;
