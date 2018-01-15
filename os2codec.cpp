@@ -160,25 +160,42 @@ static const struct {
 static QByteArray *buildReverseMap(int forwardIndex)
 {
     QByteArray *map = new QByteArray();
+
+    // Find the highest UCS character in the codepage table...
     int m = 0;
     int i = 0;
-    while(i < 127) {
+    while(i < 161) {
         if (unicodevalues[forwardIndex].values[i] > m &&
              unicodevalues[forwardIndex].values[i] < 0xfffd)
             m = unicodevalues[forwardIndex].values[i];
         i++;
     }
+    // ...and set the map size to the corresponding number of entries.
     m++;
     map->resize(m);
-    for(i = 0; i < 127 && i < m; i++)
+
+    // Populate the ASCII range (always the same)
+    for(i = 32; i < 127 && i < m; i++)
         (*map)[i] = (char)i;
+
+    // Initialize the rest to 0
     for(;i < m; i++)
         (*map)[i] = 0;
+
+    // Find the mappings for characters 127-256
     for(i=127; i<256; i++) {
         int u = unicodevalues[forwardIndex].values[i-127];
         if (u < m)
             (*map)[u] = (char)(unsigned char)(i);
     }
+
+    // And now the mappings for characters 0-31
+    for(i=0; i<32; i++) {
+        int u = unicodevalues[forwardIndex].values[i+129];
+        if (u < m)
+            (*map)[u] = (char)(unsigned char)(i);
+    }
+
     return map;
 }
 
@@ -215,6 +232,7 @@ QString QeOS2Codec::convertToUnicode(const char* chars, int len, ConverterState 
     return r;
 }
 
+
 QByteArray QeOS2Codec::convertFromUnicode(const QChar *in, int length, ConverterState *state) const
 {
     const char replacement = (state && state->flags & ConvertInvalidToNull) ? 0 : 127;
@@ -236,7 +254,8 @@ QByteArray QeOS2Codec::convertFromUnicode(const QChar *in, int length, Converter
     while(i--)
     {
         u = ucp->unicode();
-        if (u < 128) {
+
+        if ((u > 31) && (u < 127)) {
             *rp = (char)u;
         } else {
             *rp = ((u < rmsize) ? (*(rmp+u)) : 0);
