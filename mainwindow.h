@@ -168,7 +168,6 @@ private:
 
     // Central/East European
     QMenu   *centEuroMenu;
-    QAction *ibm922Action;      // IBM-922 (Estonia)                    (codepage 922)
     QAction *ibm852Action;      // IBM-852 (Latin-2)                    (codepage 852)
     QAction *iso88592Action;    // ISO 8859-2 (Latin-2)                 (codepage 912)
     QAction *win1250Action;     // Windows-1250 (MS Latin-2)            (codepage 1250)
@@ -206,6 +205,7 @@ private:
 
     // North European
     QMenu   *northEuroMenu;
+    QAction *ibm922Action;      // IBM-922 (Estonian)                   (codepage 922)
     QAction *ibm861Action;      // IBM-861 (PC Icelandic)               (codepage 861)
     QAction *ibm865Action;      // IBM-865 (PC Nordic)                  (codepage 865)
     QAction *iso88594Action;    // ISO 8859-4 (Latin-4)                 (codepage 914)
