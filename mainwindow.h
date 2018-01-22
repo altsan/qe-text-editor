@@ -51,7 +51,7 @@
 class QAction;
 class QActionGroup;
 class QLabel;
-class QPlainTextEdit;
+class QeTextEdit;
 class QTextCursor;
 class FindDialog;
 class ReplaceDialog;
@@ -140,7 +140,7 @@ private:
     void setFileCodepage( const QString &fileName, const QString &encodingName );
 
     // GUI objects
-    QPlainTextEdit *editor;
+    QeTextEdit *editor;
     FindDialog *findDialog;
     ReplaceDialog *replaceDialog;
 

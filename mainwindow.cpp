@@ -25,6 +25,7 @@
 #include "replacedialog.h"
 #include "gotolinedialog.h"
 #include "mainwindow.h"
+#include "QeTextEdit.h"
 #include "os2codec.h"
 #include "eastring.h"
 
@@ -215,7 +216,7 @@ MainWindow::MainWindow()
     if ( codec1131);
 #endif
 
-    editor = new QPlainTextEdit;
+    editor = new QeTextEdit;
 
     editor->setBackgroundVisible( true );
     QPalette p = editor->palette();
