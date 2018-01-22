@@ -20,6 +20,7 @@
 
 #include <QtGui>
 #include "replacedialog.h"
+#include "ctlutils.h"
 
 
 ReplaceDialog::ReplaceDialog( QWidget *parent )
@@ -27,6 +28,8 @@ ReplaceDialog::ReplaceDialog( QWidget *parent )
 {
     setupUi( this );
     connect( cancelButton, SIGNAL( clicked() ), this, SLOT( close() ));
+    findEdit->installEventFilter( this );
+    replaceEdit->installEventFilter( this );
 }
 
 
@@ -92,3 +95,20 @@ void ReplaceDialog::on_replaceAllButton_clicked()
     emit reCheckBox->isChecked() ? replaceAllRegExp( text, replacement, cs, absolute, confirm, backwards ) :
                                    replaceAll( text, replacement, cs, words, absolute, confirm, backwards );
 }
+
+
+bool ReplaceDialog::eventFilter( QObject *target, QEvent *event )
+{
+    bool ok = QDialog::eventFilter( target, event );
+
+    if ((( target == findEdit ) || ( target == replaceEdit )) &&
+        ( event->type() == QEvent::MouseButtonPress ))
+    {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        QLineEdit *lineEdit = static_cast<QLineEdit *>(target);
+        mouseAction( mouseEvent, lineEdit );
+    }
+    return ok;
+}
+
+

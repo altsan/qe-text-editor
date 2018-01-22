@@ -26,7 +26,7 @@
 //   - Click RMB while holding down MB1 to highlight text: copy
 //   - Click LMB and RMB simultaneously when there is text in the clipboard: paste
 //
-// It should also handle MMB paste on X11 (only)
+// It should also handle MB3 paste on X11 (only)
 //
 
 QeTextEdit::QeTextEdit( QWidget *parent )

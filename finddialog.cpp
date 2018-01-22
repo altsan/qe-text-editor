@@ -21,6 +21,7 @@
 
 #include <QtGui>
 #include "finddialog.h"
+#include "ctlutils.h"
 
 
 FindDialog::FindDialog( QWidget *parent )
@@ -28,6 +29,8 @@ FindDialog::FindDialog( QWidget *parent )
 {
     setupUi( this );
     connect( cancelButton, SIGNAL( clicked() ), this, SLOT( close() ));
+
+    findEdit->installEventFilter( this );
 }
 
 
@@ -74,5 +77,17 @@ void FindDialog::on_findButton_clicked()
     if ( !keepCheckBox->isChecked() ) close();
 }
 
+
+bool FindDialog::eventFilter( QObject *target, QEvent *event )
+{
+    bool ok = QDialog::eventFilter( target, event );
+
+    if (( target == findEdit ) && ( event->type() == QEvent::MouseButtonPress )) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        QLineEdit *lineEdit = static_cast<QLineEdit *>(target);
+        mouseAction( mouseEvent, lineEdit );
+    }
+    return ok;
+}
 
 

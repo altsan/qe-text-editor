@@ -47,6 +47,9 @@ private slots:
     void on_replaceButton_clicked();
     void on_replaceAllButton_clicked();
 
+private:
+    bool eventFilter( QObject *target, QEvent *event );
+
 };
 
 #endif
