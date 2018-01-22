@@ -216,7 +216,9 @@ MainWindow::MainWindow()
     if ( codec1131);
 #endif
 
-    editor = new QeTextEdit;
+    setAttribute( Qt::WA_DeleteOnClose );
+
+    editor = new QeTextEdit( this );
 
     editor->setBackgroundVisible( true );
     QPalette p = editor->palette();
@@ -255,6 +257,16 @@ MainWindow::MainWindow()
     currentEncoding = "";
     setCurrentFile("");
 }
+
+
+/*
+// ---------------------------------------------------------------------------
+// DESTRUCTOR (not currently needed for anything)
+//
+MainWindow::~MainWindow()
+{
+}
+*/
 
 
 // ---------------------------------------------------------------------------
@@ -1631,23 +1643,23 @@ void MainWindow::createContextMenu()
 
 void MainWindow::createStatusBar()
 {
-    editModeLabel = new QLabel(" OVR ");
+    editModeLabel = new QLabel(" OVR ", this );
     editModeLabel->setAlignment( Qt::AlignHCenter );
     editModeLabel->setMinimumSize( editModeLabel->sizeHint() );
 
-    positionLabel = new QLabel("000000:000000");
+    positionLabel = new QLabel("000000:000000", this );
     positionLabel->setAlignment( Qt::AlignHCenter );
     positionLabel->setMinimumSize( positionLabel->sizeHint() );
 
-    encodingLabel = new QLabel( tr(" Unknown encoding "));
+    encodingLabel = new QLabel( tr(" Unknown encoding "), this );
     encodingLabel->setAlignment( Qt::AlignHCenter );
     encodingLabel->setMinimumSize( encodingLabel->sizeHint() );
 
-    messagesLabel = new QLabel("                                       ");
+    messagesLabel = new QLabel("                                       ", this );
     messagesLabel->setIndent( 3 );
     messagesLabel->setMinimumSize( messagesLabel->sizeHint() );
 
-    modifiedLabel = new QLabel(" Modified ");
+    modifiedLabel = new QLabel(" Modified ", this );
     modifiedLabel->setAlignment( Qt::AlignHCenter );
     modifiedLabel->setMinimumSize( modifiedLabel->sizeHint() );
 
