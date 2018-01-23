@@ -1729,6 +1729,7 @@ void MainWindow::writeSettings()
 bool MainWindow::okToContinue()
 {
     if ( isWindowModified() ) {
+#if 0
         int r = QMessageBox::warning( this,
                                       tr("Text Editor"),
                                       tr("There are unsaved changes. "
@@ -1736,6 +1737,16 @@ bool MainWindow::okToContinue()
                                       QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
                                       QMessageBox::Save
                                     );
+#else
+        // This method allows us to set a shortcut on the Discard button
+        QMessageBox confirm( QMessageBox::Warning,
+                             tr("Text Editor"),
+                             tr("There are unsaved changes.<p>Do you want to save the changes?"),
+                             QMessageBox::Save, this );
+        confirm.addButton( tr("&Discard"), QMessageBox::DestructiveRole );
+        confirm.addButton( QMessageBox::Cancel );
+        int r = confirm.exec();
+#endif
         if ( r == QMessageBox::Save )
             return save();
         else if ( r == QMessageBox::Cancel )
