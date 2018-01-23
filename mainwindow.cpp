@@ -1901,7 +1901,12 @@ void MainWindow::showMessage( const QString &message )
 void MainWindow::showUsage()
 {
     QMessageBox::information( this, tr("Usage"),
-                              tr("qe [ <i>filename</i> [ /read ]] &nbsp; | &nbsp; [ /h | /? ]"),
+                              tr("<b>Usage:</b><br> &nbsp; <tt>qe [ <i>filename</i> ] [ <i>options</i> ]</tt>"
+                                 "<p><b>Options:</b>"
+                                 "<table>"
+                                  "<tr><td> &nbsp; /read</td> <td style=\"padding-left: 1em;\">Read-only mode</td></tr>"
+                                  "<tr><td> &nbsp; /?   </td> <td style=\"padding-left: 1em;\">Show usage information</td></tr>"
+                                  "</table>"),
                               QMessageBox::Ok
                             );
 }
