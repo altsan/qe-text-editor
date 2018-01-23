@@ -35,6 +35,7 @@ int main( int argc, char *argv[] )
     for ( int a = 1; a < argc; a++ ) {
         char *psz = argv[ a ];
         if ( *psz == '/' || *psz == '-') {
+#if 0
             psz++;
             if ( !(*psz) ) continue;
             if (( *psz == 'R') || ( *psz == 'r')) {
@@ -43,6 +44,16 @@ int main( int argc, char *argv[] )
             if (( *psz == 'H') || ( *psz == 'h') || ( *psz == '?')) {
                 showUsage = true;
             }
+#else
+            QString argStr( ++psz );
+            if ( argStr.isEmpty() || argStr.isNull() )
+                continue;
+            else if ( argStr.compare( QString("read"), Qt::CaseInsensitive ) == 0 )
+                openReadOnly = true;
+            else if (( argStr.compare( QString("?")) == 0 ) ||
+                     ( argStr.compare( QString("h"), Qt::CaseInsensitive ) == 0 ))
+                showUsage = true;
+#endif
         }
         else if ( fileName.isNull() ) {
             QFileInfo fileinfo( psz );
