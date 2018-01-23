@@ -29,7 +29,7 @@
 #define SETTINGS_APP        "QuickEditor"
 #define ENCODING_EA_NAME    ".CODEPAGE"
 
-#if 0
+#if 1
 #define DEFAULT_FILENAME_FILTERS                            \
     "Text files (*.txt readme*);;"                          \
     "Command files (*.cmd *.bat *.rex *.orx *.sh *.vrx);;"  \
