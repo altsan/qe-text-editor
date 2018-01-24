@@ -967,23 +967,41 @@ void MainWindow::createActions()
     undoAction->setStatusTip( tr("Undo the previous edit") );
     connect( undoAction, SIGNAL( triggered() ), editor, SLOT( undo() ));
 
-    redoAction = new QAction( tr("&Redo"), this );
+    redoAction = new QAction( tr("Re&do"), this );
     redoAction->setShortcut( QKeySequence::Redo );
     redoAction->setStatusTip( tr("Revert the previous undo operation") );
     connect( redoAction, SIGNAL( triggered() ), editor, SLOT( redo() ));
 
-    cutAction = new QAction( tr("&Cut"), this );
+    cutAction = new QAction( tr("Cu&t"), this );
+#ifdef __OS2__
+    QList<QKeySequence> cutShortcuts;
+    cutShortcuts << QKeySequence("Shift+Del") << QKeySequence::Cut;
+    cutAction->setShortcuts( cutShortcuts );
+#else
     cutAction->setShortcut( QKeySequence::Cut );
+#endif
     cutAction->setStatusTip( tr("Move the selected text to the clipboard") );
     connect( cutAction, SIGNAL( triggered() ), editor, SLOT( cut() ));
 
     copyAction = new QAction( tr("&Copy"), this );
+#ifdef __OS2__
+    QList<QKeySequence> copyShortcuts;
+    copyShortcuts << QKeySequence("Ctrl+Ins") << QKeySequence::Copy;
+    copyAction->setShortcuts( copyShortcuts );
+#else
     copyAction->setShortcut( QKeySequence::Copy );
+#endif
     copyAction->setStatusTip( tr("Copy the selected text to the clipboard") );
     connect( copyAction, SIGNAL( triggered() ), editor, SLOT( copy() ));
 
     pasteAction = new QAction( tr("&Paste"), this );
+#ifdef __OS2__
+    QList<QKeySequence> pasteShortcuts;
+    pasteShortcuts << QKeySequence("Shift+Ins") << QKeySequence::Paste;
+    pasteAction->setShortcuts( pasteShortcuts );
+#else
     pasteAction->setShortcut( QKeySequence::Paste );
+#endif
     pasteAction->setStatusTip( tr("Insert the current clipboard text") );
     connect( pasteAction, SIGNAL( triggered() ), editor, SLOT( paste() ));
 
@@ -1452,14 +1470,14 @@ void MainWindow::createEncodingActions()
 
     // Unicode
 
-    utf16Action = new QAction( tr("Unicode UTF-16 LE"), this );
+    utf16Action = new QAction( tr("Unicode UTF-16 &LE"), this );
     encodingGroup->addAction( utf16Action );
     utf16Action->setCheckable( true );
     utf16Action->setData("UTF-16LE");
     utf16Action->setStatusTip( tr("UTF-16 (little endian) is a multi-byte Unicode encoding.  It is rarely used for text files, and is not directly compatible with basic ASCII."));
     connect( utf16Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
-    utf16beAction = new QAction( tr("Unicode UTF-16 BE"), this );
+    utf16beAction = new QAction( tr("Unicode UTF-16 &BE"), this );
     encodingGroup->addAction( utf16beAction );
     utf16beAction->setCheckable( true );
     utf16beAction->setData("UTF-16BE");
