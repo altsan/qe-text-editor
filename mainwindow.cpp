@@ -1017,7 +1017,7 @@ void MainWindow::createActions()
     findAction->setStatusTip( tr("Search for text") );
     connect( findAction, SIGNAL( triggered() ), this, SLOT( find() ));
 
-    findAgainAction = new QAction( tr("Find &again"), this );
+    findAgainAction = new QAction( tr("Find a&gain"), this );
     findAgainAction->setShortcut( tr("Ctrl+G"));
     findAgainAction->setStatusTip( tr("Repeat the last search") );
     findAgainAction->setEnabled( false );
