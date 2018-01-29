@@ -1837,7 +1837,10 @@ bool MainWindow::saveFile( const QString &fileName )
     }
 
     QFile file( fileName );
-    if ( !file.open( QIODevice::WriteOnly | QFile::Text )) {
+    bool bExists = ( file.exists() );
+
+    // Opening in read/write mode seems to preserve EAs on existing files.
+    if ( !file.open( QIODevice::ReadWrite | QFile::Text )) {
         QMessageBox::critical( this, tr("Error"), tr("Error writing file"));
         return false;
     }
@@ -1850,6 +1853,19 @@ bool MainWindow::saveFile( const QString &fileName )
 
     setCurrentFile( fileName );
     showMessage( tr("Saved file: %1").arg( QDir::toNativeSeparators( fileName )));
+
+#ifdef __OS2__
+    if ( !bExists ) {
+        // If this is a new file, get rid of the useless default EAs added by klibc
+        EASetString( (PSZ) fileName.toLocal8Bit().data(), (PSZ) "UID",   (PSZ) "");
+        EASetString( (PSZ) fileName.toLocal8Bit().data(), (PSZ) "GID",   (PSZ) "");
+        EASetString( (PSZ) fileName.toLocal8Bit().data(), (PSZ) "MODE",  (PSZ) "");
+        EASetString( (PSZ) fileName.toLocal8Bit().data(), (PSZ) "INO",   (PSZ) "");
+        EASetString( (PSZ) fileName.toLocal8Bit().data(), (PSZ) "RDEV",  (PSZ) "");
+        EASetString( (PSZ) fileName.toLocal8Bit().data(), (PSZ) "GEN",   (PSZ) "");
+        EASetString( (PSZ) fileName.toLocal8Bit().data(), (PSZ) "FLAGS", (PSZ) "");
+    }
+#endif
 
     if ( !currentEncoding.isEmpty() ) {
         setFileCodepage( fileName, currentEncoding );
