@@ -198,22 +198,22 @@ MainWindow::MainWindow()
     QeOS2Codec *codec1131 = new QeOS2Codec( QeOS2Codec::IBM1131 );
 
     // Keep the compiler happy
-    if ( codec437 );
-    if ( codec852 );
-    if ( codec855 );
-    if ( codec857 );
-    if ( codec858 );
-    if ( codec859 );
-    if ( codec860 );
-    if ( codec861 );
-    if ( codec863 );
-    if ( codec864 );
-    if ( codec865 );
-    if ( codec867 );
-    if ( codec869 );
-    if ( codec922 );
-    if ( codec1125);
-    if ( codec1131);
+    if ( codec437 ) {;}
+    if ( codec852 ) {;}
+    if ( codec855 ) {;}
+    if ( codec857 ) {;}
+    if ( codec858 ) {;}
+    if ( codec859 ) {;}
+    if ( codec860 ) {;}
+    if ( codec861 ) {;}
+    if ( codec863 ) {;}
+    if ( codec864 ) {;}
+    if ( codec865 ) {;}
+    if ( codec867 ) {;}
+    if ( codec869 ) {;}
+    if ( codec922 ) {;}
+    if ( codec1125) {;}
+    if ( codec1131) {;}
 #endif
 
     setAttribute( Qt::WA_DeleteOnClose );
@@ -225,7 +225,6 @@ MainWindow::MainWindow()
     p.setColor( QPalette::Background, QColor("#F0F0F0"));
     editor->setPalette(p);
 
-    connect( newAction, SIGNAL( triggered() ), this, SLOT( newFile() ));
     setCentralWidget( editor );
 
     createActions();
@@ -2104,6 +2103,9 @@ void MainWindow::setFileCodepage( const QString &fileName, const QString &encodi
 //            showMessage( tr("Failed to update EA: %1").arg( rc ));
         }
     }
+#else
+    if ( fileName.isEmpty() ) {;}
+    if ( encodingName.isEmpty() ) {;}
 #endif
 }
 
