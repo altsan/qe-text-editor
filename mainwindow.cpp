@@ -25,7 +25,7 @@
 #include "replacedialog.h"
 #include "gotolinedialog.h"
 #include "mainwindow.h"
-#include "QeTextEdit.h"
+#include "qetextedit.h"
 #include "os2codec.h"
 #include "eastring.h"
 
@@ -1849,11 +1849,12 @@ bool MainWindow::saveFile( const QString &fileName )
     QString text = editor->toPlainText();
     out << text;
     out.flush();
-    file.resize( out.pos() );
-    showMessage( tr("Saved file: %1").arg( QDir::toNativeSeparators( fileName )));
+    qint64 iSize = out.pos();
+    if ( iSize != -1 ) file.resize( iSize );
     file.flush();
     file.close();
 
+    showMessage( tr("Saved file: %1 (%2 bytes written)").arg( QDir::toNativeSeparators( fileName )).arg( iSize ));
     setCurrentFile( fileName );
 
 #ifdef __OS2__

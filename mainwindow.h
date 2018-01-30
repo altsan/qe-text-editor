@@ -24,7 +24,7 @@
 #include <QMainWindow>
 
 
-#define PROGRAM_VERSION     "0.9.4"
+#define PROGRAM_VERSION     "0.9.5"
 #define SETTINGS_VENDOR     "ATutils"
 #define SETTINGS_APP        "QuickEditor"
 #define ENCODING_EA_NAME    ".CODEPAGE"
