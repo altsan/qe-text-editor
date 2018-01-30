@@ -1716,7 +1716,7 @@ void MainWindow::readSettings()
 
     QString defaultFont;
     QFontDatabase fontdb;
-    QStringList matching = fontdb.families().filter("Monotype Sans Duospace WT");
+    QStringList matching = fontdb.families().filter("Droid Sans Mono");
     if ( !matching.isEmpty() )
         defaultFont = matching.at( 0 );
     else
@@ -1848,11 +1848,13 @@ bool MainWindow::saveFile( const QString &fileName )
     out.setCodec( QTextCodec::codecForName( currentEncoding.toLatin1().data() ));
     QString text = editor->toPlainText();
     out << text;
+    out.flush();
+    file.resize( out.pos() );
+    showMessage( tr("Saved file: %1").arg( QDir::toNativeSeparators( fileName )));
     file.flush();
     file.close();
 
     setCurrentFile( fileName );
-    showMessage( tr("Saved file: %1").arg( QDir::toNativeSeparators( fileName )));
 
 #ifdef __OS2__
     if ( !bExists ) {
