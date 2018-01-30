@@ -244,14 +244,16 @@ MainWindow::MainWindow()
     setMinimumWidth( statusBar()->minimumWidth() + 20 );
     setWindowTitle( tr("Text Editor") );
     //setWindowIcon( QIcon(":/images/editor.png"));
-    /*
+
+#ifndef __OS2__
+    // OS/2 uses its own native platform icon; for other platforms, use a PNG icon
     QIcon icon;
     icon.addFile(":/images/editor.png", QSize( 40, 40 ), QIcon::Normal, QIcon::On );
     icon.addFile(":/images/editor_mini.png", QSize( 20, 20 ), QIcon::Normal, QIcon::On );
     icon.addFile(":/images/editor_vga.png", QSize( 32, 32 ), QIcon::Normal, QIcon::On );
     icon.addFile(":/images/editor_vga_mini.png", QSize( 16, 16 ), QIcon::Normal, QIcon::On );
     setWindowIcon( icon );
-    */
+#endif
 
     currentEncoding = "";
     setCurrentFile("");
