@@ -33,6 +33,7 @@ public:
 
 protected:
     void mousePressEvent( QMouseEvent *event );
+    void dropEvent( QDropEvent *event );
 
 private:
     void doCopy( QString text, QTextCursor cursor );

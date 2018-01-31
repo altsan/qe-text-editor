@@ -5,6 +5,7 @@
     <file>images/editor_mini.png</file>
     <file>images/editor_vga.png</file>
     <file>images/editor_vga_mini.png</file>
+    <file>images/editor_big.png</file>
   </qresource>
 </RCC>
 

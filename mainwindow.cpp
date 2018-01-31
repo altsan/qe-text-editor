@@ -238,6 +238,7 @@ MainWindow::MainWindow()
     replaceDialog = 0;
     lastGoTo = 1;
 
+    setAcceptDrops( true );
     connect( editor, SIGNAL( cursorPositionChanged() ), this, SLOT( updatePositionLabel() ));
     connect( editor->document(), SIGNAL( contentsChanged() ), this, SLOT( updateModified() ));
 
@@ -252,6 +253,7 @@ MainWindow::MainWindow()
     icon.addFile(":/images/editor_mini.png", QSize( 20, 20 ), QIcon::Normal, QIcon::On );
     icon.addFile(":/images/editor_vga.png", QSize( 32, 32 ), QIcon::Normal, QIcon::On );
     icon.addFile(":/images/editor_vga_mini.png", QSize( 16, 16 ), QIcon::Normal, QIcon::On );
+    icon.addFile(":/images/editor_big.png", QSize( 80, 80 ), QIcon::Normal, QIcon::On );
     setWindowIcon( icon );
 #endif
 
@@ -282,6 +284,29 @@ void MainWindow::closeEvent( QCloseEvent *event )
     }
     else {
         event->ignore();
+    }
+}
+
+
+void MainWindow::dragEnterEvent( QDragEnterEvent *event )
+{
+    if (( event->mimeData()->hasFormat("text/uri-list")) ||
+        ( event->mimeData()->hasFormat("text/plain")))
+    {
+        event->acceptProposedAction();
+    }
+}
+
+
+void MainWindow::dropEvent (QDropEvent *event )
+{
+    QList<QUrl> urls = event->mimeData()->urls();
+    if ( !urls.isEmpty() ) {
+        QString fileName = urls.first().toLocalFile();
+        if ( !fileName.isEmpty() ) {
+            if ( okToContinue() )
+                loadFile( fileName, false );
+        }
     }
 }
 
@@ -1858,8 +1883,8 @@ bool MainWindow::saveFile( const QString &fileName )
     showMessage( tr("Saved file: %1 (%2 bytes written)").arg( QDir::toNativeSeparators( fileName )).arg( iSize ));
     setCurrentFile( fileName );
 
-#ifdef __OS2__
     if ( !bExists ) {
+#ifdef __OS2__
         // If this is a new file, get rid of the useless default EAs added by klibc
         EASetString( (PSZ) fileName.toLocal8Bit().data(), (PSZ) "UID",   (PSZ) "");
         EASetString( (PSZ) fileName.toLocal8Bit().data(), (PSZ) "GID",   (PSZ) "");
@@ -1868,8 +1893,8 @@ bool MainWindow::saveFile( const QString &fileName )
         EASetString( (PSZ) fileName.toLocal8Bit().data(), (PSZ) "RDEV",  (PSZ) "");
         EASetString( (PSZ) fileName.toLocal8Bit().data(), (PSZ) "GEN",   (PSZ) "");
         EASetString( (PSZ) fileName.toLocal8Bit().data(), (PSZ) "FLAGS", (PSZ) "");
-    }
 #endif
+    }
 
     if ( !currentEncoding.isEmpty() ) {
         setFileCodepage( fileName, currentEncoding );
@@ -2070,6 +2095,8 @@ QString MainWindow::getFileCodepage( const QString &fileName )
         if ( !bOK )
             encoding = "";
     }
+#else
+    if ( fileName.isEmpty() ) {;}
 #endif
 
     return encoding;

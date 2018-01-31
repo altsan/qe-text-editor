@@ -26,7 +26,10 @@
 //   - Click RMB while holding down MB1 to highlight text: copy
 //   - Click LMB and RMB simultaneously when there is text in the clipboard: paste
 //
-// It should also handle MB3 paste on X11 (only)
+// It should also handle MB3 paste on X11 (only).
+//
+// Finally, it doesn't paste the names of dropped files but lets the parent
+// handle them (e.g. by opening them).
 //
 
 QeTextEdit::QeTextEdit( QWidget *parent )
@@ -88,3 +91,21 @@ void QeTextEdit::doPaste( QTextCursor cursor )
     cursor.insertText( text );
     setTextCursor( cursor );
 }
+
+
+
+void QeTextEdit::dropEvent( QDropEvent *event )
+{
+    // Don't handle dropped filenames (the owner will take care of them)
+    if ( event->mimeData()->hasFormat("text/uri-list")) {
+        QList<QUrl> urls = event->mimeData()->urls();
+        if ( !urls.isEmpty() ) {
+            QString fileName = urls.first().toLocalFile();
+            if ( !fileName.isEmpty() ) return;
+        }
+    }
+    // Let the default event handler take care of everything else
+    QPlainTextEdit::dropEvent( event );
+}
+
+
