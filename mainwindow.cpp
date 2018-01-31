@@ -2,6 +2,8 @@
 ** QE - mainwindow.cpp
 **
 **  Copyright (C) 2018 Alexander Taylor
+**  Some parts based on sample code from Blanchette & Summerfield, "C++ GUI
+**  Programming with Qt4" (Second Edition), Pearson 2007.
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
