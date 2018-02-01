@@ -736,6 +736,14 @@ void MainWindow::replaceNextRegExp( const QString &str, const QString &repl, boo
 {
     QRegExp regexp( str );
     regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
+    QString replaceStr = repl;
+    replaceStr.replace("\\t", "\t");
+    replaceStr.replace("\\a", "\a");
+    replaceStr.replace("\\b", "\b");
+    replaceStr.replace("\\f", "\f");
+    replaceStr.replace("\\n", "\n");
+    replaceStr.replace("\\r", "\r");
+    replaceStr.replace("\\v", "\v");
 
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     int pos = fromStart ? 0 :
@@ -743,7 +751,7 @@ void MainWindow::replaceNextRegExp( const QString &str, const QString &repl, boo
     QTextCursor found = editor->document()->find( regexp, pos, flags );
     if ( showFindResult( found )) {
         QString newText = found.selectedText();
-        newText.replace( regexp, repl );
+        newText.replace( regexp, replaceStr );
         if ( !replaceFindResult( editor->textCursor(), newText, confirm )) {
             // Clear selection but keep the cursor position at its end
             found = editor->textCursor();
@@ -782,6 +790,14 @@ void MainWindow::replacePreviousRegExp( const QString &str, const QString &repl,
 {
     QRegExp regexp( str );
     regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
+    QString replaceStr = repl;
+    replaceStr.replace("\\t", "\t");
+    replaceStr.replace("\\a", "\a");
+    replaceStr.replace("\\b", "\b");
+    replaceStr.replace("\\f", "\f");
+    replaceStr.replace("\\n", "\n");
+    replaceStr.replace("\\r", "\r");
+    replaceStr.replace("\\v", "\v");
 
     QTextDocument::FindFlags flags = QTextDocument::FindBackward;
     int pos = fromEnd ? editor->document()->characterCount() :
@@ -789,7 +805,7 @@ void MainWindow::replacePreviousRegExp( const QString &str, const QString &repl,
     QTextCursor found = editor->document()->find( regexp, pos, flags );
     if ( showFindResult( found )) {
         QString newText = found.selectedText();
-        newText.replace( regexp, repl );
+        newText.replace( regexp, replaceStr );
         if ( !replaceFindResult( editor->textCursor(), newText, confirm )) {
             // Move the cursor to the selection start, then clear the selection
             pos = found.selectionStart();
@@ -848,6 +864,14 @@ void MainWindow::replaceAllRegExp( const QString &str, const QString &repl, bool
 {
     QRegExp regexp( str );
     regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
+    QString replaceStr = repl;
+    replaceStr.replace("\\t", "\t");
+    replaceStr.replace("\\a", "\a");
+    replaceStr.replace("\\b", "\b");
+    replaceStr.replace("\\f", "\f");
+    replaceStr.replace("\\n", "\n");
+    replaceStr.replace("\\r", "\r");
+    replaceStr.replace("\\v", "\v");
 
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     if ( cs )
@@ -878,8 +902,8 @@ void MainWindow::replaceAllRegExp( const QString &str, const QString &repl, bool
     while ( !found.isNull() ) {
         count++;
         newText = found.selectedText();
-        newText.replace( regexp, repl );
-        found.insertText( repl );
+        newText.replace( regexp, replaceStr );
+        found.insertText( replaceStr );
         found = editor->document()->find( regexp, found.selectionEnd(), flags );
     }
     showMessage( tr("%1 occurences replaced.").arg( count ));
