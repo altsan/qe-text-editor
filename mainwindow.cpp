@@ -2122,6 +2122,7 @@ QString MainWindow::getFileCodepage( const QString &fileName )
             encoding = "";
     }
 #else
+    // Keep the compiler happy
     if ( fileName.isEmpty() ) {;}
 #endif
 
@@ -2138,7 +2139,7 @@ void MainWindow::setFileCodepage( const QString &fileName, const QString &encodi
     int iMax = sizeof( Codepage_CCSIDs ) / sizeof ( int );
     int iCP = 0;
     for ( int i = 0; i < iMax; i++ ) {
-        if ( QString::compare( encoding, Codepage_Mappings[ i ] ) == 0 ) {
+        if ( QString::compare( encodingName, Codepage_Mappings[ i ] ) == 0 ) {
             iCP = Codepage_CCSIDs[ i ];
             encoding.setNum( iCP );
             break;
@@ -2159,6 +2160,7 @@ void MainWindow::setFileCodepage( const QString &fileName, const QString &encodi
         }
     }
 #else
+    // Keep the compiler happy
     if ( fileName.isEmpty() ) {;}
     if ( encodingName.isEmpty() ) {;}
 #endif
