@@ -253,8 +253,8 @@ MainWindow::MainWindow()
     QIcon icon;
     icon.addFile(":/images/editor.png", QSize( 40, 40 ), QIcon::Normal, QIcon::On );
     icon.addFile(":/images/editor_mini.png", QSize( 20, 20 ), QIcon::Normal, QIcon::On );
-    icon.addFile(":/images/editor_vga.png", QSize( 32, 32 ), QIcon::Normal, QIcon::On );
-    icon.addFile(":/images/editor_vga_mini.png", QSize( 16, 16 ), QIcon::Normal, QIcon::On );
+    icon.addFile(":/images/editor_lo.png", QSize( 32, 32 ), QIcon::Normal, QIcon::On );
+    icon.addFile(":/images/editor_lo_mini.png", QSize( 16, 16 ), QIcon::Normal, QIcon::On );
     icon.addFile(":/images/editor_big.png", QSize( 80, 80 ), QIcon::Normal, QIcon::On );
     setWindowIcon( icon );
 #endif

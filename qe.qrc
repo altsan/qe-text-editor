@@ -3,6 +3,8 @@
     <file>images/qe.ico</file>
     <file>images/editor.png</file>
     <file>images/editor_mini.png</file>
+    <file>images/editor_lo.png</file>
+    <file>images/editor_lo_mini.png</file>
     <file>images/editor_vga.png</file>
     <file>images/editor_vga_mini.png</file>
     <file>images/editor_big.png</file>

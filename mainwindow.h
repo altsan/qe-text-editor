@@ -31,7 +31,7 @@
 
 #if 1
 #define DEFAULT_FILENAME_FILTERS                            \
-    "Text files (*.txt readme*);;"                          \
+    "Text files (*.txt *.log readme*);;"                    \
     "Command files (*.cmd *.bat *.rex *.orx *.sh *.vrx);;"  \
     "All files (*)"
 #else
@@ -42,6 +42,7 @@
     "C/C++ source code (*.c *.h *.cpp *.hpp *.cc);;"        \
     "Command files (*.cmd *.bat *.rex *.orx *.sh *.vrx);;"  \
     "Java source code (*.jav *.java);;"                     \
+    "Log files (*.log *.l1 *.l2 *.err);;"                   \
     "Pascal source code (*.pas);;"                          \
     "Python files (*.py);;"                                 \
     "WWW files (*.htm *.html *.css *.cgi *.js *.php);;"     \

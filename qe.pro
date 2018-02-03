@@ -5,12 +5,13 @@
 TEMPLATE = app
 TARGET =
 DEPENDPATH += .
-INCLUDEPATH += G:/github/altsan/qe/. .
+INCLUDEPATH += .
 
 # Input
 HEADERS += finddialog.h replacedialog.h gotolinedialog.h eastring.h os2codec.h mainwindow.h qetextedit.h ctlutils.h
 FORMS += finddialog.ui replacedialog.ui gotolinedialog.ui
 SOURCES += eastring.cpp os2codec.cpp finddialog.cpp replacedialog.cpp gotolinedialog.cpp main.cpp mainwindow.cpp qetextedit.cpp ctlutils.cpp
 RESOURCES += qe.qrc
-RC_FILE = qe.rc
+os2:RC_FILE = qe.rc
+win32:RC_FILE = qe_win.rc
 
