@@ -15,7 +15,8 @@
 #
 # Files created dynamically by the Qt build process
 #
-Makefile
+Makefile*
+object_script*
 *.[Rr][Ss][Pp]
 moc_*
 qrc_*.cpp
