@@ -22,9 +22,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "version.h"
 
-
-#define PROGRAM_VERSION     "0.9.5"
+#define PROGRAM_VERSION     VER_FILEVERSION_STR
 #define SETTINGS_VENDOR     "ATutils"
 #define SETTINGS_APP        "QuickEditor"
 #define ENCODING_EA_NAME    ".CODEPAGE"
