@@ -246,16 +246,16 @@ MainWindow::MainWindow()
 
     setMinimumWidth( statusBar()->minimumWidth() + 20 );
     setWindowTitle( tr("Text Editor") );
-    //setWindowIcon( QIcon(":/images/editor.png"));
 
+    // Qt4 on OS/2 doesn't render PNGs well, so leave it with a native icon; otherwise...
 #ifndef __OS2__
-    // OS/2 uses its own native platform icon; for other platforms, use a PNG icon
     QIcon icon;
-    icon.addFile(":/images/editor.png", QSize( 40, 40 ), QIcon::Normal, QIcon::On );
-    icon.addFile(":/images/editor_mini.png", QSize( 20, 20 ), QIcon::Normal, QIcon::On );
-    icon.addFile(":/images/editor_lo.png", QSize( 32, 32 ), QIcon::Normal, QIcon::On );
-    icon.addFile(":/images/editor_lo_mini.png", QSize( 16, 16 ), QIcon::Normal, QIcon::On );
-    icon.addFile(":/images/editor_big.png", QSize( 80, 80 ), QIcon::Normal, QIcon::On );
+    icon.addFile(":/images/editor_16.png", QSize( 16, 16 ), QIcon::Normal, QIcon::On );
+    icon.addFile(":/images/editor_20.png", QSize( 20, 20 ), QIcon::Normal, QIcon::On );
+    icon.addFile(":/images/editor_32.png", QSize( 32, 32 ), QIcon::Normal, QIcon::On );
+    icon.addFile(":/images/editor_40.png", QSize( 40, 40 ), QIcon::Normal, QIcon::On );
+    icon.addFile(":/images/editor_64.png", QSize( 64, 64 ), QIcon::Normal, QIcon::On );
+    icon.addFile(":/images/editor_80.png", QSize( 80, 80 ), QIcon::Normal, QIcon::On );
     setWindowIcon( icon );
 #endif
 
@@ -1799,16 +1799,7 @@ void MainWindow::writeSettings()
 bool MainWindow::okToContinue()
 {
     if ( isWindowModified() ) {
-#if 0
-        int r = QMessageBox::warning( this,
-                                      tr("Text Editor"),
-                                      tr("There are unsaved changes. "
-                                         "Do you want to save the changes?"),
-                                      QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
-                                      QMessageBox::Save
-                                    );
-#else
-        // This method allows us to set a shortcut on the Discard button
+        // This approach allows us to set a shortcut on the Discard button
         QMessageBox confirm( QMessageBox::Warning,
                              tr("Text Editor"),
                              tr("There are unsaved changes.<p>Do you want to save the changes?"),
@@ -1816,7 +1807,6 @@ bool MainWindow::okToContinue()
         confirm.addButton( tr("&Discard"), QMessageBox::DestructiveRole );
         confirm.addButton( QMessageBox::Cancel );
         int r = confirm.exec();
-#endif
         if ( r == QMessageBox::Save )
             return save();
         else if ( r == QMessageBox::Cancel )
