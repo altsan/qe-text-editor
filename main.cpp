@@ -24,6 +24,10 @@
 
 #include "mainwindow.h"
 
+#ifdef Q_OS_WIN32
+#include <windows.h>
+#endif
+
 int main( int argc, char *argv[] )
 {
     QApplication app( argc, argv );
@@ -56,7 +60,13 @@ int main( int argc, char *argv[] )
 #endif
         }
         else if ( fileName.isNull() ) {
-            QFileInfo fileinfo( psz );
+#ifdef Q_OS_WIN32
+            int t;
+            LPWSTR *wstr = CommandLineToArgvW( GetCommandLine(), &t );
+            QFileInfo fileinfo( QString::fromWCharArray( wstr[a] ));
+#else
+            QFileInfo fileinfo( QString::fromLocal8Bit( psz ));
+#endif
             if ( fileinfo.canonicalFilePath().isEmpty() ) {
                 QDir dir( QDir::currentPath() );
                 fileName = QDir::cleanPath( dir.filePath( psz ));
