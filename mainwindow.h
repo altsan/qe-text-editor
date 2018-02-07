@@ -281,6 +281,7 @@ private:
     QString     currentFile;
     QString     currentDir;
     QString     currentEncoding;
+    QString     currentFilter;
     bool        encodingChanged;
     int         lastGoTo;
     FindParams  lastFind;

@@ -34,6 +34,7 @@
 #endif
 #include "eastring.h"
 
+//#define NO_NATIVE_FILE_DIALOG
 //#define DISABLE_NEW_CODECS
 
 #ifdef __OS2__
@@ -358,13 +359,15 @@ void MainWindow::open()
         QString fileName = QFileDialog::getOpenFileName( this,
                                                          tr("Open File"),
                                                          currentDir,
-                                                         tr( DEFAULT_FILENAME_FILTERS )
+                                                         tr( DEFAULT_FILENAME_FILTERS ),
+                                                         &currentFilter
                                                        );
 #else
         QString fileName = OS2Native::getOpenFileName( this,
                                                          tr("Open File"),
                                                          currentDir,
-                                                         tr( DEFAULT_FILENAME_FILTERS )
+                                                         tr( DEFAULT_FILENAME_FILTERS ),
+                                                         &currentFilter
                                                        );
 #endif
         if ( !fileName.isEmpty() ) {
@@ -1778,6 +1781,8 @@ void MainWindow::readSettings()
     recentFiles = settings.value("recentFiles").toStringList();
     updateRecentFileActions();
 
+    currentFilter = settings.value("lastFilter", tr("All files (*)")).toString();
+
     toggleEditMode( settings.value("overwrite", false ).toBool() );
     editModeAction->setChecked( editor->overwriteMode() );
 
@@ -1805,6 +1810,7 @@ void MainWindow::writeSettings()
     QSettings settings( SETTINGS_VENDOR, SETTINGS_APP );
 
     settings.setValue("geometry",    saveGeometry() );
+    settings.setValue("lastFilter",  currentFilter );
     settings.setValue("recentFiles", recentFiles );
     settings.setValue("overwrite",   editor->overwriteMode() );
     settings.setValue("wrapMode",

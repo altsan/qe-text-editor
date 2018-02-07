@@ -27,7 +27,7 @@
 
 //
 // [BEGIN]
-// This code (with some modifications) taken from the OS/2 Firefox sources:
+// This code (with some modifications) taken from the Mozilla for OS/2 sources:
 // https://github.com/bitwiseworks/mozilla-os2/blob/master/widget/os2/nsFilePicker.cpp
 
 typedef struct _FdData
@@ -111,19 +111,19 @@ void EnhanceFileDialog( PFILEDLG pfd, QString filter, QString *selectedFilter )
                 filterList;
 
     pfdextra = (PFDDATA) calloc( 1, sizeof( FDDATA ));
-
+    pfd->fl        |= FDS_FILTERUNION;
     pfd->pfnDlgProc = EnhancedFileDlgProc;
     pfd->ulUser     = (ULONG) pfdextra;
 
     if ( !( filter.isNull() || filter.isEmpty() )) {
         QStringList filters = filter.split( QRegExp(";;"), QString::SkipEmptyParts );
-        QRegExp re("^([^\\(]*)\\(([^\\)]*)\\)", Qt::CaseSensitive, QRegExp::RegExp );
+        QRegExp re("\\(([^\\)]*)\\)", Qt::CaseSensitive, QRegExp::RegExp );
         for ( int i = 0; i < filters.size(); i++ ) {
             if ( selectedFilter && selectedFilter->compare( filters[ i ] ) == 0 )
                 pfdextra->ulCurExt = i;
             if ( re.indexIn( filters[ i ], 0 ) != -1 ) {
-                typeList.append( filters[ i ] ); //re.cap( 1 ).trimmed();
-                filterList.append( re.cap( 2 ).replace(' ', ';'));
+                typeList.append( filters[ i ] );
+                filterList.append( re.cap( 1 ).replace(' ', ';'));
             }
         }
     }
@@ -141,6 +141,14 @@ void EnhanceFileDialog( PFILEDLG pfd, QString filter, QString *selectedFilter )
         apszFilterList[ i ] = (PSZ) strdup( filterList.at( i ).toLocal8Bit().data() );
     apszFilterList[ i ] = NULL;
     pfdextra->papszIFilterList = (PAPSZ) apszFilterList;
+}
+
+
+void UpdateSelectedFilter( PFILEDLG pfd, QString *selectedFilter )
+{
+    if ( !selectedFilter || !pfd->ulUser ) return;
+    PFDDATA pfdu = (PFDDATA)pfd->ulUser;
+    *selectedFilter = QString::fromLocal8Bit( (char *)( *(pfd->papszITypeList[ pfdu->ulCurExt ] )));
 }
 
 
@@ -191,8 +199,10 @@ QString OS2Native::getOpenFileName(       QWidget *parent,
 
     hwndFD = WinFileDlg( HWND_DESKTOP, parent? parent->winId(): HWND_DESKTOP, &fd );
     if ( hwndFD ) {
-        if (( fd.lReturn == DID_OK ) && fd.ulFQFCount )
-            selected = QString::fromLocal8Bit( fd.szFullFile );
+        if (( fd.lReturn == DID_OK ) && fd.ulFQFCount ) {
+            selected = QDir::fromNativeSeparators( QString::fromLocal8Bit( fd.szFullFile ));
+            UpdateSelectedFilter( &fd, selectedFilter );
+        }
         FreeFileDialogData( &fd );
     }
     return selected;
@@ -225,9 +235,10 @@ QStringList	OS2Native::getOpenFileNames(       QWidget *parent,
     if ( hwndFD ) {
         if (( fd.lReturn == DID_OK ) && fd.ulFQFCount ) {
             for ( ULONG i = 0; i < fd.ulFQFCount; i++ ) {
-                selected << QString::fromLocal8Bit( (char *)(fd.papszFQFilename[i]) );
+                selected.append( QDir::fromNativeSeparators( QString::fromLocal8Bit( (char *)(fd.papszFQFilename[i]) )));
             }
             WinFreeFileDlgList( fd.papszFQFilename );
+            UpdateSelectedFilter( &fd, selectedFilter );
         }
         FreeFileDialogData( &fd );
     }
@@ -259,8 +270,10 @@ QString OS2Native::getSaveFileName(       QWidget *parent,
 
     hwndFD = WinFileDlg( HWND_DESKTOP, parent? parent->winId(): HWND_DESKTOP, &fd );
     if ( hwndFD ) {
-        if (( fd.lReturn == DID_OK ) && fd.ulFQFCount )
-            selected = QString::fromLocal8Bit( fd.szFullFile );
+        if (( fd.lReturn == DID_OK ) && fd.ulFQFCount ) {
+            selected = QDir::fromNativeSeparators( QString::fromLocal8Bit( fd.szFullFile ));
+            UpdateSelectedFilter( &fd, selectedFilter );
+        }
         FreeFileDialogData( &fd );
     }
     return selected;
