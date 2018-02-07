@@ -29,11 +29,15 @@
 #include "mainwindow.h"
 #include "qetextedit.h"
 #include "os2codec.h"
+#ifdef __OS2__
+#include "os2native.h"
+#endif
 #include "eastring.h"
 
 //#define DISABLE_NEW_CODECS
 
 #ifdef __OS2__
+
 
 /* We tag a file with a non-default encoding under OS/2 by setting its .CODEPAGE
  * extended attribute. This (standardized but rarely-used) EA is meant to store
@@ -171,6 +175,7 @@ QString Codepage_Mappings[] = {
 };
 
 #endif
+
 
 // ---------------------------------------------------------------------------
 // PUBLIC CONSTRUCTOR
@@ -329,7 +334,7 @@ void MainWindow::newFile()
 void MainWindow::open()
 {
     if ( okToContinue() ) {
-#if 0
+/*
         QFileDialog dialog( this );
         dialog.setFileMode( QFileDialog::ExistingFile );
         dialog.setAcceptMode( QFileDialog::AcceptOpen );
@@ -348,18 +353,25 @@ void MainWindow::open()
             if ( !fileNameList.isEmpty() )
                 loadFile( fileNameList.at( 0 ), false );
         }
-#else
+*/
+#ifdef NO_NATIVE_FILE_DIALOG
         QString fileName = QFileDialog::getOpenFileName( this,
                                                          tr("Open File"),
                                                          currentDir,
                                                          tr( DEFAULT_FILENAME_FILTERS )
                                                        );
+#else
+        QString fileName = OS2Native::getOpenFileName( this,
+                                                         tr("Open File"),
+                                                         currentDir,
+                                                         tr( DEFAULT_FILENAME_FILTERS )
+                                                       );
+#endif
         if ( !fileName.isEmpty() ) {
             // always reset the encoding when explicitly opening a file
             currentEncoding = "";
             loadFile( fileName, false );
         }
-#endif
     }
 }
 
@@ -375,10 +387,17 @@ bool MainWindow::save()
 
 bool MainWindow::saveAs()
 {
+#ifdef NO_NATIVE_FILE_DIALOG
     QString fileName = QFileDialog::getSaveFileName( this,
                                                      tr("Save File"),
                                                      currentDir,
                                                      tr("All files (*)"));
+#else
+    QString fileName = OS2Native::getSaveFileName( this,
+                                                   tr("Save File"),
+                                                   currentDir,
+                                                   tr("All files (*)"));
+#endif
     if ( fileName.isEmpty() )
         return false;
     return saveFile( fileName );
@@ -2155,4 +2174,5 @@ void MainWindow::setFileCodepage( const QString &fileName, const QString &encodi
     if ( encodingName.isEmpty() ) {;}
 #endif
 }
+
 
