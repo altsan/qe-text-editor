@@ -26,8 +26,9 @@
 #define DID_NEWTYPE_CB  290
 
 //
-// [BEGIN] This code (with some modifications) was originally from the OS/2 Firefox sources
-//
+// [BEGIN]
+// This code (with some modifications) taken from the OS/2 Firefox sources:
+// https://github.com/bitwiseworks/mozilla-os2/blob/master/widget/os2/nsFilePicker.cpp
 
 typedef struct _FdData
 {
@@ -95,8 +96,8 @@ MRESULT EXPENTRY EnhancedFileDlgProc( HWND hwndDlg, ULONG msg, MPARAM mp1, MPARA
     return WinDefFileDlgProc( hwndDlg, msg, mp1, mp2 );
 }
 
-//
-// [END] This code (with some modifications) was originally from the OS/2 Firefox sources
+// This code (with some modifications) taken from the OS/2 Firefox sources.
+// [END]
 //
 
 

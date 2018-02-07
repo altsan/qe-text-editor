@@ -31,7 +31,7 @@
   OS/2 version includes the public domain "EAString" module by Roger Orr.
 
   OS/2 native file dialog code is derived in part from the Mozilla for OS/2
-  project: https://github.com/bitwiseworks/mozilla-os2/
+  project.
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
