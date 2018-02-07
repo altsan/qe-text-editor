@@ -1,8 +1,8 @@
 # Quick Text Editor
 
-  Quick Text Editor is a fast and simple text editor, modelled after
-  IBM's OS/2 System Editor and Aaron Lawrence's AE.  It is written
-  using Qt and is therefore reasonably cross-platform.
+  Quick Text Editor is a simple text editor modelled after IBM's OS/2
+  System Editor and Aaron Lawrence's AE.  It is written using Qt4 and
+  is therefore reasonably cross-platform.
 
   The philosophy behind QE is to provide a simple tool for quickly
   reading and/or editing text files.  It is not a programmer's editor,
@@ -29,6 +29,9 @@
   with Qt4" (Second Edition) by Jasmin Blanchette & Mark Summerfield.
 
   OS/2 version includes the public domain "EAString" module by Roger Orr.
+
+  OS/2 native file dialog code is derived in part from the Mozilla for OS/2
+  project: https://github.com/bitwiseworks/mozilla-os2/
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
