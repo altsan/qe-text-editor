@@ -374,7 +374,7 @@ void MainWindow::open()
             currentEncoding = "";
             loadFile( fileName, false );
         }
-        else showMessage( tr("Canceled."));
+//        else showMessage( tr("Cancelled."));
     }
 }
 
