@@ -390,7 +390,7 @@ bool MainWindow::save()
 
 bool MainWindow::saveAs()
 {
-#ifdef NO_NATIVE_FILE_DIALOG
+#ifndef __OS2__
     QString fileName = QFileDialog::getSaveFileName( this,
                                                      tr("Save File"),
                                                      currentDir,
