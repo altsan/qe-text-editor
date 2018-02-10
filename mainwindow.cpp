@@ -34,7 +34,6 @@
 #endif
 #include "eastring.h"
 
-//#define NO_NATIVE_FILE_DIALOG
 //#define DISABLE_NEW_CODECS
 
 #ifdef __OS2__
@@ -355,7 +354,7 @@ void MainWindow::open()
                 loadFile( fileNameList.at( 0 ), false );
         }
 */
-#ifdef NO_NATIVE_FILE_DIALOG
+#ifndef __OS2__
         QString fileName = QFileDialog::getOpenFileName( this,
                                                          tr("Open File"),
                                                          currentDir,
