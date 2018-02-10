@@ -1,7 +1,7 @@
 #ifndef QE_VERSION_H
 #define QE_VERSION_H
 
-#define VER_FILEVERSION_STR         "0.9.5"
+#define VER_FILEVERSION_STR         "0.9.6"
 #define VER_PRODUCTVERSION_STR      VER_FILEVERSION_STR
 
 #define VER_LEGALTRADEMARKS1_STR    "All Rights Reserved"
@@ -21,7 +21,7 @@
 
 #else
 #define VER_LEGALCOPYRIGHT_STR      "Copyright © 2018 Alexander Taylor"
-#define VER_FILEVERSION             0,9,5,0
+#define VER_FILEVERSION             0,9,6,0
 #define VER_PRODUCTVERSION          VER_FILEVERSION
 
 #endif  // else

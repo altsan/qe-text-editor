@@ -21,6 +21,7 @@
 #define INCL_WIN
 #include <os2.h>
 
+#include <QMessageBox>
 #include "os2native.h"
 
 #define DID_NEWTYPE_CB  290
@@ -104,7 +105,7 @@ MRESULT EXPENTRY EnhancedFileDlgProc( HWND hwndDlg, ULONG msg, MPARAM mp1, MPARA
 void EnhanceFileDialog( PFILEDLG pfd, QString filter, QString *selectedFilter )
 {
     PFDDATA pfdextra;
-    LONG    i;
+    int     i;
     PSZ     *apszTypeList,
             *apszFilterList;
     QStringList typeList,
@@ -118,7 +119,7 @@ void EnhanceFileDialog( PFILEDLG pfd, QString filter, QString *selectedFilter )
     if ( !( filter.isNull() || filter.isEmpty() )) {
         QStringList filters = filter.split( QRegExp(";;"), QString::SkipEmptyParts );
         QRegExp re("\\(([^\\)]*)\\)", Qt::CaseSensitive, QRegExp::RegExp );
-        for ( int i = 0; i < filters.size(); i++ ) {
+        for ( i = 0; i < filters.size(); i++ ) {
             if ( selectedFilter && selectedFilter->compare( filters[ i ] ) == 0 )
                 pfdextra->ulCurExt = i;
             if ( re.indexIn( filters[ i ], 0 ) != -1 ) {
@@ -127,8 +128,9 @@ void EnhanceFileDialog( PFILEDLG pfd, QString filter, QString *selectedFilter )
             }
         }
     }
+    pfdextra->ulNumFilters = (ULONG) typeList.size();
 
-    apszTypeList = (PSZ *) malloc( typeList.size() * sizeof( PSZ ) + 1 );
+    apszTypeList = (PSZ *) malloc( pfdextra->ulNumFilters * sizeof( PSZ ) + 1 );
     for ( i = 0; i < typeList.size(); i++ )
         apszTypeList[ i ] = (PSZ) strdup( typeList.at( i ).toLocal8Bit().data() );
     apszTypeList[ i ] = NULL;
@@ -187,13 +189,14 @@ QString OS2Native::getOpenFileName(       QWidget *parent,
     QString selected;
 
     memset( &fd, 0, sizeof(fd) );
-    fd.cbSize   = sizeof( FILEDLG );
-    fd.fl       = FDS_CENTER | FDS_OPEN_DIALOG;
+    fd.cbSize = sizeof( FILEDLG );
+    fd.fl     = FDS_CENTER | FDS_OPEN_DIALOG;
 
     if ( !caption.isNull() && !caption.isEmpty() )
         fd.pszTitle = (PSZ) strdup( caption.toLocal8Bit().data() );
     strncpy( fd.szFullFile, QDir::toNativeSeparators( dir ).toLocal8Bit().constData(), CCHMAXPATH-1 );
-    strncat( fd.szFullFile, "\\", CCHMAXPATH-1 );
+    if ( !QString( fd.szFullFile ).endsWith('\\'))
+        strncat( fd.szFullFile, "\\", CCHMAXPATH-1 );
 
     EnhanceFileDialog( &fd, filter, selectedFilter );
 
@@ -205,6 +208,13 @@ QString OS2Native::getOpenFileName(       QWidget *parent,
         }
         FreeFileDialogData( &fd );
     }
+    else {
+//        QMessageBox::critical( parent, QObject::tr("Dialog Failed"),
+//                               QObject::tr("WinFileDlg failed with error %1").arg( fd.lSRC ),
+//                               QMessageBox::Ok );
+        return QFileDialog::getOpenFileName( parent, caption, dir, filter, selectedFilter, options );
+    }
+
     return selected;
 }
 
@@ -221,13 +231,14 @@ QStringList	OS2Native::getOpenFileNames(       QWidget *parent,
     QStringList selected;
 
     memset( &fd, 0, sizeof(fd) );
-    fd.cbSize   = sizeof( FILEDLG );
-    fd.fl       = FDS_CENTER | FDS_OPEN_DIALOG | FDS_MULTIPLESEL;
+    fd.cbSize = sizeof( FILEDLG );
+    fd.fl     = FDS_CENTER | FDS_OPEN_DIALOG | FDS_MULTIPLESEL;
 
     if ( !caption.isNull() && !caption.isEmpty() )
         fd.pszTitle = (PSZ) strdup( caption.toLocal8Bit().data() );
     strncpy( fd.szFullFile, QDir::toNativeSeparators( dir ).toLocal8Bit().constData(), CCHMAXPATH-1 );
-    strncat( fd.szFullFile, "\\", CCHMAXPATH-1 );
+    if ( !QString( fd.szFullFile ).endsWith('\\'))
+        strncat( fd.szFullFile, "\\", CCHMAXPATH-1 );
 
     EnhanceFileDialog( &fd, filter, selectedFilter );
 
@@ -241,6 +252,9 @@ QStringList	OS2Native::getOpenFileNames(       QWidget *parent,
             UpdateSelectedFilter( &fd, selectedFilter );
         }
         FreeFileDialogData( &fd );
+    }
+    else {
+        return QFileDialog::getOpenFileNames( parent, caption, dir, filter, selectedFilter, options );
     }
     return selected;
 }
@@ -258,13 +272,14 @@ QString OS2Native::getSaveFileName(       QWidget *parent,
     QString selected;
 
     memset( &fd, 0, sizeof(fd) );
-    fd.cbSize     = sizeof( FILEDLG );
-    fd.fl         = FDS_CENTER | FDS_SAVEAS_DIALOG | FDS_ENABLEFILELB;
+    fd.cbSize = sizeof( FILEDLG );
+    fd.fl     = FDS_CENTER | FDS_SAVEAS_DIALOG | FDS_ENABLEFILELB;
 
     if ( !caption.isNull() && !caption.isEmpty() )
         fd.pszTitle = (PSZ) strdup( caption.toLocal8Bit().data() );
     strncpy( fd.szFullFile, QDir::toNativeSeparators( dir ).toLocal8Bit().constData(), CCHMAXPATH-1 );
-    strncat( fd.szFullFile, "\\", CCHMAXPATH-1 );
+    if ( !QString( fd.szFullFile ).endsWith('\\'))
+        strncat( fd.szFullFile, "\\", CCHMAXPATH-1 );
 
     EnhanceFileDialog( &fd, filter, selectedFilter );
 
@@ -275,6 +290,9 @@ QString OS2Native::getSaveFileName(       QWidget *parent,
             UpdateSelectedFilter( &fd, selectedFilter );
         }
         FreeFileDialogData( &fd );
+    }
+    else {
+        return QFileDialog::getSaveFileName( parent, caption, dir, filter, selectedFilter, options );
     }
     return selected;
 }

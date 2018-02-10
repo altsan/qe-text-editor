@@ -364,17 +364,18 @@ void MainWindow::open()
                                                        );
 #else
         QString fileName = OS2Native::getOpenFileName( this,
-                                                         tr("Open File"),
-                                                         currentDir,
-                                                         tr( DEFAULT_FILENAME_FILTERS ),
-                                                         &currentFilter
-                                                       );
+                                                       tr("Open File"),
+                                                       currentDir,
+                                                       tr( DEFAULT_FILENAME_FILTERS ),
+                                                       &currentFilter
+                                                     );
 #endif
         if ( !fileName.isEmpty() ) {
             // always reset the encoding when explicitly opening a file
             currentEncoding = "";
             loadFile( fileName, false );
         }
+        else showMessage( tr("Canceled."));
     }
 }
 
