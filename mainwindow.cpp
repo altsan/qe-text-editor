@@ -998,9 +998,11 @@ void MainWindow::createActions()
     connect( openAction, SIGNAL( triggered() ), this, SLOT( open() ));
 
     saveAction = new QAction( tr("&Save"), this );
-    QList<QKeySequence> saveShortcuts;
-    saveShortcuts << QKeySequence("F2") << QKeySequence("Ctrl+S");
-    saveAction->setShortcuts( saveShortcuts );
+// It's a bad idea to have a hidden shortcut for save, especially one as easy to use by mistake as Ctrl+S
+//    QList<QKeySequence> saveShortcuts;
+//    saveShortcuts << QKeySequence("F2") << QKeySequence("Ctrl+S");
+//    saveAction->setShortcuts( saveShortcuts );
+    saveAction->setShortcut( tr("F2"));
     saveAction->setStatusTip( tr("Save the current file") );
     connect( saveAction, SIGNAL( triggered() ), this, SLOT( save() ));
 
