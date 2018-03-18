@@ -97,7 +97,7 @@ MRESULT EXPENTRY EnhancedFileDlgProc( HWND hwndDlg, ULONG msg, MPARAM mp1, MPARA
     return WinDefFileDlgProc( hwndDlg, msg, mp1, mp2 );
 }
 
-// This code (with some modifications) taken from the OS/2 Firefox sources.
+// This code (with some modifications) taken from the Mozilla for OS/2 sources.
 // [END]
 //
 
