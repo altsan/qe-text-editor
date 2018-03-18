@@ -66,8 +66,8 @@ void QeTextEdit::mousePressEvent( QMouseEvent *event )
     {
         doPaste( cursor );
     }
-
-    QPlainTextEdit::mousePressEvent( event );
+    else
+        QPlainTextEdit::mousePressEvent( event );
 }
 
 
