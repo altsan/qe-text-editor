@@ -25,8 +25,8 @@ void doCopy( QString text, QLineEdit *field )
 {
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText( text, clipboard->supportsSelection() ?
-                                QClipboard::Selection :
-                                QClipboard::Clipboard );
+                            QClipboard::Selection :
+                            QClipboard::Clipboard );
     field->deselect();
 }
 

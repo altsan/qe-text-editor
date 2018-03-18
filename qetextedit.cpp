@@ -40,8 +40,6 @@ QeTextEdit::QeTextEdit( QWidget *parent )
 
 void QeTextEdit::mousePressEvent( QMouseEvent *event )
 {
-    QPlainTextEdit::mousePressEvent( event );
-
     Qt::MouseButtons buttons = event->buttons();
     Qt::MouseButtons clicked = event->button();
     QTextCursor cursor = textCursor();
@@ -68,28 +66,38 @@ void QeTextEdit::mousePressEvent( QMouseEvent *event )
     {
         doPaste( cursor );
     }
+
+    QPlainTextEdit::mousePressEvent( event );
 }
 
 
 void QeTextEdit::doCopy( QString text, QTextCursor cursor )
 {
+#if 0
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText( text, clipboard->supportsSelection() ?
                                 QClipboard::Selection :
                                 QClipboard::Clipboard );
     cursor.clearSelection();
     setTextCursor( cursor );
+#else
+    QPlainTextEdit::copy();
+#endif
 }
 
 
 void QeTextEdit::doPaste( QTextCursor cursor )
 {
+#if 0
     QClipboard *clipboard = QApplication::clipboard();
     QString text = clipboard->supportsSelection() ?
                        clipboard->text( QClipboard::Selection ) :
                        clipboard->text( QClipboard::Clipboard );
     cursor.insertText( text );
     setTextCursor( cursor );
+#else
+    QPlainTextEdit::paste();
+#endif
 }
 
 
