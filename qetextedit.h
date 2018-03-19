@@ -30,14 +30,20 @@ class QeTextEdit : public QPlainTextEdit
 
 public:
     QeTextEdit( QWidget *parent = 0 );
+    void doContextMenuClick( QPoint pos );
+    void mousePressEvent( QMouseEvent *event );
 
 protected:
-    void mousePressEvent( QMouseEvent *event );
     void dropEvent( QDropEvent *event );
 
+private slots:
+    void copy();
+    void cut();
+    void paste();
+
+/*
 private:
-    void doCopy( QString text, QTextCursor cursor );
-    void doPaste( QTextCursor cursor );
+*/
 
 };
 

@@ -249,6 +249,8 @@ MainWindow::MainWindow()
     connect( editor, SIGNAL( cursorPositionChanged() ), this, SLOT( updatePositionLabel() ));
     connect( editor->document(), SIGNAL( contentsChanged() ), this, SLOT( updateModified() ));
 
+    editor->installEventFilter( this );
+
     setMinimumWidth( statusBar()->minimumWidth() + 20 );
     setWindowTitle( tr("Text Editor") );
 
@@ -277,6 +279,39 @@ MainWindow::~MainWindow()
 {
 }
 */
+
+
+// ---------------------------------------------------------------------------
+// EVENT FILTER
+//
+
+bool MainWindow::eventFilter( QObject *target, QEvent *event )
+{
+
+    if ( target == editor ) {
+        /* We disable the usual context menu event to prevent mouse chording
+         * from triggering it on some platforms.  We will generate a context
+         * menu event ourselves on MB2 click (below) instead.
+         */
+        if ( event->type() == QEvent::ContextMenu ) {
+            return true;
+        }
+        else if ( event->type() == QEvent::MouseButtonRelease ) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+            if ( mouseEvent->button() == Qt::RightButton ) {
+                editor->doContextMenuClick( mouseEvent->pos() );
+                return true;
+            }
+        }
+        else if ( event->type() == QEvent::MouseButtonPress ) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+            editor->mousePressEvent( mouseEvent );
+            return true;
+        }
+    }
+
+    return QMainWindow::eventFilter( target, event );
+}
 
 
 // ---------------------------------------------------------------------------

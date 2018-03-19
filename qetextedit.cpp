@@ -32,11 +32,18 @@
 // handle them (e.g. by opening them).
 //
 
+// ---------------------------------------------------------------------------
+// Constructor
+//
 QeTextEdit::QeTextEdit( QWidget *parent )
     : QPlainTextEdit( parent )
 {
 }
 
+
+// ---------------------------------------------------------------------------
+// Overridden events
+//
 
 void QeTextEdit::mousePressEvent( QMouseEvent *event )
 {
@@ -49,57 +56,58 @@ void QeTextEdit::mousePressEvent( QMouseEvent *event )
     if (( clicked == Qt::RightButton ) && ( buttons & Qt::LeftButton ))
     {
         if ( selected.isEmpty() )
-            doPaste( cursor );
+            paste();
         else
-            doCopy( selected, cursor );
-        setTextCursor( cursor );
+            copy();
     }
 
     // Mouse chord, MB2 first - paste only
     else if (( clicked == Qt::LeftButton ) && ( buttons & Qt::RightButton ))
     {
-        doPaste( cursor );
+        paste();
     }
 
     // MB3 clicked - paste only if platform supports selection clipboard (X11)
     else if (( clicked == Qt::MidButton ) && QApplication::clipboard()->supportsSelection() )
     {
-        doPaste( cursor );
+        paste();
     }
+
+    // Pass any other mouse events to the default handler
     else
         QPlainTextEdit::mousePressEvent( event );
 }
 
-
+/*
 void QeTextEdit::doCopy( QString text, QTextCursor cursor )
 {
-#if 0
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText( text, clipboard->supportsSelection() ?
                                 QClipboard::Selection :
                                 QClipboard::Clipboard );
     cursor.clearSelection();
     setTextCursor( cursor );
-#else
-    QPlainTextEdit::copy();
-#endif
 }
 
 
 void QeTextEdit::doPaste( QTextCursor cursor )
 {
-#if 0
     QClipboard *clipboard = QApplication::clipboard();
     QString text = clipboard->supportsSelection() ?
                        clipboard->text( QClipboard::Selection ) :
                        clipboard->text( QClipboard::Clipboard );
     cursor.insertText( text );
     setTextCursor( cursor );
-#else
-    QPlainTextEdit::paste();
-#endif
 }
+*/
 
+
+void QeTextEdit::doContextMenuClick( QPoint pos )
+{
+    QContextMenuEvent *contextEvent = new QContextMenuEvent( QContextMenuEvent::Mouse, pos );
+    QPlainTextEdit::contextMenuEvent( contextEvent );
+    delete contextEvent;
+}
 
 
 void QeTextEdit::dropEvent( QDropEvent *event )
@@ -115,5 +123,28 @@ void QeTextEdit::dropEvent( QDropEvent *event )
     // Let the default event handler take care of everything else
     QPlainTextEdit::dropEvent( event );
 }
+
+
+// ---------------------------------------------------------------------------
+// Slots
+//
+
+void QeTextEdit::copy()
+{
+    QPlainTextEdit::copy();
+}
+
+
+void QeTextEdit::cut()
+{
+    QPlainTextEdit::cut();
+}
+
+
+void QeTextEdit::paste()
+{
+    QPlainTextEdit::paste();
+}
+
 
 

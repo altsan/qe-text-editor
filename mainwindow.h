@@ -142,6 +142,9 @@ private:
     QString getFileCodepage( const QString &fileName );
     void setFileCodepage( const QString &fileName, const QString &encodingName );
 
+    // Event filter
+    bool eventFilter( QObject *target, QEvent *event );
+
     // GUI objects
     QeTextEdit *editor;
     FindDialog *findDialog;
