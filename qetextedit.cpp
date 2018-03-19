@@ -90,11 +90,17 @@ void QeTextEdit::mouseReleaseEvent( QMouseEvent *event )
 }
 */
 
+/* On certain platforms (but not on OS/2), context menus seem to trigger
+ * after the mouse release event.  This prevents the chording action from
+ * triggering a context menu under those circumstances.
+ */
 void QeTextEdit::contextMenuEvent( QContextMenuEvent *event )
 {
-    if ( isChording ) 
+    if ( isChording )
         isChording = false;
+#ifndef __OS2__
     else
+#endif
         QPlainTextEdit::contextMenuEvent( event );
 }
 
@@ -120,13 +126,6 @@ void QeTextEdit::doPaste( QTextCursor cursor )
     setTextCursor( cursor );
 }
 
-
-void QeTextEdit::doContextMenuClick( QPoint pos )
-{
-    QContextMenuEvent *contextEvent = new QContextMenuEvent( QContextMenuEvent::Mouse, pos );
-    QPlainTextEdit::contextMenuEvent( contextEvent );
-    delete contextEvent;
-}
 */
 
 

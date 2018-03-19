@@ -30,11 +30,9 @@ class QeTextEdit : public QPlainTextEdit
 
 public:
     QeTextEdit( QWidget *parent = 0 );
-//    void doContextMenuClick( QPoint pos );
     void mousePressEvent( QMouseEvent *event );
-//    void mouseReleaseEvent( QMouseEvent *event );
     void contextMenuEvent( QContextMenuEvent *event );
-    
+
 protected:
     void dropEvent( QDropEvent *event );
 
