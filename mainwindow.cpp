@@ -1930,6 +1930,24 @@ bool MainWindow::saveFile( const QString &fileName )
     QFile file( fileName );
     bool bExists = ( file.exists() );
 
+    if ( bExists ) {
+        QDateTime fileTime = QFileInfo( fileName ).lastModified();
+        if ( fileTime > currentModifyTime ) {
+            int r = QMessageBox::warning( this,
+                                          tr("File Modified"),
+                                          tr("The modification time on %1 has changed."
+                                             "<p>This file may have been modified by another "
+                                             "application or process. If you save now, any "
+                                             "such modifications will be lost.</p>"
+                                             "<p>Save anyway?</p>").arg( QDir::toNativeSeparators( fileName )),
+                                          QMessageBox::Yes | QMessageBox::No,
+                                          QMessageBox::Yes
+                                        );
+            if ( r == QMessageBox::No )
+                return false;
+        }
+    }
+
     // Opening in read/write mode seems to preserve EAs on existing files.
     if ( !file.open( QIODevice::ReadWrite | QFile::Text )) {
         QMessageBox::critical( this, tr("Error"), tr("Error writing file"));
@@ -1988,7 +2006,9 @@ void MainWindow::setCurrentFile( const QString &fileName )
     updateModified( false );
     encodingChanged = false;
     QString shownName = tr("Untitled");
+    currentModifyTime = QDateTime::currentDateTime();
     if ( !currentFile.isEmpty() ) {
+        currentModifyTime = QFileInfo( fileName ).lastModified();
         currentDir = QDir::cleanPath( QFileInfo( fileName ).absolutePath() );
         shownName  = strippedName( currentFile );
         recentFiles.removeAll( currentFile );

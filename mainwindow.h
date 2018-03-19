@@ -22,6 +22,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QDateTime>
 #include "version.h"
 
 #define PROGRAM_VERSION     VER_FILEVERSION_STR
@@ -282,6 +283,7 @@ private:
     QString     currentDir;
     QString     currentEncoding;
     QString     currentFilter;
+    QDateTime   currentModifyTime;
     bool        encodingChanged;
     int         lastGoTo;
     FindParams  lastFind;
