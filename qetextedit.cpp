@@ -38,6 +38,7 @@
 QeTextEdit::QeTextEdit( QWidget *parent )
     : QPlainTextEdit( parent )
 {
+    isChording = false;
 }
 
 
@@ -59,23 +60,42 @@ void QeTextEdit::mousePressEvent( QMouseEvent *event )
             paste();
         else
             copy();
+        isChording = true;
     }
 
     // Mouse chord, MB2 first - paste only
     else if (( clicked == Qt::LeftButton ) && ( buttons & Qt::RightButton ))
     {
         paste();
+        isChording = true;
     }
 
     // MB3 clicked - paste only if platform supports selection clipboard (X11)
     else if (( clicked == Qt::MidButton ) && QApplication::clipboard()->supportsSelection() )
     {
         paste();
+        isChording = true;
     }
 
     // Pass any other mouse events to the default handler
     else
         QPlainTextEdit::mousePressEvent( event );
+}
+
+/*
+void QeTextEdit::mouseReleaseEvent( QMouseEvent *event )
+{
+    isChording = false;
+    QPlainTextEdit::mouseReleaseEvent( event );
+}
+*/
+
+void QeTextEdit::contextMenuEvent( QContextMenuEvent *event )
+{
+    if ( isChording ) 
+        isChording = false;
+    else
+        QPlainTextEdit::contextMenuEvent( event );
 }
 
 /*
@@ -99,7 +119,6 @@ void QeTextEdit::doPaste( QTextCursor cursor )
     cursor.insertText( text );
     setTextCursor( cursor );
 }
-*/
 
 
 void QeTextEdit::doContextMenuClick( QPoint pos )
@@ -108,6 +127,7 @@ void QeTextEdit::doContextMenuClick( QPoint pos )
     QPlainTextEdit::contextMenuEvent( contextEvent );
     delete contextEvent;
 }
+*/
 
 
 void QeTextEdit::dropEvent( QDropEvent *event )
