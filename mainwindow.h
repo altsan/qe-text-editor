@@ -75,8 +75,10 @@ class MainWindow : public QMainWindow
 public:
     MainWindow();
     bool loadFile( const QString &fileName, bool createIfNew );
+    void openAsEncoding( QString fileName, bool createIfNew, QString encoding );
     void showUsage();
     void setReadOnly( bool readonly );
+    void setTextEncoding( QString newEncoding );
 
 protected:
     void closeEvent( QCloseEvent *event );
@@ -140,6 +142,7 @@ private:
     void updateEncoding();
     bool showFindResult( QTextCursor found );
     bool replaceFindResult( QTextCursor found, const QString newText, bool confirm );
+    bool mapNameToEncoding( QString &encoding );
     QString getFileCodepage( const QString &fileName );
     void setFileCodepage( const QString &fileName, const QString &encodingName );
 

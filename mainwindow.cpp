@@ -265,6 +265,7 @@ MainWindow::MainWindow()
 #endif
 
     currentEncoding = "";
+    currentDir = QDir::currentPath();
     setCurrentFile("");
 }
 
@@ -964,6 +965,13 @@ void MainWindow::setTextEncoding()
     if ( newEncoding.compare( currentEncoding ) != 0 ) {
         currentEncoding = newEncoding;
 
+        // A currentEncoding of "" normally means use the default locale; however
+        // when opening a file it will trigger an attempt to load the encoding from
+        // the file attribute (OS/2 only), falling back to default otherwise.  To
+        // force the file to be opened in the default encoding, set currentEncoding
+        // to "Default" before calling loadFile (it will be reset to "" after the file
+        // is opened).
+
         if ( isWindowModified() ) {
 #if 0
             QMessageBox::warning( this,
@@ -997,6 +1005,50 @@ void MainWindow::setTextEncoding()
         updateEncodingLabel();
     }
     action->setChecked( true );
+}
+
+
+void MainWindow::setTextEncoding( QString newEncoding )
+{
+    if ( newEncoding.compare( currentEncoding ) != 0 ) {
+        currentEncoding = newEncoding;
+
+        if ( isWindowModified() ) {
+            encodingChanged = true;
+        }
+        else if ( !currentFile.isEmpty() ) {
+            // Ask whether to re-parse the file with the new encoding
+            int r = QMessageBox::question( this,
+                                           tr("Re-load File?"),
+                                           tr("You have changed the text encoding for this file. "
+                                              "Do you want to refresh the file from disk using the new encoding?"),
+                                           QMessageBox::Yes | QMessageBox::No,
+                                           QMessageBox::Yes
+                                        );
+            if ( r == QMessageBox::Yes ) {
+                // Change empty to "Default" temporarily to get the right logic path in loadFile
+                if ( currentEncoding == "") currentEncoding = "Default";
+                loadFile( currentFile, false );
+            }
+            else
+                encodingChanged = true;
+        }
+        updateEncodingLabel();
+    }
+}
+
+
+void MainWindow::openAsEncoding( QString fileName, bool createIfNew, QString encoding )
+{
+    // The user has told us to force a specific codepage to be used for reading this
+    // file (overriding any that may be set in the EA).
+    //
+    if ( mapNameToEncoding( encoding )) {
+        currentEncoding = encoding;
+        // Changing empty to "Default" temporarily disables setting encoding from EA
+        if ( currentEncoding == "") currentEncoding = "Default";
+    }
+    loadFile( fileName, createIfNew );
 }
 
 
@@ -2002,7 +2054,6 @@ bool MainWindow::print()
 void MainWindow::setCurrentFile( const QString &fileName )
 {
     currentFile = fileName;
-    currentDir = QDir::currentPath();
     updateModified( false );
     encodingChanged = false;
     QString shownName = tr("Untitled");
@@ -2064,6 +2115,9 @@ void MainWindow::showUsage()
                                  "<p><b>Options:</b>"
                                  "<table>"
                                   "<tr><td> &nbsp; /read</td> <td style=\"padding-left: 1em;\">Read-only mode</td></tr>"
+#if 1
+                                  "<tr><td> &nbsp; /cp:&lt;encoding&gt;</td> <td style=\"padding-left: 1em;\">Use the specified encoding</td></tr>"
+#endif
                                   "<tr><td> &nbsp; /?   </td> <td style=\"padding-left: 1em;\">Show usage information</td></tr>"
                                   "</table>"),
                               QMessageBox::Ok
@@ -2139,6 +2193,39 @@ bool MainWindow::replaceFindResult( QTextCursor found, const QString newText, bo
 }
 
 
+bool MainWindow::mapNameToEncoding( QString &encoding )
+{
+    bool bOK = false;
+
+    // First we try to interpret it as a numeric codepage number
+    unsigned int iCP = encoding.toUInt( &bOK );
+    if ( bOK ) {
+        int iMax = sizeof( Codepage_CCSIDs ) / sizeof ( int );
+        for ( int i = 0; i < iMax; i++ ) {
+            if ( iCP == Codepage_CCSIDs[ i ] ) {
+                encoding = Codepage_Mappings[ i ];
+                bOK = true;
+                break;
+            }
+        }
+    }
+    // If that didn't work, see if it matches one of our encoding names verbatim
+    else {
+        QList<QAction *> actions = encodingGroup->actions();
+        for ( int i = 0; i < actions.size(); i++ ) {
+            if ( QString::compare( actions.at( i )->data().toString(), encoding ) == 0 ) {
+                bOK = true;
+                break;
+            }
+        }
+    }
+    if ( !bOK )
+        encoding = "";
+
+    return ( bOK );
+}
+
+
 QString MainWindow::getFileCodepage( const QString &fileName )
 {
     QString encoding("");
@@ -2153,32 +2240,8 @@ QString MainWindow::getFileCodepage( const QString &fileName )
 
     if ( !encoding.isEmpty() ) {
         // We found a value, now try and map it to something meaningful
-
-        bool bOK = false;
-        // First we try to interpret it as a numeric codepage number
-        unsigned int iCP = encoding.toUInt( &bOK );
-        if ( bOK ) {
-            int iMax = sizeof( Codepage_CCSIDs ) / sizeof ( int );
-            for ( int i = 0; i < iMax; i++ ) {
-                if ( iCP == Codepage_CCSIDs[ i ] ) {
-                    encoding = Codepage_Mappings[ i ];
-                    bOK = true;
-                    break;
-                }
-            }
-        }
-        // If that didn't work, see if it matches one of our encoding names verbatim
-        else {
-            QList<QAction *> actions = encodingGroup->actions();
-            for ( int i = 0; i < actions.size(); i++ ) {
-                if ( QString::compare( actions.at( i )->data().toString(), encoding ) == 0 ) {
-                    bOK = true;
-                    break;
-                }
-            }
-        }
-        if ( !bOK )
-            encoding = "";
+        // (if this call fails, encoding will be changed to "")
+        mapNameToEncoding( encoding );
     }
 #else
     // Keep the compiler happy
