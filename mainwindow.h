@@ -57,6 +57,7 @@ class QeTextEdit;
 class QTextCursor;
 class FindDialog;
 class ReplaceDialog;
+class QeOpenThread;
 
 typedef struct _FindParams_t
 {
@@ -119,6 +120,7 @@ private slots:
     void replaceAllRegExp( const QString &str, const QString &repl, bool cs, bool absolute, bool confirm, bool backwards );
     void goToLine();
     void setTextEncoding();
+    void readDone();
 
 private:
     // Setup methods
@@ -145,6 +147,7 @@ private:
     bool mapNameToEncoding( QString &encoding );
     QString getFileCodepage( const QString &fileName );
     void setFileCodepage( const QString &fileName, const QString &encodingName );
+
 
     // GUI objects
     QeTextEdit *editor;
@@ -279,6 +282,18 @@ private:
     QMenu   *helpMenu;
     QAction *aboutAction;
 
+
+    // Global preferences from options dialog (not yet implemented)
+
+    bool    useNativeFD;
+    bool    saveLastDir;
+    bool    warnUnmodified;
+    bool    warnFileChanged;
+    bool    detectUpdate;
+    bool    quickFindCS;
+    bool    quickFindWords;
+
+
     // Other class variables
 
     QStringList recentFiles;
@@ -290,6 +305,8 @@ private:
     bool        encodingChanged;
     int         lastGoTo;
     FindParams  lastFind;
+
+    QeOpenThread *openThread;
 
 };
 

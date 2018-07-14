@@ -28,6 +28,7 @@
 #include "gotolinedialog.h"
 #include "mainwindow.h"
 #include "qetextedit.h"
+#include "threads.h"
 #include "os2codec.h"
 #ifdef __OS2__
 #include "os2native.h"
@@ -35,6 +36,8 @@
 #include "eastring.h"
 
 //#define DISABLE_NEW_CODECS
+
+//#define USE_IO_THREADS
 
 #ifdef __OS2__
 
@@ -241,6 +244,7 @@ MainWindow::MainWindow()
 
     readSettings();
 
+    openThread = 0;
     findDialog = 0;
     replaceDialog = 0;
     lastGoTo = 1;
@@ -1919,8 +1923,9 @@ bool MainWindow::okToContinue()
 
 bool MainWindow::loadFile( const QString &fileName, bool createIfNew )
 {
-    QFile file( fileName );
-    if ( !file.open( QIODevice::ReadOnly | QFile::Text )) {
+    QFile *file = new QFile( fileName );
+
+    if ( !file->open( QIODevice::ReadOnly | QFile::Text )) {
         if ( createIfNew ) {
             editor->clear();
             showMessage( tr("New file: %1").arg( QDir::toNativeSeparators( fileName )));
@@ -1932,30 +1937,49 @@ bool MainWindow::loadFile( const QString &fileName, bool createIfNew )
         }
     }
     else {
-        QTextStream in( &file );
+        QTextCodec *codec;
         // currentEncoding is always reset to "" when doing an explicit open
         if ( currentEncoding.isEmpty() ) {
             currentEncoding = getFileCodepage( fileName );
             if ( !currentEncoding.isEmpty() )
-                in.setCodec( QTextCodec::codecForName( currentEncoding.toLatin1().data() ));
+                codec = QTextCodec::codecForName( currentEncoding.toLatin1().data() );
             else
-                in.setCodec( QTextCodec::codecForLocale() );
+                codec = QTextCodec::codecForLocale();
         }
         else {
             // This will only be used if we're doing a reload of the current file
             if ( currentEncoding == "Default") {
-                in.setCodec( QTextCodec::codecForLocale() );
+                codec = QTextCodec::codecForLocale();
                 currentEncoding = "";
             }
             else
-                in.setCodec( QTextCodec::codecForName( currentEncoding.toLatin1().data() ));
+                codec = QTextCodec::codecForName( currentEncoding.toLatin1().data() );
         }
+        QApplication::setOverrideCursor( Qt::WaitCursor );
+
+#ifdef USE_IO_THREADS
+
+        showMessage( tr("Opening %1").arg( QDir::toNativeSeparators( fileName )));
+        setEnabled( false );
+        if ( !openThread )
+            openThread = new QeOpenThread();
+        connect( openThread, SIGNAL( finished() ), this, SLOT( readDone() ));
+        openThread->setFile( file, codec, fileName );
+        openThread->start();
+        return true;
+#else
+
+        QTextStream in( file );
+        in.setCodec( codec );
         QString text = in.readAll();
         editor->setPlainText( text );
-        file.close();
+        file->close();
+        delete file;
+        QApplication::restoreOverrideCursor();
         showMessage( tr("Opened file: %1").arg( QDir::toNativeSeparators( fileName )));
-    }
+#endif
 
+    }
     setCurrentFile( fileName );
     return true;
 }
@@ -2288,4 +2312,18 @@ void MainWindow::setFileCodepage( const QString &fileName, const QString &encodi
 #endif
 }
 
+
+void MainWindow::readDone()
+{
+#ifdef USE_IO_THREADS
+
+    editor->setPlainText( openThread->getText() );
+
+    setEnabled( true );
+    QApplication::restoreOverrideCursor();
+    showMessage( tr("Opened file: %1").arg( QDir::toNativeSeparators( openThread->inputFileName )));
+    setCurrentFile( openThread->inputFileName );
+
+#endif
+}
 

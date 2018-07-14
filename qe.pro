@@ -8,9 +8,9 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 # Input
-HEADERS += finddialog.h replacedialog.h gotolinedialog.h eastring.h os2codec.h mainwindow.h qetextedit.h ctlutils.h
+HEADERS += finddialog.h replacedialog.h gotolinedialog.h eastring.h os2codec.h mainwindow.h qetextedit.h ctlutils.h threads.h
 FORMS += finddialog.ui replacedialog.ui gotolinedialog.ui
-SOURCES += eastring.cpp os2codec.cpp finddialog.cpp replacedialog.cpp gotolinedialog.cpp main.cpp mainwindow.cpp qetextedit.cpp ctlutils.cpp
+SOURCES += eastring.cpp os2codec.cpp finddialog.cpp replacedialog.cpp gotolinedialog.cpp main.cpp mainwindow.cpp qetextedit.cpp ctlutils.cpp threads.cpp
 RESOURCES += qe.qrc
 os2:HEADERS += os2native.h
 os2:SOURCES += os2native.cpp
