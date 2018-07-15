@@ -1237,21 +1237,21 @@ void MainWindow::createEncodingActions()
     encodingGroup->addAction( win1252Action );
     win1252Action->setCheckable( true );
     win1252Action->setData("Windows-1252");
-    win1252Action->setStatusTip( tr("Microsoft Latin-1 encoding for Western European languages; it is a superset of ISO-8859-1."));
+    win1252Action->setStatusTip( tr("Microsoft Latin-1 encoding for Western European languages (a superset of the official ISO-8859-1 standard)."));
     connect( win1252Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     iso885915Action = new QAction( tr("Latin-9 (ISO-8859-15)"), this );
     encodingGroup->addAction( iso885915Action );
     iso885915Action->setCheckable( true );
     iso885915Action->setData("ISO 8859-15");
-    iso885915Action->setStatusTip( tr("ISO Latin-9 encoding for Western European languages. It supports the same languages as Windows-1252 but is not 100% compatible."));
+    iso885915Action->setStatusTip( tr("ISO Latin-9 encoding for Western European languages. Supports the same languages as Windows-1252 but is not 100% compatible."));
     connect( iso885915Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     aromanAction = new QAction( tr("Mac OS Roman (Macintosh)"), this );
     encodingGroup->addAction( aromanAction );
     aromanAction->setCheckable( true );
     aromanAction->setData("Apple Roman");
-    aromanAction->setStatusTip( tr("A text encoding used under Mac OS 9 and older. It supports several Western languages and includes various graphical symbols."));
+    aromanAction->setStatusTip( tr("A text encoding used under Mac OS 9 and older; supports several Western languages and includes various graphical symbols."));
     connect( aromanAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     ibm850Action = new QAction( tr("Multilingual (IBM-850)"), this );
@@ -1273,14 +1273,14 @@ void MainWindow::createEncodingActions()
     encodingGroup->addAction( ibm858Action );
     ibm858Action->setCheckable( true );
     ibm858Action->setData("IBM-858");
-    ibm858Action->setStatusTip( tr("Commonly used for Western languages under OS/2 (post-1997); this is an updated version of IBM-850 (official designation IBM-858)."));
+    ibm858Action->setStatusTip( tr("Commonly used for Western languages under OS/2; this is an updated version of IBM-850 (official designation IBM-858)."));
     connect( ibm858Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     ibm859Action = new QAction( tr("Western European (IBM-859)"), this );
     encodingGroup->addAction( ibm859Action );
     ibm859Action->setCheckable( true );
     ibm859Action->setData("IBM-859");
-    ibm859Action->setStatusTip( tr("IBM encoding of the Latin-9 character set for OS/2 systems. It is not compatible with ISO-8859-15, and is rarely used."));
+    ibm859Action->setStatusTip( tr("IBM Latin-9 encoding for OS/2 systems. It is not compatible with ISO-8859-15, and is rarely used."));
     connect( ibm859Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     ibm860Action = new QAction( tr("Portuguese (IBM-860)"), this );
@@ -1304,7 +1304,7 @@ void MainWindow::createEncodingActions()
     encodingGroup->addAction( win1250Action );
     win1250Action->setCheckable( true );
     win1250Action->setData("Windows-1250");
-    win1250Action->setStatusTip( tr("Microsoft encoding for Central and East European languages. It is not entirely compatible with ISO-8859-2."));
+    win1250Action->setStatusTip( tr("Microsoft encoding for Central and East European languages. It is not (quite) compatible with ISO-8859-2."));
     connect( win1250Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     iso88592Action = new QAction( tr("Latin-2 (ISO-8859-2)"), this );
@@ -1319,7 +1319,7 @@ void MainWindow::createEncodingActions()
     encodingGroup->addAction( ibm852Action );
     ibm852Action->setCheckable( true );
     ibm852Action->setData("IBM-852");
-    ibm852Action->setStatusTip( tr("IBM encoding of the Latin-2 character set for Central and East European languages.  Mainly used under DOS and OS/2."));
+    ibm852Action->setStatusTip( tr("IBM Latin-2 encoding for Central and East European languages. Mainly used under DOS and OS/2."));
     connect( ibm852Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 #endif
 
@@ -1424,7 +1424,7 @@ void MainWindow::createEncodingActions()
     encodingGroup->addAction( ibm857Action );
     ibm857Action->setCheckable( true );
     ibm857Action->setData("IBM-857");
-    ibm857Action->setStatusTip( tr("Turkish (Latin-5) text encoding used under OS/2 and DOS.  Not compatible with ISO-8859-9."));
+    ibm857Action->setStatusTip( tr("Turkish (Latin-5) text encoding used under OS/2 and DOS. Not compatible with ISO-8859-9."));
     connect( ibm857Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     ibm869Action = new QAction( tr("Greek (IBM-869)"), this );
@@ -1448,7 +1448,7 @@ void MainWindow::createEncodingActions()
     encodingGroup->addAction( win1251Action );
     win1251Action->setCheckable( true );
     win1251Action->setData("Windows-1251");
-    win1251Action->setStatusTip( tr("Microsoft encoding for Cyrillic languages. It is not compatible with ISO-8859-5, but does include Ukrainian support."));
+    win1251Action->setStatusTip( tr("Microsoft encoding for Cyrillic languages. It is not compatible with ISO-8859-5, but includes Ukrainian support."));
     connect( win1251Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     ibm866Action = new QAction( tr("Russian (IBM-866)"), this );
@@ -1477,7 +1477,7 @@ void MainWindow::createEncodingActions()
     encodingGroup->addAction( ibm855Action );
     ibm855Action->setCheckable( true );
     ibm855Action->setData("IBM-855");
-    ibm855Action->setStatusTip( tr("IBM encoding for Bulgarian and the Balkan languages.  Mainly used under DOS and OS/2."));
+    ibm855Action->setStatusTip( tr("IBM encoding for Bulgarian and the Balkan languages. Mainly used under DOS and OS/2."));
     connect( ibm855Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     ibm1125Action = new QAction( tr("Ukrainian (IBM-1125)"), this );
@@ -1508,14 +1508,14 @@ void MainWindow::createEncodingActions()
     encodingGroup->addAction( gbkAction );
     gbkAction->setCheckable( true );
     gbkAction->setData("GB18030-0");
-    gbkAction->setStatusTip( tr("This is used for Chinese text encoding in mainland China; it is a superset of the older GBK standard."));
+    gbkAction->setStatusTip( tr("This is used for Chinese text encoding in mainland China; it is a superset of a previous standard called GBK."));
     connect( gbkAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     gbAction = new QAction( tr("Chinese (GB2312)"), this );
     encodingGroup->addAction( gbAction );
     gbAction->setCheckable( true );
     gbAction->setData("GB2312");
-    gbAction->setStatusTip( tr("This is an older standard for Chinese text in mainland China; it has been largely superseded by GB18030."));
+    gbAction->setStatusTip( tr("This is an older standard for Chinese text in mainland China. Largely superseded by GBK and GB18030."));
     connect( gbAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     eucJpAction = new QAction( tr("Japanese (EUC-JP)"), this );
@@ -1603,7 +1603,7 @@ void MainWindow::createEncodingActions()
     encodingGroup->addAction( win1255Action );
     win1255Action->setCheckable( true );
     win1255Action->setData("Windows-1255");
-    win1255Action->setStatusTip( tr("Microsoft encoding for Hebrew and Yiddish text. It is broadly a superset of ISO-8859-8, but is not 100% compatible."));
+    win1255Action->setStatusTip( tr("Microsoft encoding for Hebrew and Yiddish text. Mainly a superset of ISO-8859-8, but not 100% compatible."));
     connect( win1255Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
 #ifndef DISABLE_NEW_CODECS
@@ -1628,14 +1628,14 @@ void MainWindow::createEncodingActions()
     encodingGroup->addAction( utf16Action );
     utf16Action->setCheckable( true );
     utf16Action->setData("UTF-16LE");
-    utf16Action->setStatusTip( tr("UTF-16 (little endian) is a multi-byte Unicode encoding.  It is rarely used for text files, and is not directly compatible with basic ASCII."));
+    utf16Action->setStatusTip( tr("UTF-16 (little endian) is a multi-byte Unicode encoding. It is rarely used for text files, and is not directly compatible with basic ASCII."));
     connect( utf16Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     utf16beAction = new QAction( tr("Unicode UTF-16 &BE"), this );
     encodingGroup->addAction( utf16beAction );
     utf16beAction->setCheckable( true );
     utf16beAction->setData("UTF-16BE");
-    utf16beAction->setStatusTip( tr("UTF-16 (big endian) is a multi-byte Unicode encoding.  It is rarely used for text files, and is not directly compatible with basic ASCII."));
+    utf16beAction->setStatusTip( tr("UTF-16 (big endian) is a multi-byte Unicode encoding. It is rarely used for text files, and is not directly compatible with basic ASCII."));
     connect( utf16beAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     utf8Action = new QAction( tr("&Unicode UTF-8"), this );
