@@ -27,6 +27,10 @@
 #include <QFile>
 #include <QTextStream>
 
+
+#define FILE_READ_SIZE  0x100000
+
+
 class QeOpenThread : public QThread
 {
     Q_OBJECT
@@ -35,6 +39,7 @@ public:
     QeOpenThread();
     void    setFile( QFile *file, QTextCodec *codec, QString fileName );
     QString getText();
+    int     getProgress();
     void    cancel();
 
     QString inputFileName;
@@ -48,6 +53,7 @@ private:
     QTextCodec *inputEncoding;
 
     bool        stop;
+    qint64      progress;
 
 };
 
