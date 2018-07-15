@@ -57,6 +57,7 @@ class QeTextEdit;
 class QTextCursor;
 class FindDialog;
 class ReplaceDialog;
+class IoDialog;
 class QeOpenThread;
 
 typedef struct _FindParams_t
@@ -120,6 +121,7 @@ private slots:
     void replaceAllRegExp( const QString &str, const QString &repl, bool cs, bool absolute, bool confirm, bool backwards );
     void goToLine();
     void setTextEncoding();
+    void readProgress();
     void readDone();
 
 private:
@@ -147,12 +149,13 @@ private:
     bool mapNameToEncoding( QString &encoding );
     QString getFileCodepage( const QString &fileName );
     void setFileCodepage( const QString &fileName, const QString &encodingName );
-
+    void cancelOpen();
 
     // GUI objects
-    QeTextEdit *editor;
-    FindDialog *findDialog;
+    QeTextEdit    *editor;
+    FindDialog    *findDialog;
     ReplaceDialog *replaceDialog;
+    IoDialog      *ioDialog;
 
     QLabel *editModeLabel;
     QLabel *messagesLabel;
@@ -307,6 +310,7 @@ private:
     FindParams  lastFind;
 
     QeOpenThread *openThread;
+    bool         isThreadActive;
 
 };
 

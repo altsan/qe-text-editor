@@ -1,7 +1,5 @@
 /******************************************************************************
-** threads.h
-**
-** Contains all our worker threads.
+** QE - iodialog.cpp
 **
 **  Copyright (C) 2018 Alexander Taylor
 **
@@ -20,36 +18,30 @@
 **
 ******************************************************************************/
 
-#ifndef QE_THREADS_H
-#define QE_THREADS_H
+#include <QtGui>
+#include "iodialog.h"
 
-#include <QThread>
-#include <QFile>
-#include <QTextStream>
-
-class QeOpenThread : public QThread
+IoDialog::IoDialog( QWidget *parent )
 {
-    Q_OBJECT
+    label = new QLabel( tr("Loading file, please wait..."));
+    cancelButton = new QPushButton( tr("Cancel"));
+    connect( cancelButton, SIGNAL( clicked() ), this, SLOT( cancelClicked() ));
 
-public:
-    QeOpenThread();
-    void    setFile( QFile *file, QTextCodec *codec, QString fileName );
-    QString getText();
-    void    cancel();
+    QVBoxLayout *vblayout = new QVBoxLayout;
+    QHBoxLayout *hblayout = new QHBoxLayout;
+    hblayout->addWidget( cancelButton );
+    hblayout->addStretch();
+    vblayout->addWidget( label );
+    vblayout->setSpacing( 8 );
+    vblayout->addLayout( hblayout );
 
-    QString inputFileName;
+    setWindowFlags( Qt::SubWindow );
+    setLayout( vblayout );
+    setWindowTitle( tr("Loading..."));
+}
 
-protected:
-    void run();
 
-private:
-    QString     fullText;
-    QFile      *inputFile;
-    QTextCodec *inputEncoding;
-
-    bool        stop;
-
-};
-
-#endif
-
+void IoDialog::cancelClicked()
+{
+    emit abortOpen();
+}

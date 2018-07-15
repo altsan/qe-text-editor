@@ -26,6 +26,7 @@
 #include "finddialog.h"
 #include "replacedialog.h"
 #include "gotolinedialog.h"
+#include "iodialog.h"
 #include "mainwindow.h"
 #include "qetextedit.h"
 #include "threads.h"
@@ -37,7 +38,7 @@
 
 //#define DISABLE_NEW_CODECS
 
-//#define USE_IO_THREADS
+#define USE_IO_THREADS
 
 #ifdef __OS2__
 
@@ -245,8 +246,10 @@ MainWindow::MainWindow()
     readSettings();
 
     openThread = 0;
+    isThreadActive = false;
     findDialog = 0;
     replaceDialog = 0;
+    ioDialog = 0;
     lastGoTo = 1;
 
     setAcceptDrops( true );
@@ -1960,12 +1963,15 @@ bool MainWindow::loadFile( const QString &fileName, bool createIfNew )
 #ifdef USE_IO_THREADS
 
         showMessage( tr("Opening %1").arg( QDir::toNativeSeparators( fileName )));
-        setEnabled( false );
+        menuBar()->setEnabled( false );
+        editor->setEnabled( false );
         if ( !openThread )
             openThread = new QeOpenThread();
         connect( openThread, SIGNAL( finished() ), this, SLOT( readDone() ));
         openThread->setFile( file, codec, fileName );
         openThread->start();
+        isThreadActive = true;
+        QTimer::singleShot( 1000, this, SLOT( readProgress() ));
         return true;
 #else
 
@@ -2313,16 +2319,52 @@ void MainWindow::setFileCodepage( const QString &fileName, const QString &encodi
 }
 
 
+void MainWindow::readProgress()
+{
+#ifdef USE_IO_THREADS
+
+    if ( !isThreadActive ) return;
+/*
+    if ( !ioDialog )
+        ioDialog = new IoDialog( this );
+    connect( ioDialog, SIGNAL( abortOpen() ), this, SLOT( cancelOpen() ));
+    ioDialog->show();
+*/
+#endif
+}
+
+
 void MainWindow::readDone()
 {
 #ifdef USE_IO_THREADS
 
+    isThreadActive = false;
+
+    if ( !openThread ) return;
     editor->setPlainText( openThread->getText() );
 
-    setEnabled( true );
+    if ( ioDialog ) ioDialog->done( 0 );
+//    setEnabled( true );
+    menuBar()->setEnabled( true );
+    editor->setEnabled( true );
+
     QApplication::restoreOverrideCursor();
     showMessage( tr("Opened file: %1").arg( QDir::toNativeSeparators( openThread->inputFileName )));
     setCurrentFile( openThread->inputFileName );
+
+    editor->setFocus( Qt::OtherFocusReason );
+
+#endif
+}
+
+
+void MainWindow::cancelOpen()
+{
+#ifdef USE_IO_THREADS
+
+    if ( !openThread ) return;
+    openThread->cancel();
+    readDone();
 
 #endif
 }

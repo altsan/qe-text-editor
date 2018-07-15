@@ -12,6 +12,7 @@ QeOpenThread::QeOpenThread()
     inputFileName = "";
 
     fullText = "";
+    stop     = false;
 }
 
 
@@ -47,5 +48,12 @@ void QeOpenThread::setFile( QFile *file, QTextCodec *codec, QString fileName )
 QString QeOpenThread::getText()
 {
     return fullText;
+}
+
+
+// ----------------------------------------------------------------------------
+void QeOpenThread::cancel()
+{
+    stop = true;
 }
 

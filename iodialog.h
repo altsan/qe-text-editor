@@ -1,7 +1,5 @@
 /******************************************************************************
-** threads.h
-**
-** Contains all our worker threads.
+** QE - iodialog.h
 **
 **  Copyright (C) 2018 Alexander Taylor
 **
@@ -20,36 +18,30 @@
 **
 ******************************************************************************/
 
-#ifndef QE_THREADS_H
-#define QE_THREADS_H
+#ifndef QE_IODIALOG_H
+#define QE_IODIALOG_H
 
-#include <QThread>
-#include <QFile>
-#include <QTextStream>
+#include <QDialog>
+#include <QLabel>
 
-class QeOpenThread : public QThread
+class IoDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    QeOpenThread();
-    void    setFile( QFile *file, QTextCodec *codec, QString fileName );
-    QString getText();
-    void    cancel();
+    IoDialog( QWidget *parent = 0 );
+//    dismiss();
 
-    QString inputFileName;
+signals:
+    void abortOpen();
 
-protected:
-    void run();
+private slots:
+    void cancelClicked();
 
 private:
-    QString     fullText;
-    QFile      *inputFile;
-    QTextCodec *inputEncoding;
-
-    bool        stop;
+    QLabel      *label;
+    QPushButton *cancelButton;
 
 };
 
 #endif
-
