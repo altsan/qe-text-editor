@@ -21,6 +21,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#define USE_IO_THREADS
+
+
 #include <QMainWindow>
 #include <QDateTime>
 #include "version.h"
@@ -57,7 +60,7 @@ class QeTextEdit;
 class QTextCursor;
 class FindDialog;
 class ReplaceDialog;
-class IoDialog;
+//class IoDialog;
 class QeOpenThread;
 
 typedef struct _FindParams_t
@@ -155,7 +158,7 @@ private:
     QeTextEdit    *editor;
     FindDialog    *findDialog;
     ReplaceDialog *replaceDialog;
-    IoDialog      *ioDialog;
+//    IoDialog      *ioDialog;
 
     QLabel *editModeLabel;
     QLabel *messagesLabel;

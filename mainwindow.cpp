@@ -26,7 +26,7 @@
 #include "finddialog.h"
 #include "replacedialog.h"
 #include "gotolinedialog.h"
-#include "iodialog.h"
+// #include "iodialog.h"
 #include "mainwindow.h"
 #include "qetextedit.h"
 #include "threads.h"
@@ -35,10 +35,6 @@
 #include "os2native.h"
 #endif
 #include "eastring.h"
-
-//#define DISABLE_NEW_CODECS
-
-#define USE_IO_THREADS
 
 #ifdef __OS2__
 
@@ -249,8 +245,9 @@ MainWindow::MainWindow()
     isThreadActive = false;
     findDialog = 0;
     replaceDialog = 0;
-    ioDialog = 0;
     lastGoTo = 1;
+
+    // ioDialog = 0;
 
     setAcceptDrops( true );
     connect( editor, SIGNAL( cursorPositionChanged() ), this, SLOT( updatePositionLabel() ));
@@ -560,7 +557,7 @@ void MainWindow::about()
 {
     QMessageBox::about( this,
                         tr("Product Information"),
-                        tr("<b>Quick Text Editor</b><br>Version %1<hr>"
+                        tr("<b>QE Text Editor</b><br>Version %1<hr>"
                            "Copyright &copy;2018 Alexander Taylor"
                            "<p>Licensed under the GNU General Public License "
                            "version 3.0&nbsp;<br>"
@@ -2330,6 +2327,7 @@ void MainWindow::readProgress()
     connect( ioDialog, SIGNAL( abortOpen() ), this, SLOT( cancelOpen() ));
     ioDialog->show();
 */
+
 #endif
 }
 
@@ -2343,8 +2341,8 @@ void MainWindow::readDone()
     if ( !openThread ) return;
     editor->setPlainText( openThread->getText() );
 
-    if ( ioDialog ) ioDialog->done( 0 );
-//    setEnabled( true );
+//    if ( ioDialog ) ioDialog->done( 0 );
+
     menuBar()->setEnabled( true );
     editor->setEnabled( true );
 
