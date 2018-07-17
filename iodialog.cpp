@@ -21,9 +21,9 @@
 #include <QtGui>
 #include "iodialog.h"
 
-IoDialog::IoDialog( QWidget *parent )
+IoDialog::IoDialog( QString text, QWidget *parent )
 {
-    label = new QLabel( tr("Loading file, please wait..."));
+    label = new QLabel( text );
     cancelButton = new QPushButton( tr("Cancel"));
     connect( cancelButton, SIGNAL( clicked() ), this, SLOT( cancelClicked() ));
 
@@ -37,11 +37,11 @@ IoDialog::IoDialog( QWidget *parent )
 
     setWindowFlags( Qt::SubWindow );
     setLayout( vblayout );
-    setWindowTitle( tr("Loading..."));
 }
 
 
 void IoDialog::cancelClicked()
 {
     emit abortOpen();
+    close();
 }

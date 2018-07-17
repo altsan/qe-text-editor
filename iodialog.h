@@ -29,8 +29,7 @@ class IoDialog : public QDialog
     Q_OBJECT
 
 public:
-    IoDialog( QWidget *parent = 0 );
-//    dismiss();
+    IoDialog( QString text, QWidget *parent = 0 );
 
 signals:
     void abortOpen();

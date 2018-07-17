@@ -19,7 +19,6 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 ******************************************************************************/
-
 #ifndef QE_THREADS_H
 #define QE_THREADS_H
 
@@ -28,8 +27,12 @@
 #include <QTextStream>
 
 
-#define FILE_READ_SIZE  0x100000
+#define FILE_CHUNK_SIZE  0x100000
 
+
+// ============================================================================
+// QeOpenThread
+//
 
 class QeOpenThread : public QThread
 {
@@ -39,23 +42,58 @@ public:
     QeOpenThread();
     void    setFile( QFile *file, QTextCodec *codec, QString fileName );
     QString getText();
-    int     getProgress();
     void    cancel();
 
     QString inputFileName;
+
+signals:
+    void updateProgress( int percentage );
 
 protected:
     void run();
 
 private:
+    void        setProgress( qint64 progress, qint64 total );
     QString     fullText;
     QFile      *inputFile;
     QTextCodec *inputEncoding;
 
     bool        stop;
-    qint64      progress;
-
 };
 
-#endif
+
+
+// ============================================================================
+// QeSaveThread
+//
+
+class QeSaveThread : public QThread
+{
+    Q_OBJECT
+
+public:
+    QeSaveThread();
+    void    setFile( QFile *file, QTextCodec *codec, QString fileName );
+    void    cancel();
+
+    QString outputFileName;
+    QString fullText;
+
+signals:
+    void updateProgress( int percentage );
+    void saveComplete( qint64 bytes );
+
+protected:
+    void run();
+
+private:
+    void        setProgress( qint64 progress, qint64 total );
+    QFile      *outputFile;
+    QTextCodec *outputEncoding;
+
+    bool        stop;
+};
+
+
+#endif      // QE_THREADS_H
 

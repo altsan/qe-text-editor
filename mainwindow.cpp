@@ -26,7 +26,6 @@
 #include "finddialog.h"
 #include "replacedialog.h"
 #include "gotolinedialog.h"
-// #include "iodialog.h"
 #include "mainwindow.h"
 #include "qetextedit.h"
 #include "threads.h"
@@ -242,12 +241,10 @@ MainWindow::MainWindow()
     readSettings();
 
     openThread = 0;
-    isThreadActive = false;
+    isReadThreadActive = false;
     findDialog = 0;
     replaceDialog = 0;
     lastGoTo = 1;
-
-    // ioDialog = 0;
 
     setAcceptDrops( true );
     connect( editor, SIGNAL( cursorPositionChanged() ), this, SLOT( updatePositionLabel() ));
@@ -1964,11 +1961,12 @@ bool MainWindow::loadFile( const QString &fileName, bool createIfNew )
         editor->setEnabled( false );
         if ( !openThread )
             openThread = new QeOpenThread();
+        connect( openThread, SIGNAL( updateProgress( int )), this, SLOT( readProgress( int )));
         connect( openThread, SIGNAL( finished() ), this, SLOT( readDone() ));
         openThread->setFile( file, codec, fileName );
         openThread->start();
-        isThreadActive = true;
-        QTimer::singleShot( 1000, this, SLOT( readProgress() ));
+        isReadThreadActive = true;
+//        QTimer::singleShot( 1000, this, SLOT( readProgress() ));
         return true;
 #else
 
@@ -2032,6 +2030,7 @@ bool MainWindow::saveFile( const QString &fileName )
         QMessageBox::critical( this, tr("Error"), tr("Error writing file"));
         return false;
     }
+#ifdef USE_IO_THREADS
     QTextStream out( &file );
     out.setCodec( QTextCodec::codecForName( currentEncoding.toLatin1().data() ));
     QString text = editor->toPlainText();
@@ -2061,6 +2060,25 @@ bool MainWindow::saveFile( const QString &fileName )
     if ( !currentEncoding.isEmpty() ) {
         setFileCodepage( fileName, currentEncoding );
     }
+#else
+
+    QApplication::setOverrideCursor( Qt::WaitCursor );
+    menuBar()->setEnabled( false );
+    editor->setEnabled( false );
+
+    showMessage( tr("Saving %1").arg( QDir::toNativeSeparators( fileName )));
+    if ( !saveThread )
+        saveThread = new QeSaveThread();
+    connect( saveThread, SIGNAL( updateProgress( int )), this, SLOT( saveProgress( int )));
+    connect( saveThread, SIGNAL( saveComplete( qint64 )), this, SLOT( saveDone( qint64 )));
+    QTextCodec codec( QTextCodec::codecForName( currentEncoding.toLatin1().data() ));
+    saveThread->setFile( file, codec, fileName );
+    saveThread->fullText = editor->toPlainText();
+    saveThread->start();
+    isSaveThreadActive = true;
+
+#endif      // USE_IO_THREADS
+
     return true;
 }
 
@@ -2316,17 +2334,12 @@ void MainWindow::setFileCodepage( const QString &fileName, const QString &encodi
 }
 
 
-void MainWindow::readProgress()
+void MainWindow::readProgress( int percent )
 {
 #ifdef USE_IO_THREADS
 
-    if ( !isThreadActive ) return;
-/*
-    if ( !ioDialog )
-        ioDialog = new IoDialog( this );
-    connect( ioDialog, SIGNAL( abortOpen() ), this, SLOT( cancelOpen() ));
-    ioDialog->show();
-*/
+    if ( !isReadThreadActive ) return;
+    showMessage( tr("Opening %1 (%2%)").arg( QDir::toNativeSeparators( openThread->inputFileName )).arg( percent ));
 
 #endif
 }
@@ -2336,12 +2349,12 @@ void MainWindow::readDone()
 {
 #ifdef USE_IO_THREADS
 
-    isThreadActive = false;
+    isReadThreadActive = false;
 
     if ( !openThread ) return;
     editor->setPlainText( openThread->getText() );
 
-//    if ( ioDialog ) ioDialog->done( 0 );
+//    cancel progress indicator, if any
 
     menuBar()->setEnabled( true );
     editor->setEnabled( true );
@@ -2356,13 +2369,54 @@ void MainWindow::readDone()
 }
 
 
-void MainWindow::cancelOpen()
+void MainWindow::readCancel()
+{
+#ifdef USE_IO_THREADS
+    if ( openThread )
+        openThread->cancel();
+
+    menuBar()->setEnabled( true );
+    editor->setEnabled( true );
+    QApplication::restoreOverrideCursor();
+    editor->setFocus( Qt::OtherFocusReason );
+
+    showMessage( tr("Cancelled."));
+
+#endif
+}
+
+
+void MainWindow::saveDone( qint64 iSize )
 {
 #ifdef USE_IO_THREADS
 
-    if ( !openThread ) return;
-    openThread->cancel();
-    readDone();
+    isSaveThreadActive = false;
+    if ( !saveThread ) return;
+
+//    cancel progress indicator, if any
+
+    if ( !currentEncoding.isEmpty() ) {
+        setFileCodepage( saveThread->outputFileName, currentEncoding );
+    }
+    showMessage( tr("Saved file: %1 (%2 bytes written)").arg( QDir::toNativeSeparators( saveThread->outputFileName )).arg( iSize ));
+    setCurrentFile( saveThread->outputFileName );
+
+    menuBar()->setEnabled( true );
+    editor->setEnabled( true );
+    QApplication::restoreOverrideCursor();
+
+    editor->setFocus( Qt::OtherFocusReason );
+
+#endif
+}
+
+
+void MainWindow::saveProgress( int percent )
+{
+#ifdef USE_IO_THREADS
+
+    if ( !isSaveThreadActive ) return;
+    showMessage( tr("Saving %1 (%2%)").arg( QDir::toNativeSeparators( saveThread->outputFileName )).arg( percent ));
 
 #endif
 }
