@@ -897,7 +897,8 @@ void MainWindow::replaceAll( const QString &str, const QString &repl, bool cs, b
         flags = QTextDocument::FindBackward;
 
     int pos = fromStart ? 0 :
-                          editor->textCursor().selectionEnd();
+                          ( backwards? editor->textCursor().selectionEnd():
+                                       editor->textCursor().selectionStart() );
     QTextCursor found = editor->document()->find( str, pos, flags );
 
     if ( found.isNull() ) {
@@ -907,24 +908,9 @@ void MainWindow::replaceAll( const QString &str, const QString &repl, bool cs, b
         return;
     }
 
-/*
-    if ( confirm ) {
-        int r = QMessageBox::question( this,
-                                       tr("Confirm"),
-                                       tr("Replace all occurences of \"%1\"?").arg( str ),
-                                       QMessageBox::Yes | QMessageBox::No,
-                                       QMessageBox::Yes
-                                    );
-        if ( r != QMessageBox::Yes )
-            return;
-    }
-*/
-
-//  if ( !keep )
-        replaceDialog->close();
-
+    replaceDialog->close();
     QMessageBox confirmBox( QMessageBox::Question,
-                            tr("Confirm"),
+                            tr("Replace"),
                             tr("Replace this text?"),
                             0L, this );
     confirmBox.addButton( tr("&Replace"), QMessageBox::YesRole );
@@ -932,8 +918,8 @@ void MainWindow::replaceAll( const QString &str, const QString &repl, bool cs, b
     QPushButton *btnSkip  = confirmBox.addButton( tr("&Skip"),        QMessageBox::NoRole );
     QPushButton *btnClose = confirmBox.addButton( QMessageBox::Close );
 
-    int count = 0;
     bool skip;
+    int count = 0;
     while ( !found.isNull() ) {
         skip = false;
 
@@ -953,7 +939,9 @@ void MainWindow::replaceAll( const QString &str, const QString &repl, bool cs, b
             count++;
             found.insertText( repl );
         }
-        found = editor->document()->find( str, found.selectionEnd(), flags );
+        found = editor->document()->find( str,
+                                          (backwards? found.selectionStart(): found.selectionEnd()),
+                                          flags );
     }
     showMessage( tr("%1 occurences replaced.").arg( count ));
     found = editor->textCursor();
@@ -981,7 +969,8 @@ void MainWindow::replaceAllRegExp( const QString &str, const QString &repl, bool
     if ( backwards )
         flags = QTextDocument::FindBackward;
     int pos = fromStart ? 0 :
-                          editor->textCursor().selectionEnd();
+                          ( backwards? editor->textCursor().selectionEnd():
+                                       editor->textCursor().selectionStart() );
     QTextCursor found = editor->document()->find( regexp, pos, flags );
     if ( found.isNull() ) {
         showMessage( tr("No matches."));
@@ -989,24 +978,44 @@ void MainWindow::replaceAllRegExp( const QString &str, const QString &repl, bool
         found.clearSelection();
         return;
     }
-    if ( confirm ) {
-        int r = QMessageBox::question( this,
-                                       tr("Confirm"),
-                                       tr("Replace all occurences of text matching expression \"%1\"?").arg( str ),
-                                       QMessageBox::Yes | QMessageBox::No,
-                                       QMessageBox::Yes
-                                    );
-        if ( r != QMessageBox::Yes )
-            return;
-    }
+
+    replaceDialog->close();
+    QMessageBox confirmBox( QMessageBox::Question,
+                            tr("Replace"),
+                            tr("Replace this text?"),
+                            0L, this );
+    confirmBox.addButton( tr("&Replace"), QMessageBox::YesRole );
+    QPushButton *btnAll   = confirmBox.addButton( tr("Replace &All"), QMessageBox::YesRole );
+    QPushButton *btnSkip  = confirmBox.addButton( tr("&Skip"),        QMessageBox::NoRole );
+    QPushButton *btnClose = confirmBox.addButton( QMessageBox::Close );
+
+    bool skip;
     int count = 0;
     QString newText;
     while ( !found.isNull() ) {
-        count++;
-        newText = found.selectedText();
-        newText.replace( regexp, replaceStr );
-        found.insertText( replaceStr );
-        found = editor->document()->find( regexp, found.selectionEnd(), flags );
+        skip = false;
+
+        QTextCursor temp( found );
+        temp.setPosition( temp.selectionStart() );
+        showMessage( tr("Found match at %1:%2").arg( temp.blockNumber() + 1 ).arg( temp.positionInBlock() ));
+        editor->setTextCursor( found );
+
+        if ( confirm ) {
+            confirmBox.exec();
+            QPushButton *r = (QPushButton *) confirmBox.clickedButton();
+            if ( r == btnSkip )  skip = true;
+            if ( r == btnClose ) break;
+            if ( r == btnAll )   confirm = false;
+        }
+        if ( !skip ) {
+            count++;
+            newText = found.selectedText();
+            newText.replace( regexp, replaceStr );
+            found.insertText( replaceStr );
+        }
+        found = editor->document()->find( regexp,
+                                          (backwards? found.selectionStart(): found.selectionEnd()),
+                                          flags );
     }
     showMessage( tr("%1 occurences replaced.").arg( count ));
     found = editor->textCursor();
