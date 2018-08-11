@@ -43,6 +43,7 @@ void ReplaceDialog::doReplace()
 
 void ReplaceDialog::on_findEdit_textChanged( const QString &text )
 {
+    findButton->setEnabled( !text.isEmpty() );
     replaceButton->setEnabled( !text.isEmpty() );
     replaceAllButton->setEnabled( !text.isEmpty() );
 }
@@ -58,6 +59,23 @@ void ReplaceDialog::on_backCheckBox_toggled( bool checked )
 {
     startCheckBox->setText( checked? tr("Fro&m end of file"):
                                      tr("Fro&m start of file") );
+}
+
+
+void ReplaceDialog::on_findButton_clicked()
+{
+    QString text  = findEdit->text();
+    bool cs       = caseCheckBox->isChecked();
+    bool words    = wordCheckBox->isChecked();
+    bool absolute = startCheckBox->isChecked();
+    if ( backCheckBox->isChecked() ) {
+        emit reCheckBox->isChecked() ? findPreviousRegExp( text, cs, absolute ) :
+                                       findPrevious( text, cs, words, absolute );
+    } else {
+        emit reCheckBox->isChecked() ? findNextRegExp( text, cs, absolute ) :
+                                       findNext( text, cs, words, absolute );
+    }
+    startCheckBox->setChecked( false );
 }
 
 

@@ -33,6 +33,10 @@ public:
     void doReplace();
 
 signals:
+    void findNext( const QString &str, bool cs, bool words, bool absolute );
+    void findNextRegExp( const QString &str, bool cs, bool absolute );
+    void findPrevious( const QString &str, bool cs, bool words, bool absolute );
+    void findPreviousRegExp( const QString &str, bool cs, bool absolute );
     void replaceNext( const QString &str, const QString &repl, bool cs, bool words, bool absolute, bool confirm );
     void replaceNextRegExp( const QString &str, const QString &repl, bool cs, bool absolute, bool confirm );
     void replacePrevious( const QString &str, const QString &repl, bool cs, bool words, bool absolute, bool confirm );
@@ -44,6 +48,7 @@ private slots:
     void on_findEdit_textChanged( const QString &text );
     void on_reCheckBox_toggled( bool checked );
     void on_backCheckBox_toggled( bool checked );
+    void on_findButton_clicked();
     void on_replaceButton_clicked();
     void on_replaceAllButton_clicked();
 

@@ -130,6 +130,19 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
+        <widget class="QPushButton" name="findButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Find</string>
+         </property>
+         <property name="default">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="replaceButton">
          <property name="enabled">
           <bool>false</bool>
@@ -138,7 +151,7 @@
           <string>Replace</string>
          </property>
          <property name="default">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -193,6 +206,7 @@
   <tabstop>backCheckBox</tabstop>
   <tabstop>startCheckBox</tabstop>
   <tabstop>verifyCheckBox</tabstop>
+  <tabstop>findButton</tabstop>
   <tabstop>replaceButton</tabstop>
   <tabstop>replaceAllButton</tabstop>
   <tabstop>cancelButton</tabstop>

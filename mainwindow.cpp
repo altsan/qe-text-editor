@@ -494,6 +494,24 @@ void MainWindow::replace()
 {
     if ( !replaceDialog ) {
         replaceDialog = new ReplaceDialog( this );
+
+        connect( replaceDialog,
+                 SIGNAL( findNext( const QString &, bool, bool, bool )),
+                 this,
+                 SLOT( findNext( const QString &, bool, bool, bool )));
+        connect( replaceDialog,
+                 SIGNAL( findNextRegExp( const QString &, bool, bool )),
+                 this,
+                 SLOT( findNextRegExp( const QString &, bool, bool )));
+        connect( replaceDialog,
+                 SIGNAL( findPrevious( const QString &, bool, bool, bool )),
+                 this,
+                 SLOT( findPrevious( const QString &, bool, bool, bool )));
+        connect( replaceDialog,
+                 SIGNAL( findPreviousRegExp( const QString &, bool, bool )),
+                 this,
+                 SLOT( findPreviousRegExp( const QString &, bool, bool )));
+
         connect( replaceDialog,
                  SIGNAL( replaceNext( const QString &, const QString &, bool, bool, bool, bool )),
                  this,
@@ -765,13 +783,15 @@ void MainWindow::replaceNext( const QString &str, const QString &repl, bool cs, 
     if ( words )
         flags |= QTextDocument::FindWholeWords;
     int pos = fromStart ? 0 :
-                          editor->textCursor().selectionEnd();
+                          editor->textCursor().selectionStart();
     QTextCursor found = editor->document()->find( str, pos, flags );
     if ( showFindResult( found )) {
         if ( ! replaceFindResult( editor->textCursor(), repl, confirm )) {
-            // Clear selection but keep the cursor position at its end
+            // Clear selection but move the cursor position to its end
+            pos = found.selectionEnd();
             found = editor->textCursor();
             found.clearSelection();
+            found.setPosition( pos );
             editor->setTextCursor( found );
         }
     }
@@ -793,15 +813,17 @@ void MainWindow::replaceNextRegExp( const QString &str, const QString &repl, boo
 
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     int pos = fromStart ? 0 :
-                          editor->textCursor().selectionEnd();
+                          editor->textCursor().selectionStart();
     QTextCursor found = editor->document()->find( regexp, pos, flags );
     if ( showFindResult( found )) {
         QString newText = found.selectedText();
         newText.replace( regexp, replaceStr );
         if ( !replaceFindResult( editor->textCursor(), newText, confirm )) {
-            // Clear selection but keep the cursor position at its end
+            // Clear selection but move the cursor position to its end
+            pos = found.selectionEnd();
             found = editor->textCursor();
             found.clearSelection();
+            found.setPosition( pos );
             editor->setTextCursor( found );
         }
     }
@@ -816,7 +838,7 @@ void MainWindow::replacePrevious( const QString &str, const QString &repl, bool 
     if ( words )
         flags |= QTextDocument::FindWholeWords;
     int pos = fromEnd ? editor->document()->characterCount() :
-                        editor->textCursor().selectionStart();
+                        editor->textCursor().selectionEnd();
 
     QTextCursor found = editor->document()->find( str, pos, flags );
     if ( showFindResult( found )) {
@@ -847,7 +869,7 @@ void MainWindow::replacePreviousRegExp( const QString &str, const QString &repl,
 
     QTextDocument::FindFlags flags = QTextDocument::FindBackward;
     int pos = fromEnd ? editor->document()->characterCount() :
-                        editor->textCursor().selectionStart();
+                        editor->textCursor().selectionEnd();
     QTextCursor found = editor->document()->find( regexp, pos, flags );
     if ( showFindResult( found )) {
         QString newText = found.selectedText();
@@ -1958,6 +1980,7 @@ bool MainWindow::loadFile( const QString &fileName, bool createIfNew )
 
         showMessage( tr("Opening %1").arg( QDir::toNativeSeparators( fileName )));
         menuBar()->setEnabled( false );
+//        editor->document()->clear();
         editor->setEnabled( false );
         if ( !openThread )
             openThread = new QeOpenThread();
@@ -1966,7 +1989,6 @@ bool MainWindow::loadFile( const QString &fileName, bool createIfNew )
         openThread->setFile( file, codec, fileName );
         openThread->start();
         isReadThreadActive = true;
-//        QTimer::singleShot( 1000, this, SLOT( readProgress() ));
         return true;
 #else
 
@@ -2341,6 +2363,7 @@ void MainWindow::readProgress( int percent )
     if ( !isReadThreadActive ) return;
     showMessage( tr("Opening %1 (%2%)").arg( QDir::toNativeSeparators( openThread->inputFileName )).arg( percent ));
 
+    // TODO update progress bar, once implemented
 #endif
 }
 
@@ -2350,11 +2373,14 @@ void MainWindow::readDone()
 #ifdef USE_IO_THREADS
 
     isReadThreadActive = false;
-
     if ( !openThread ) return;
-    editor->setPlainText( openThread->getText() );
 
-//    cancel progress indicator, if any
+    showMessage( tr("Opening %1 (100%)").arg( QDir::toNativeSeparators( openThread->inputFileName )));
+    editor->setUpdatesEnabled( false );
+    editor->setPlainText( openThread->getText() );
+    editor->setUpdatesEnabled( true );
+
+//  TODO hide progress bar, once implemented
 
     menuBar()->setEnabled( true );
     editor->setEnabled( true );
