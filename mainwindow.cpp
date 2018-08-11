@@ -899,12 +899,15 @@ void MainWindow::replaceAll( const QString &str, const QString &repl, bool cs, b
     int pos = fromStart ? 0 :
                           editor->textCursor().selectionEnd();
     QTextCursor found = editor->document()->find( str, pos, flags );
+
     if ( found.isNull() ) {
         showMessage( tr("No matches."));
         found = editor->textCursor();
         found.clearSelection();
         return;
     }
+
+/*
     if ( confirm ) {
         int r = QMessageBox::question( this,
                                        tr("Confirm"),
@@ -915,10 +918,41 @@ void MainWindow::replaceAll( const QString &str, const QString &repl, bool cs, b
         if ( r != QMessageBox::Yes )
             return;
     }
+*/
+
+//  if ( !keep )
+        replaceDialog->close();
+
+    QMessageBox confirmBox( QMessageBox::Question,
+                            tr("Confirm"),
+                            tr("Replace this text?"),
+                            0L, this );
+    confirmBox.addButton( tr("&Replace"), QMessageBox::YesRole );
+    QPushButton *btnAll   = confirmBox.addButton( tr("Replace &All"), QMessageBox::YesRole );
+    QPushButton *btnSkip  = confirmBox.addButton( tr("&Skip"),        QMessageBox::NoRole );
+    QPushButton *btnClose = confirmBox.addButton( QMessageBox::Close );
+
     int count = 0;
+    bool skip;
     while ( !found.isNull() ) {
-        count++;
-        found.insertText( repl );
+        skip = false;
+
+        QTextCursor temp( found );
+        temp.setPosition( temp.selectionStart() );
+        showMessage( tr("Found match at %1:%2").arg( temp.blockNumber() + 1 ).arg( temp.positionInBlock() ));
+        editor->setTextCursor( found );
+
+        if ( confirm ) {
+            confirmBox.exec();
+            QPushButton *r = (QPushButton *) confirmBox.clickedButton();
+            if ( r == btnSkip )  skip = true;
+            if ( r == btnClose ) break;
+            if ( r == btnAll )   confirm = false;
+        }
+        if ( !skip ) {
+            count++;
+            found.insertText( repl );
+        }
         found = editor->document()->find( str, found.selectionEnd(), flags );
     }
     showMessage( tr("%1 occurences replaced.").arg( count ));
@@ -1196,7 +1230,7 @@ void MainWindow::createActions()
     findAgainAction->setEnabled( false );
     connect( findAgainAction, SIGNAL( triggered() ), this, SLOT( findAgain() ));
 
-    replaceAction = new QAction( tr("&Replace..."), this );
+    replaceAction = new QAction( tr("Find/&Replace..."), this );
     QList<QKeySequence> replaceShortcuts;
     replaceShortcuts << QKeySequence("Ctrl+R") << QKeySequence::Replace;
     replaceAction->setShortcuts( replaceShortcuts );
