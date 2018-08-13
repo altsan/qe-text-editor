@@ -34,6 +34,11 @@
 #define SETTINGS_APP        "QuickEditor"
 #define ENCODING_EA_NAME    ".CODEPAGE"
 
+
+#define HELP_PANEL_GENERAL        1
+#define HELP_PANEL_KEYS         190
+
+
 #if 1
 #define DEFAULT_FILENAME_FILTERS                            \
     "Text files (*.txt *.log readme*);;"                    \
@@ -331,7 +336,6 @@ private:
 
     // Program help (platform specific implementation)
 #ifdef __OS2__
-//    void *helpTable;
     void *helpInstance;
 #endif
 

@@ -38,7 +38,6 @@
 
 #ifdef __OS2__
 
-
 /* We tag a file with a non-default encoding under OS/2 by setting its .CODEPAGE
  * extended attribute. This (standardized but rarely-used) EA is meant to store
  * the OS/2 codepage number for the file's encoding.  What we do is use a lookup
@@ -266,7 +265,6 @@ MainWindow::MainWindow()
     setWindowIcon( icon );
 #endif
 
-//    helpTable = NULL;
     helpInstance = NULL;
     createHelp();
 
@@ -594,7 +592,7 @@ void MainWindow::about()
 void MainWindow::showGeneralHelp()
 {
 #ifdef __OS2__
-    OS2Native::showHelpPanel( helpInstance, 1 );
+    OS2Native::showHelpPanel( helpInstance, HELP_PANEL_GENERAL );
 #endif
 }
 
@@ -602,7 +600,7 @@ void MainWindow::showGeneralHelp()
 void MainWindow::showKeysHelp()
 {
 #ifdef __OS2__
-    OS2Native::showHelpPanel( helpInstance, 190 );
+    OS2Native::showHelpPanel( helpInstance, HELP_PANEL_KEYS );
 #endif
 }
 
@@ -1896,8 +1894,11 @@ void MainWindow::createMenus()
 
     menuBar()->addSeparator();
     helpMenu = menuBar()->addMenu( tr("&Help"));
+#ifdef __OS2__
     helpMenu->addAction( helpGeneralAction );
     helpMenu->addAction( helpKeysAction );
+    helpMenu->addSeparator();
+#endif
     helpMenu->addAction( aboutAction );
 
 }
