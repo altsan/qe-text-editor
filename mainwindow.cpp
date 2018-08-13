@@ -35,6 +35,7 @@
 #endif
 #include "eastring.h"
 
+
 #ifdef __OS2__
 
 
@@ -265,20 +266,27 @@ MainWindow::MainWindow()
     setWindowIcon( icon );
 #endif
 
+//    helpTable = NULL;
+    helpInstance = NULL;
+    createHelp();
+
     currentEncoding = "";
     currentDir = QDir::currentPath();
     setCurrentFile("");
 }
 
 
-/*
+
 // ---------------------------------------------------------------------------
-// DESTRUCTOR (not currently needed for anything)
+// DESTRUCTOR
 //
 MainWindow::~MainWindow()
 {
+#ifdef __OS2__
+    if ( helpInstance ) OS2Native::destroyNativeHelp( helpInstance );
+#endif
 }
-*/
+
 
 
 // ---------------------------------------------------------------------------
@@ -580,6 +588,22 @@ void MainWindow::about()
                            "https://www.gnu.org/licenses/gpl.html</a>"
                            "<br></p>").arg( PROGRAM_VERSION )
                       );
+}
+
+
+void MainWindow::showGeneralHelp()
+{
+#ifdef __OS2__
+    OS2Native::showHelpPanel( helpInstance, 1 );
+#endif
+}
+
+
+void MainWindow::showKeysHelp()
+{
+#ifdef __OS2__
+    OS2Native::showHelpPanel( helpInstance, 190 );
+#endif
 }
 
 
@@ -1275,6 +1299,13 @@ void MainWindow::createActions()
     fontAction->setStatusTip( tr("Change the edit window font") );
     connect( fontAction, SIGNAL( triggered() ), this, SLOT( setEditorFont() ));
 
+    helpGeneralAction = new QAction( tr("General &help"), this );
+    helpGeneralAction->setStatusTip( tr("General program help") );
+    connect( helpGeneralAction, SIGNAL( triggered() ), this, SLOT( showGeneralHelp() ));
+
+    helpKeysAction = new QAction( tr("&Keys help"), this );
+    helpKeysAction->setStatusTip( tr("Help on keyboard commands") );
+    connect( helpKeysAction, SIGNAL( triggered() ), this, SLOT( showKeysHelp() ));
 
     aboutAction = new QAction( tr("&Product information"), this );
     aboutAction->setStatusTip( tr("Show product information") );
@@ -1865,6 +1896,8 @@ void MainWindow::createMenus()
 
     menuBar()->addSeparator();
     helpMenu = menuBar()->addMenu( tr("&Help"));
+    helpMenu->addAction( helpGeneralAction );
+    helpMenu->addAction( helpKeysAction );
     helpMenu->addAction( aboutAction );
 
 }
@@ -1911,6 +1944,14 @@ void MainWindow::createStatusBar()
     modifiedLabel->setForegroundRole( QPalette::ButtonText );
 
     updateStatusBar();
+}
+
+
+void MainWindow::createHelp()
+{
+#ifdef __OS2__
+    helpInstance = OS2Native::setNativeHelp( this, QString("qe.hlp"), tr("QE Help") );
+#endif
 }
 
 

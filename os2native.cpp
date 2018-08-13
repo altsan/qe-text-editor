@@ -19,10 +19,16 @@
 *******************************************************************************/
 
 #define INCL_WIN
+#define INCL_WINHELP
 #include <os2.h>
 
 #include <QMessageBox>
 #include "os2native.h"
+
+
+// ===========================================================================
+// OS/2 Native File Dialog Logic
+//
 
 #define DID_NEWTYPE_CB  290
 
@@ -298,4 +304,83 @@ QString OS2Native::getSaveFileName(       QWidget *parent,
 }
 
 
+
+// ===========================================================================
+// OS/2 Native Help Logic
+//
+
+// Map a widget to an OS/2 PM window-ID ushort. Since QWidget->winId() returns
+// the window _handle_ rather than the numeric ID, we need to do a small extra
+// step to query the latter from the former.  (We specifically need window IDs
+// in order to construct the help table.)
+
+unsigned short OS2Native::getWindowId( QWidget *window )
+{
+    HWND   hwnd;
+    USHORT usID;
+
+    if ( !window ) return 0;
+    hwnd = window->winId();
+    if ( !hwnd ) return 0;
+
+    usID = WinQueryWindowUShort( hwnd, QWS_ID );
+    return usID;
+}
+
+
+void *OS2Native::setNativeHelp(       QWidget *parent,
+                                      //void   **help_table,
+                                const QString &help_library,
+                                const QString &help_title    )
+{
+    HAB      hab;
+    HWND     hwndFrame,
+             hwndHelp;
+    HELPINIT hinit;
+//    PHELPTABLE pht;
+
+    if ( !parent ) return NULL;
+
+    hwndFrame = parent->winId();
+    if ( !hwndFrame ) return NULL;
+    hab = WinQueryAnchorBlock( hwndFrame );
+    if ( !hab ) hab = 1;
+/*
+    pht = (PHELPTABLE) calloc( 2, sizeof( HELPTABLE ));
+    pht[0].idAppWindow = getWindowId( parent );
+    pht[0].idExtPanel  = 1;
+    *help_table = pht;
+*/
+    memset( &hinit, 0, sizeof( HELPINIT ));
+    hinit.cb = sizeof( HELPINIT );
+    hinit.phtHelpTable = NULL; //pht;
+    hinit.pszHelpWindowTitle = (PSZ)( help_title.toLocal8Bit().data() );
+    hinit.pszHelpLibraryName = (PSZ)( QDir::toNativeSeparators( help_library ).toLocal8Bit().data() );
+    hwndHelp = WinCreateHelpInstance( hab, &hinit );
+    if ( hwndHelp )
+        WinAssociateHelpInstance( hwndHelp, hwndFrame );
+
+    return (PVOID) hwndHelp;
+}
+
+
+void OS2Native::destroyNativeHelp( void *help_instance )
+{
+    HWND hwndHelp = (HWND) help_instance;
+//    PHELPTABLE pht = (PHELPTABLE) help_table;
+    if ( !hwndHelp ) return;
+
+    WinDestroyHelpInstance( hwndHelp );
+//    if ( pht ) free( pht );
+}
+
+
+void OS2Native::showHelpPanel( void *help_instance, unsigned short id )
+{
+    HWND hwndHelp = (HWND) help_instance;
+    if ( !hwndHelp ) return;
+
+    WinSendMsg( hwndHelp, HM_DISPLAY_HELP,
+                MPFROMSHORT( id ), MPFROMSHORT( HM_RESOURCEID ));
+}
 

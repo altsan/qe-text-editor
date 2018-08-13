@@ -28,6 +28,11 @@ namespace OS2Native {
     QStringList	getOpenFileNames( QWidget *parent = 0, const QString & caption = QString(), const QString & dir = QString(), const QString & filter = QString(), QString * selectedFilter = 0, QFileDialog::Options options = 0 );
     QString	    getSaveFileName( QWidget *parent = 0, const QString & caption = QString(), const QString & dir = QString(), const QString & filter = QString(), QString * selectedFilter = 0, QFileDialog::Options options = 0 );
     void        buildFilterString( QString filter, char *pszBuffer, ULONG ulBufSize );
+
+    unsigned short getWindowId( QWidget *window );
+    void         * setNativeHelp( QWidget *parent, const QString &help_library, const QString &help_title );
+    void           destroyNativeHelp( void *help_instance );
+    void           showHelpPanel( void *help_instance, unsigned short id );
 };
 
 #endif

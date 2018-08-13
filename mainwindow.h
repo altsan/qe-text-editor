@@ -28,6 +28,7 @@
 #include <QDateTime>
 #include "version.h"
 
+
 #define PROGRAM_VERSION     VER_FILEVERSION_STR
 #define SETTINGS_VENDOR     "ATutils"
 #define SETTINGS_APP        "QuickEditor"
@@ -80,6 +81,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow();
+    ~MainWindow();
     bool loadFile( const QString &fileName, bool createIfNew );
     void openAsEncoding( QString fileName, bool createIfNew, QString encoding );
     void showUsage();
@@ -101,6 +103,8 @@ private slots:
     void findAgain();
     void replace();
     void about();
+    void showGeneralHelp();
+    void showKeysHelp();
     void openRecentFile();
     void clearRecentFiles();
     bool toggleEditMode( bool ovr );
@@ -139,6 +143,7 @@ private:
     void createMenus();
     void createContextMenu();
     void createStatusBar();
+    void createHelp();
     void readSettings();
     void writeSettings();
 
@@ -289,6 +294,8 @@ private:
     QAction *autosaveAction;
 
     QMenu   *helpMenu;
+    QAction *helpGeneralAction;
+    QAction *helpKeysAction;
     QAction *aboutAction;
 
 
@@ -320,6 +327,12 @@ private:
     QeSaveThread *saveThread;
     bool         isReadThreadActive;
     bool         isSaveThreadActive;
+#endif
+
+    // Program help (platform specific implementation)
+#ifdef __OS2__
+//    void *helpTable;
+    void *helpInstance;
 #endif
 
 };
