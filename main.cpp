@@ -48,13 +48,11 @@ int main( int argc, char *argv[] )
                 openReadOnly = true;
             else if ( argStr.compare( QString("xxxx"), Qt::CaseInsensitive ) == 0 )
                 openReadOnly = true;
-#if 1
             else if ( argStr.startsWith( QString("cp:"), Qt::CaseInsensitive ) == 1 ) {
                 openEncoding = true;
                 encoding = argStr;
                 encoding.remove( 0, 3 );
             }
-#endif
             else if (( argStr.compare( QString("?")) == 0 ) ||
                      ( argStr.compare( QString("h"), Qt::CaseInsensitive ) == 0 ))
                 showUsage = true;
@@ -88,8 +86,9 @@ int main( int argc, char *argv[] )
         else
             qe->loadFile( fileName, true );
     }
-    else if ( openEncoding )
+    else if ( openEncoding && qe->mapNameToEncoding( encoding )) {
         qe->setTextEncoding( encoding );
+    }
 
     qe->setReadOnly( openReadOnly );
     qe->show();

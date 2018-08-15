@@ -1086,6 +1086,7 @@ void MainWindow::setTextEncoding()
                 // Change empty to "Default" temporarily to get the right logic path in loadFile
                 if ( currentEncoding == "") currentEncoding = "Default";
                 loadFile( currentFile, false );
+                return;     // the file-loading routine will update the GUI as needed
             }
             else
                 encodingChanged = true;
@@ -1117,11 +1118,12 @@ void MainWindow::setTextEncoding( QString newEncoding )
                 // Change empty to "Default" temporarily to get the right logic path in loadFile
                 if ( currentEncoding == "") currentEncoding = "Default";
                 loadFile( currentFile, false );
+                return;     // the file-loading routine will update the GUI as needed
             }
             else
                 encodingChanged = true;
         }
-        updateEncodingLabel();
+        updateEncoding();
     }
 }
 
@@ -1299,6 +1301,7 @@ void MainWindow::createActions()
 
     helpGeneralAction = new QAction( tr("General &help"), this );
     helpGeneralAction->setStatusTip( tr("General program help") );
+    helpGeneralAction->setShortcut( tr("F1") );
     connect( helpGeneralAction, SIGNAL( triggered() ), this, SLOT( showGeneralHelp() ));
 
     helpKeysAction = new QAction( tr("&Keys help"), this );
@@ -2365,8 +2368,10 @@ bool MainWindow::mapNameToEncoding( QString &encoding )
     else {
         QList<QAction *> actions = encodingGroup->actions();
         for ( int i = 0; i < actions.size(); i++ ) {
-            if ( QString::compare( actions.at( i )->data().toString(), encoding ) == 0 ) {
+            if ( QString::compare( actions.at( i )->data().toString(), encoding, Qt::CaseInsensitive ) == 0 ) {
                 bOK = true;
+                // Sync the passed string with the matching one so that it has the proper case
+                encoding = actions.at( i )->data().toString();
                 break;
             }
         }

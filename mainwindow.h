@@ -36,7 +36,7 @@
 
 
 #define HELP_PANEL_GENERAL        1
-#define HELP_PANEL_KEYS         190
+#define HELP_PANEL_KEYS         200
 
 
 #if 1
@@ -88,6 +88,7 @@ public:
     MainWindow();
     ~MainWindow();
     bool loadFile( const QString &fileName, bool createIfNew );
+    bool mapNameToEncoding( QString &encoding );
     void openAsEncoding( QString fileName, bool createIfNew, QString encoding );
     void showUsage();
     void setReadOnly( bool readonly );
@@ -161,12 +162,11 @@ private:
     void updateRecentFileActions();
     QString strippedName( const QString &fullFileName );
     void showMessage( const QString &message );
-    void updateEncoding();
     bool showFindResult( QTextCursor found );
     bool replaceFindResult( QTextCursor found, const QString newText, bool confirm );
-    bool mapNameToEncoding( QString &encoding );
     QString getFileCodepage( const QString &fileName );
     void setFileCodepage( const QString &fileName, const QString &encodingName );
+    void updateEncoding();
 
     // GUI objects
     QeTextEdit    *editor;
