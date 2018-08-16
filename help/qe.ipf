@@ -73,7 +73,7 @@ encodings are supported&colon.
   970    EUC-KR
  1089    ISO 8859-6
  1090    ISO 8859-14
- 1091    ISO 8859-16"
+ 1091    ISO 8859-16
  1092    TSCII
  1168    KOI8-U
  1200    UTF-16BE
@@ -111,14 +111,28 @@ and :hp2.Help:ehp2. menus.
 :ul.
 :li.The :hp2.File:ehp2. menu contains the commands for creating, opening, saving
 and printing files; it also features a list of the five most-recently-opened
-files.  In addition, this menu includes the :hp2.Encoding:ehp2. sub-menu, which
-allows you to set the text encoding used for the current text (see the section on
-:link reftype=hd res=300.using encodings:elink. for more information).
+files.
+:p.This menu also includes the :hp2.Encoding:ehp2. sub-menu, which allows you to
+set the text encoding used for the current text.  See the section on
+:link reftype=hd res=300.using encodings:elink. for more information.
 :li.The :hp2.Edit:ehp2. menu contains clipboard actions, undo/redo controls, and
-options for navigating, :link reftype=hd res=110.searching and replacing:elink.
-within the current text.
+the :link reftype=hd res=110.Go to Line:elink. dialog.
+:p.This menu also provides facilities for finding and/or replacing
+text within the current file&colon.
+:ul compact.
+:li.The :link reftype=hd res=120.Find:elink. dialog allows quick but flexible
+text searches.
+:li.The :link reftype=hd res=130.Find/Replace:elink. dialog also provides text
+search capability, but in addition allows found text to be replaced automatically.
+:li.Finally, the :hp2.Find again:ehp2. command is a quick way to repeat the last
+find operation without having to open either of the above dialogs.  (This option
+is only available if a previous find was performed since QE was started.)
+:eul.
+
 :li.The :hp2.Options:ehp2. menu contains several options for configuring QE's
-behaviour.
+behaviour. These include toggles for word wrap, read-only mode, and input
+(insert or overwrite) mode, as well selection of the editor font.
+
 :li.The :hp2.Help:ehp2. menu allows you to access program help and product
 information.
 :eul.
@@ -157,61 +171,101 @@ from left to right as follows&colon.
 
 
 .*----------------------------------------------------------------------------
-:h2 x=left y=bottom width=100% height=100% res=110.Finding and replacing text
-:p.QE provides two interactive dialogs for finding text within the current
-file.
-:ul.
-:li.The :link reftype=hd res=111.Find:elink. dialog allows quick but flexible
-searches.
-:li.The :link reftype=hd res=112.Find/Replace:elink. dialog provides the same
-search capability, but also allows text which is so found to be replaced with
-different text.
-:eul.
-
-:p.In addition, QE provides a :hp2.find again:ehp2. command (available via
-the :hp2.Edit:ehp2. menu) which repeats the last find operation (if any)
-without requiring either dialog to be opened again.
+:h2 x=left y=bottom width=100% height=100% res=110.Go to Line dialog
+:p.:artwork align=left name='goto_dialog.bmp'.
+.br
+:p.Enter the line number within the current text to which you want to
+navigate. When you select :hp2.OK:ehp2., the cursor will be moved to the
+beginning of the specified line.
+:note.You cannot enter a line number which does not currently exist.
+In other words, the highest number which may be entered is the number of the
+last line in the current text.
 
 
-.* . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-:h3 x=left y=bottom width=100% height=100% res=111.Find dialog
+.*----------------------------------------------------------------------------
+:h2 x=left y=bottom width=100% height=100% res=120.Find dialog
 :p.:artwork align=left name='find_dialog.bmp'.
 .br
-:p.In the &osq.Find&colon.&csq.entry field, enter the text (or regular expression)
+:p.The Find dialog contains the following controls.
+:dl break=fit tsize=30.
+:dt.Find (entry field)
+:dd.Enter the text (or regular expression &mdash. see below) that you want
 to search for.
-:p.The remaining controls on this dialog are described below.
-:dl break=fit tsize=24.
 :dt.Regular expression
-:dd.Normally, QE will search for the text as entered, verbatim, in the entry field.
-Checking this box will cause QE to interpret that text as a
-:link reftype=fn refid=regex.regular expression:elink. instead.
+:dd.Normally, QE will search for the text as entered, verbatim. Checking this box
+will cause QE to interpret that text as a :link reftype=fn refid=regex.regular
+expression:elink. instead.
 :dt.Match case
-:dd.By default, searches are not case-sensitive. Check this box to perform a
+:dd.By default, searching is not case-sensitive. Check this box to perform a
 case-sensitive search.
 :dt.Match whole words
-:dd.Check this box to search only for whole words which match the specified text.
+:dd.Check this box to find only whole words which match the specified text. This
+option is disabled when searching for a regular expression.
 :dt.Search backwards
-:dd.Normally, searches are carried out from the starting position moving forwards
-in the text. Check this box to search backwards from the starting position instead.
+:dd.Normally, searching is carried out in the forwards direction. Check this
+box to search backwards from the starting position instead.
 :dt.From start of file / From end of file
-:dd.The starting position for searching is normally the current cursor position.
-Check this box to start from the beginning of the file instead (or from the end
-of the file, if the &osq.Search backwards&csq. box is checked).
+:dd.Normally, searching starts from the current cursor position. Check this box
+to start from the beginning or end of the file instead (depending on whether a
+forwards or backwards search is being performed).
 :dt.Keep this dialog open
 :dd.By default, the dialog will close when the search is initiated. Check this
 box to keep the dialog open. This can be useful if you need to perform several
 consecutive searches using different search terms.
-:dt.Find (button)
+:dt.Find (pushbutton)
 :dd.This button will begin the search operation.
-:dt.Cancel (button)
+:dt.Cancel (pushbutton)
 :dd.This button will close the dialog without doing a search.
 :edl.
 
 
-.* . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-:h3 x=left y=bottom width=100% height=100% res=112.Find/Replace dialog
+.*----------------------------------------------------------------------------
+:h2 x=left y=bottom width=100% height=100% res=130.Find/Replace dialog
 :p.:artwork align=left name='replace_dialog.bmp'.
 .br
+:p.The Find/Replace dialog contains the following controls.
+:dl break=fit tsize=30.
+:dt.Find (entry field)
+:dd.Enter the text (or regular expression &mdash. see below) that you want
+to search for.
+:dt.Replace with (entry field)
+:dd.Enter the text with which the find results will be replaced. This only applies
+when using :hp2.Replace:ehp2. or :hp2.Replace all:ehp2..
+:dt.Regular expression
+:dd.Normally, QE will search for the text as entered, verbatim. Checking this box
+will cause QE to interpret that text as a :link reftype=fn refid=regex.regular
+expression:elink. instead.
+:p.Note that the text in the &osq.Replace with&csq. entry field will :hp1.not:ehp1. be
+treated as a regular expression, except that regex-style substitution variables
+(\1, \2, etc.) may be used.
+:dt.Match case
+:dd.By default, searching is not case-sensitive. Check this box to perform a
+case-sensitive search.
+:dt.Match whole words
+:dd.Check this box to find only whole words which match the specified text. This
+option is disabled when searching for a regular expression.
+:dt.Search backwards
+:dd.Normally, searching is carried out in the forwards direction. Check this
+box to search backwards from the starting position instead.
+:dt.From start of file / From end of file
+:dd.Normally, searching starts from the current cursor position. Check this box
+to start from the beginning or end of the file instead (depending on whether a
+forwards or backwards search is being performed).
+:dt.Confirm replacement
+:dd.Check this box to be prompted before replacing each occurance of the found
+text. If not checked, the found text will be replaced automatically. This only
+applies using :hp2.Replace:ehp2. or :hp2.Replace all:ehp2..
+:dt.Find (pushbutton)
+:dd.This button will perform a find operation only; no replacement will be done.
+:dt.Replace (pushbutton)
+:dd.This button will initiate a find-and-replace operation. Only the first
+match found (following the current start position) will be replaced.
+:dt.Replace all (pushbutton)
+:dd.This button will find and replace all instances of the find text (following
+the current start position), and close the dialog.
+:dt.Close (pushbutton)
+:dd.This button will close the dialog without taking any further action.
+:edl.
 
 
 :fn id=regex.
@@ -222,7 +276,7 @@ implementation of regular expressions, which is compatible with Perl.
 file. More information on regular expressions in general can be found at&colon.
 :p.https&colon.//en.wikipedia.org/wiki/Regular_expression#Syntax
 :p.and information on the Qt4 implemention in particular at&colon.
-http&colon.//doc.qt.io/archives/qt-4.7/qregexp.html#details
+:p.http&colon.//doc.qt.io/archives/qt-4.7/qregexp.html#details
 :efn.
 
 
@@ -333,7 +387,56 @@ http&colon.//doc.qt.io/archives/qt-4.7/qregexp.html#details
 
 .*****************************************************************************
 :h1 x=left y=bottom width=100% height=100% res=300.Using encodings
+:p.:hp1.Text encoding:ehp1. refers to the encoding scheme used for representing
+text in digital data. In other words, it determines how bytes are translated
+into meaningful text. It is therefore essential that&colon.
+:ol compact.
+:li.The appropriate encoding is used when opening and reading a text file.
+:li.Each text file is saved using an encoding that supports the characters it
+contains.
+:eol.
+:p.The encoding features in QE have been designed to facilitate these
+objectives. Note that failing in either of these objectives leads to problems
+which are described below (under :hp2.Potential Pitfalls:ehp2.).
+
 :p.
+:p.:hp7.QE's Behaviour:ehp7.
+:p.QE defaults to using the current system encoding (codepage) when started.
+This is done to maximize compatibility with other text editors, which generally
+do the same. As long as the files you work with use the system encoding (as
+most text files generally do), this should not be a problem.
+
+:p.You can at any time select a new encoding using the :hp2.File &bxh.&rahead.
+Encoding:ehp2. menu.
+
+:p.If you change the current encoding after opening an existing file, but before
+any changes have been made, you will be asked if you want to reload that file
+using the new encoding. If you know that the file in question uses that encoding,
+then you should do so.
+
+:p.If, after making changes to a file, you save it using a different encoding
+from the one with which the file was originally opened, you will be shown a
+message warning you to make sure that you are indeed using the correct encoding
+for the file.
+
+:p.
+:p.:hp7.Potential Pitfalls:ehp7.
+
+:p.:hp5.Opening a file with the wrong encoding:ehp5.
+:p.If you open a file with the wrong encoding, certain characters with the
+file may not display correctly. This can generally be rectified simply by
+selecting the correct encoding, if you know what that is.
+:p.This problem is not a destructive one unless you subsequently save the
+file using the wrong encoding (see below).
+
+:p.:hp5.Saving a file with the wrong encoding:ehp5.
+:p.If you save a file using an encoding that does not support all of the
+characters in the text, those unsupported characters :hp8.will be lost:ehp8.
+&mdash. they will be replaced by substitution symbols in the saved file. It
+is therefore very important that you always use an appropriate encoding when
+saving a file.
+:p.If you are unsure of what the proper encoding should be, you are advised
+to select UTF-8, which supports all known characters.
 
 
 .*****************************************************************************
@@ -410,5 +513,13 @@ GNU General Public License for more details.
 :p.You should have received a copy of the GNU General Public License
 along with this program.  If not, see &lt.http&colon.//www.gnu.org/licenses/&gt..
 :lm margin=1.
+:p.
+
+:p.See the :link reftype=hd res=990.following section:elink. for the complete
+text of the GPL.
+
+.*----------------------------------------------------------------------------
+:h2 x=left y=bottom width=100% height=100% res=990.COPYING
+.im gpl3.ipf
 
 :euserdoc.

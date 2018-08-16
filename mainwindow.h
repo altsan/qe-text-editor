@@ -36,6 +36,9 @@
 
 
 #define HELP_PANEL_GENERAL        1
+#define HELP_PANEL_LINE         110
+#define HELP_PANEL_FIND         120
+#define HELP_PANEL_REPLACE      130
 #define HELP_PANEL_KEYS         200
 
 
