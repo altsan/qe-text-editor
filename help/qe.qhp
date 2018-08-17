@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QtHelpProject version="1.0">
+  <namespace>altsan.qe</namespace>
+  <virtualFolder>help</virtualFolder>
+  <filterSection>
+    <toc>
+      <section title="QE Text Editor" ref="qe.1.html">
+        <section title="Command-line options" ref="qe.2.html">
+          <section title="Encodings" ref="qe.3.html"></section>
+        </section>
+      </section>
+      <section title="User interface" ref="qe.4.html">
+        <section title="Go to Line dialog" ref="qe.5.html"></section>
+        <section title="Find dialog" ref="qe.6.html"></section>
+        <section title="Find/Replace dialog" ref="qe.7.html"></section>
+        <section title="Regular expressions" ref="qe.8.html"></section>
+      </section>
+      <section title="Keyboard commands" ref="qe.9.html"></section>
+      <section title="Using encodings" ref="qe.10.html"></section>
+      <section title="Limitations" ref="qe.11.html">
+        <section title="Large files" ref="qe.12.html"></section>
+      </section>
+      <section title="Notices" ref="qe.13.html">
+        <section title="COPYING" ref="gpl.1.html"></section>
+      </section>
+    </toc>
+    <files>
+      <file>edit_linebreak.png</file>
+      <file>edit_nolinebreak.png</file>
+      <file>find_dialog.png</file>
+      <file>goto_dialog.png</file>
+      <file>menu.png</file>
+      <file>replace_dialog.png</file>
+      <file>status.png</file>
+      <file>qe.1.html</file>
+      <file>qe.2.html</file>
+      <file>qe.3.html</file>
+      <file>qe.4.html</file>
+      <file>qe.5.html</file>
+      <file>qe.6.html</file>
+      <file>qe.7.html</file>
+      <file>qe.8.html</file>
+      <file>qe.9.html</file>
+      <file>qe.10.html</file>
+      <file>qe.11.html</file>
+      <file>qe.12.html</file>
+      <file>qe.13.html</file>
+      <file>gpl3.1.html</file>
+    </files>
+  </filterSection>
+</QtHelpProject>

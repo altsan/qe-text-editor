@@ -25,14 +25,18 @@ s/:dd\./<dd>/g
 s/\.br[:blank:]*$/<br>/g
 s/\.ce (.*)$/<p align="center">\1<\/p>/g
 s/\.im (.*)$/<!-- include file: \1 -->/g
-s/:h1.* id=(.*) .*\.(.*)/<!-- begin section l1 -->\n<hr><a name="\1"><\/a><h1>\2<\/h1>/g
-s/:h1.*\.(.*)/<!-- begin section l1 -->\n<hr><h1>\1<\/h1>/g
-s/:h2.* id=(.*) .*\.(.*)/<!-- begin section l2 -->\n<hr><a name="\1"><\/a><h2>\2<\/h2>/g
-s/:h2.*\.(.*)/<!-- begin section l2 -->\n<hr><h2>\1<\/h2>/g
-s/:h3.* id=(.*) .*\.(.*)/<!-- begin section l3 -->\n<hr><a name="\1"><\/a><h3>\2<\/h3>/g
-s/:h3.*\.(.*)/<!-- begin section l3 -->\n<hr><h3>\1<\/h3>/g
-s/:h4.* id=(.*) .*\.(.*)/<hr><a name="\1"><\/a><h4>\2<\/h4>/g
-s/:h4.*\.(.*)/<hr><h4>\1<\/h4>/g
+s/:h1.* id=([a-zA-Z0-9]*)[^.]*\.(.*)/<!-- begin section l1 -->\n<hr><a name="\1"><\/a><h1>\2<\/h1>/g
+s/:h1.* res=([0-9]*)[^.]*\.(.*)/<!-- begin section l1 -->\n<hr><a name="\1"><\/a><h1>\2<\/h1>/g
+s/:h1[^.]*\.(.*)/<!-- begin section l1 -->\n<hr><h1>\1<\/h1>/g
+s/:h2.* id=([a-zA-Z0-9]*)[^.]*\.(.*)/<!-- begin section l2 -->\n<hr><a name="\1"><\/a><h2>\2<\/h2>/g
+s/:h2.* res=([0-9]*)[^.]*\.(.*)/<!-- begin section l2 -->\n<hr><a name="\1"><\/a><h2>\2<\/h2>/g
+s/:h2[^.]*\.(.*)/<!-- begin section l2 -->\n<hr><h2>\1<\/h2>/g
+s/:h3.* id=([a-zA-Z0-9]*)[^.]*\.(.*)/<!-- begin section l3 -->\n<hr><a name="\1"><\/a><h3>\2<\/h3>/g
+s/:h3.* res=([0-9]*)[^.]*\.(.*)/<!-- begin section l3 -->\n<hr><a name="\1"><\/a><h3>\2<\/h3>/g
+s/:h3[^.]*\.(.*)/<!-- begin section l3 -->\n<hr><h3>\1<\/h3>/g
+s/:h4.* id=([a-zA-Z0-9]*)[^.]*\.(.*)/<hr><a name="\1"><\/a><h4>\2<\/h4>/g
+s/:h4.* res=([0-9]*)[^.]*\.(.*)/<hr><a name="\1"><\/a><h4>\2<\/h4>/g
+s/:h4[^.]*\.(.*)/<hr><h4>\1<\/h4>/g
 s/:fn.* id=(.*)\./<!-- begin footnote -->\n<a name="\1"><div style="border: thin solid black; padding: 1em; background: #e0e0e0;">/g
 s/:efn\./<\/div>\n<!-- end footnote -->/g
 s/:xmp\./<pre>/g
@@ -53,8 +57,8 @@ s/:hp8\./<font color="red">/g
 s/:ehp8\./<\/font>/g
 s/:hp9\./<font color="pink">/g
 s/:ehp9\./<\/font>/g
-s/:link [a-zA-Z0-9]*refid=([^.]*)\.(.*):elink\./<a href="#\1">\2<\/a>/g
-s/:link [a-zA-Z0-9]*refid=([^.]*)\./<a href="#\1">/g
+s/:link reftype=[a-zA-Z]* refid=([^.]*)\./<a href="#\1">/g
+s/:link reftype=[a-zA-Z]* res=([^.]*)\./<a href="#\1">/g
 s/:elink\./<\/a>/g
 s/:link [^.]*\.//g
 s/:elink\.//g

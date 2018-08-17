@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QHelpCollectionProject version="1.0">
+  <assistant>
+    <title>QE Text Editor</title>
+    <applicationIcon>../images/editor_16.png</applicationIcon>
+    <cacheDirectory>altsan/qe</cacheDirectory>
+    <startPage>qthelp://altsan.qe/help/index.html</startPage>
+    <enableDocumentationManager>false</enableDocumentationManager>
+    <enableAddressBar>false</enableAddressBar>
+    <enableFilterFunctionality>false</enableFilterFunctionality>
+  </assistant>
+  <docFiles>
+    <generate>
+      <file>
+        <input>qe.qhp</input>
+        <output>qe.qch</output>
+      </file>
+    </generate>
+    <register>
+      <file>qe.qch</file>
+    </register>
+  </docFiles>
+</QHelpCollectionProject>
+
