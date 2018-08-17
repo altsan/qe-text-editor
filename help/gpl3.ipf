@@ -1,3 +1,5 @@
+.*----------------------------------------------------------------------------
+:h2 x=left y=bottom width=100% height=100% res=990.COPYING
 .ce GNU GENERAL PUBLIC LICENSE
 .ce Version 3, 29 June 2007
 

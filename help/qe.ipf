@@ -147,7 +147,7 @@ menu.
 and a pale grey background in areas where the current text does not occupy the
 full height of the window.
 
-:p.:artwork runin name='edit_linebreak.bmp'.  :artwork runin name='edit_nolinebreak.bmp'.
+:p.:artwork runin name='edit_linebreak.bmp'. :artwork runin name='edit_nolinebreak.bmp'.
 .br
 
 :p.Note that the white background will extend :hp1.past:ehp1. the final line
@@ -518,8 +518,6 @@ along with this program.  If not, see &lt.http&colon.//www.gnu.org/licenses/&gt.
 :p.See the :link reftype=hd res=990.following section:elink. for the complete
 text of the GPL.
 
-.*----------------------------------------------------------------------------
-:h2 x=left y=bottom width=100% height=100% res=990.COPYING
 .im gpl3.ipf
 
 :euserdoc.
