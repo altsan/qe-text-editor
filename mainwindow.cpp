@@ -36,7 +36,9 @@
 #include "eastring.h"
 
 
-#ifdef __OS2__
+// #ifdef __OS2__
+// We now also use these mappings to look up the encoding from the codepage
+// number when parsing the /cp: command line switch.
 
 /* We tag a file with a non-default encoding under OS/2 by setting its .CODEPAGE
  * extended attribute. This (standardized but rarely-used) EA is meant to store
@@ -173,7 +175,7 @@ QString Codepage_Mappings[] = {
     "ISO-2022-JP"
 };
 
-#endif
+// #endif
 
 
 // ---------------------------------------------------------------------------
@@ -2265,16 +2267,22 @@ void MainWindow::showMessage( const QString &message )
 
 void MainWindow::showUsage()
 {
+#if defined( Q_OS_WIN32 )
+#define SWITCH_CHAR     '/'
+#elif defined( Q_OS_OS2 )
+#define SWITCH_CHAR     '/'
+#else
+#define SWITCH_CHAR     '-'
+#endif
+
     QMessageBox::information( this, tr("Usage"),
                               tr("<b>Usage:</b><br> &nbsp; <tt>qe [ <i>filename</i> ] [ <i>options</i> ]</tt>"
                                  "<p><b>Options:</b>"
                                  "<table>"
-                                  "<tr><td> &nbsp; /read</td> <td style=\"padding-left: 1em;\">Read-only mode</td></tr>"
-#if 1
-                                  "<tr><td> &nbsp; /cp:&lt;encoding&gt;</td> <td style=\"padding-left: 1em;\">Use the specified encoding</td></tr>"
-#endif
-                                  "<tr><td> &nbsp; /?   </td> <td style=\"padding-left: 1em;\">Show usage information</td></tr>"
-                                  "</table>"),
+                                  "<tr><td> &nbsp; %1read</td> <td style=\"padding-left: 1em;\">Read-only mode</td></tr>"
+                                  "<tr><td> &nbsp; %1enc:&lt;encoding&gt;</td> <td style=\"padding-left: 1em;\">Use the specified encoding</td></tr>"
+                                  "<tr><td> &nbsp; %1?   </td> <td style=\"padding-left: 1em;\">Show usage information</td></tr>"
+                                  "</table>").arg( SWITCH_CHAR ),
                               QMessageBox::Ok
                             );
 }

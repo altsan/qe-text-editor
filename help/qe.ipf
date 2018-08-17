@@ -27,12 +27,16 @@ acronym for anything in particular (although if one is desired,
 :h2 x=left y=bottom width=100% height=100% res=002.Command-line options
 :p.QE accepts the following command-line options when run.
 
-:dl tsize=20.
-:dt./?  or  /h
+:dl tsize=16 break=fit.
+:dt./?
+.br
+/h
 :dd.Show usage information
 :dt./read
 :dd.Start QE in read-only mode
-:dt./cp&colon.:hp1.encoding:ehp1.
+:dt./enc&colon.:hp1.encoding:ehp1.
+.br
+/cp&colon.:hp1.encoding:ehp1.
 :dd.Select the specified :link reftype=fn refid=codepages.encoding:elink.
 :edl.
 

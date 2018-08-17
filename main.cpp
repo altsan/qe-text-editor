@@ -48,7 +48,8 @@ int main( int argc, char *argv[] )
                 openReadOnly = true;
             else if ( argStr.compare( QString("xxxx"), Qt::CaseInsensitive ) == 0 )
                 openReadOnly = true;
-            else if ( argStr.startsWith( QString("cp:"), Qt::CaseInsensitive ) == 1 ) {
+            else if (( argStr.startsWith( QString("cp:"), Qt::CaseInsensitive ) == 1 ) ||
+                     ( argStr.startsWith( QString("enc:"), Qt::CaseInsensitive ) == 1 )) {
                 openEncoding = true;
                 encoding = argStr;
                 encoding.remove( 0, 3 );

@@ -338,9 +338,7 @@ private:
 #endif
 
     // Program help (platform specific implementation)
-#ifdef __OS2__
     void *helpInstance;
-#endif
 
 };
 
