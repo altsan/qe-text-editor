@@ -1,0 +1,11 @@
+h1, h2, h3 {
+    display: none;
+}
+dt {
+    color: #008000;
+    font-weight: bold;
+}
+dd, li {
+    margin-bottom: 1em;
+}
+
