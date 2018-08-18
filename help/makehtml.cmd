@@ -36,14 +36,23 @@ DO i = 1 TO htms.0
             IF secs > 1 THEN DO
                 h = h + 1
                 hsecs.h = outfile
-                CALL LINEOUT outfile, '</html>'
+                CALL LINEOUT outfile, '</body></html>'
                 CALL LINEOUT outfile
                 outfile = SUBSTR( htms.i, 1, lp ) || secs
                 CALL LINEOUT outfile, '<html>'
+                CALL LINEOUT outfile, '<head><link rel="stylesheet" type="text/css" href="help.css"></head><body>'
             END
             secs = secs + 1
         END
+
+        IF l == '</html>' THEN
+            CALL LINEOUT outfile, '</body>'
+
         CALL LINEOUT outfile, l
+
+        IF l == '<html>' THEN
+            CALL LINEOUT outfile, '<head><link rel="stylesheet" type="text/css" href="help.css"></head><body>'
+
         /* Save any target anchors found */
         IF POS('<a name=', l ) <> 0 THEN DO
             PARSE VAR l . '<a name="'a_name'"' .

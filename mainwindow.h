@@ -26,6 +26,7 @@
 
 #include <QMainWindow>
 #include <QDateTime>
+#include <QProcess>
 #include "version.h"
 
 
@@ -34,7 +35,15 @@
 #define SETTINGS_APP        "QuickEditor"
 #define ENCODING_EA_NAME    ".CODEPAGE"
 
+// Constants for QtAssistant-based cross-platform help
+#define HELP_HTML_ROOT      "qthelp://altsan.qe/help/"
+#define HELP_HTML_GENERAL   "qe.1.html"
+#define HELP_HTML_LINE      "qe.5.html"
+#define HELP_HTML_FIND      "qe.6.html"
+#define HELP_HTML_REPLACE   "qe.7.html"
+#define HELP_HTML_KEYS      "qe.9.html"
 
+// Constants for OS/2 native help
 #define HELP_PANEL_GENERAL        1
 #define HELP_PANEL_LINE         110
 #define HELP_PANEL_FIND         120
@@ -170,6 +179,7 @@ private:
     QString getFileCodepage( const QString &fileName );
     void setFileCodepage( const QString &fileName, const QString &encodingName );
     void updateEncoding();
+    void launchAssistant( const QString &panel );
 
     // GUI objects
     QeTextEdit    *editor;
@@ -339,6 +349,9 @@ private:
 
     // Program help (platform specific implementation)
     void *helpInstance;
+
+    // QtAssistant process
+    QProcess *helpProcess;
 
 };
 

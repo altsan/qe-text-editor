@@ -5,9 +5,7 @@
   <filterSection>
     <toc>
       <section title="QE Text Editor" ref="qe.1.html">
-        <section title="Command-line options" ref="qe.2.html">
-          <section title="Encodings" ref="qe.3.html"></section>
-        </section>
+        <section title="Command-line options" ref="qe.2.html"></section>
       </section>
       <section title="User interface" ref="qe.4.html">
         <section title="Go to Line dialog" ref="qe.5.html"></section>
@@ -17,13 +15,30 @@
       </section>
       <section title="Keyboard commands" ref="qe.9.html"></section>
       <section title="Using encodings" ref="qe.10.html"></section>
-      <section title="Limitations" ref="qe.11.html">
-        <section title="Large files" ref="qe.12.html"></section>
-      </section>
+      <section title="Limitations" ref="qe.11.html"></section>
       <section title="Notices" ref="qe.13.html">
-        <section title="COPYING" ref="gpl.1.html"></section>
+        <section title="COPYING" ref="qe.14.html"></section>
       </section>
     </toc>
+    <keywords>
+      <keyword name="Command line" ref="qe.2.html"/>
+      <keyword name="Copyright" ref="qe.13.html"/>
+      <keyword name="Encoding names" ref="qe.3.html"/>
+      <keyword name="Encodings" ref="qe.10.html"/>
+      <keyword name="Find" ref="qe.6.html"/>
+      <keyword name="Go to line" ref="qe.5.html"/>
+      <keyword name="Interface" ref="qe.4.html"/>
+      <keyword name="Introduction" ref="qe.1.html"/>
+      <keyword name="Keys" ref="qe.9.html"/>
+      <keyword name="Keyboard" ref="qe.9.html"/>
+      <keyword name="Large files" ref="qe.12.html"/>
+      <keyword name="License" ref="qe.14.html"/>
+      <keyword name="Limitations" ref="qe.11.html"/>
+      <keyword name="Parameters" ref="qe.2.html"/>
+      <keyword name="Regular expression" ref="qe.8.html"/>
+      <keyword name="Replace" ref="qe.7.html"/>
+      <keyword name="Shortcuts" ref="qe.9.html"/>
+    </keywords>
     <files>
       <file>edit_linebreak.png</file>
       <file>edit_nolinebreak.png</file>
@@ -32,6 +47,7 @@
       <file>menu.png</file>
       <file>replace_dialog.png</file>
       <file>status.png</file>
+      <file>help.css</file>
       <file>qe.1.html</file>
       <file>qe.2.html</file>
       <file>qe.3.html</file>
@@ -45,7 +61,7 @@
       <file>qe.11.html</file>
       <file>qe.12.html</file>
       <file>qe.13.html</file>
-      <file>gpl3.1.html</file>
+      <file>qe.14.html</file>
     </files>
   </filterSection>
 </QtHelpProject>

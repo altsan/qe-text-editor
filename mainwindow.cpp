@@ -265,6 +265,7 @@ MainWindow::MainWindow()
     icon.addFile(":/images/editor_64.png", QSize( 64, 64 ), QIcon::Normal, QIcon::On );
     icon.addFile(":/images/editor_80.png", QSize( 80, 80 ), QIcon::Normal, QIcon::On );
     setWindowIcon( icon );
+
 #endif
 
     helpInstance = NULL;
@@ -595,6 +596,8 @@ void MainWindow::showGeneralHelp()
 {
 #ifdef __OS2__
     OS2Native::showHelpPanel( helpInstance, HELP_PANEL_GENERAL );
+#else
+    launchAssistant( HELP_HTML_GENERAL );
 #endif
 }
 
@@ -603,6 +606,8 @@ void MainWindow::showKeysHelp()
 {
 #ifdef __OS2__
     OS2Native::showHelpPanel( helpInstance, HELP_PANEL_KEYS );
+#else
+    launchAssistant( HELP_HTML_KEYS );
 #endif
 }
 
@@ -1957,6 +1962,8 @@ void MainWindow::createHelp()
 {
 #ifdef __OS2__
     helpInstance = OS2Native::setNativeHelp( this, QString("qe.hlp"), tr("QE Help") );
+#else
+    helpProcess = new QProcess( this );
 #endif
 }
 
@@ -2543,5 +2550,22 @@ void MainWindow::saveProgress( int percent )
     showMessage( tr("Saving %1 (%2%)").arg( QDir::toNativeSeparators( saveThread->outputFileName )).arg( percent ));
 
 #endif
+}
+
+
+void MainWindow::launchAssistant( const QString &panel )
+{
+    QString assistant = QLibraryInfo::location( QLibraryInfo::BinariesPath )
+                        + QLatin1String("/assistant");
+    QStringList args;
+    args << QLatin1String("-collectionFile")
+         << QLatin1String("qe.qhc")
+         << QLatin1String("-enableRemoteControl");
+    helpProcess->start( assistant, args );
+    if ( !helpProcess->waitForStarted() ) return;
+
+    QByteArray assistantInput;
+    assistantInput.append("setSource " + QString( HELP_HTML_ROOT ) + panel + QString("\n"));
+    helpProcess->write( assistantInput );
 }
 
