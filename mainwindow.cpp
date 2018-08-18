@@ -2560,7 +2560,13 @@ void MainWindow::launchAssistant( const QString &panel )
          << QLatin1String("qe.qhc")
          << QLatin1String("-enableRemoteControl");
     helpProcess->start( assistant, args );
-    if ( !helpProcess->waitForStarted() ) return;
+    if ( !helpProcess->waitForStarted() ) {
+        helpProcess->start( QLatin1String("assistant"), args );
+        if ( !helpProcess->waitForStarted() ) {
+            showMessage( tr("Help viewer not available."));
+            return;
+	}
+    }
 
     QByteArray assistantInput;
     assistantInput.append("setSource " + QString( HELP_HTML_ROOT ) + panel + QString("\n"));
