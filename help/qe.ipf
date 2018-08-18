@@ -410,7 +410,7 @@ This is done to maximize compatibility with other text editors, which generally
 do the same. As long as the files you work with use the system encoding (as
 most text files generally do), this should not be a problem.
 
-:p.You can at any time select a new encoding using the :hp2.File &bxh.&rahead.
+:p.You can select a new encoding at any time using the :hp2.File &bxh.&rahead.
 Encoding:ehp2. menu.
 
 :p.If you change the current encoding after opening an existing file, but before
@@ -428,8 +428,8 @@ for the file.
 
 :p.:hp5.Opening a file with the wrong encoding:ehp5.
 :p.If you open a file with the wrong encoding, certain characters with the
-file may not display correctly. This can generally be rectified simply by
-selecting the correct encoding, if you know what that is.
+file may not display correctly. This can generally be rectified by selecting
+the correct encoding, if you know (or can determine) what that is.
 :p.This problem is not a destructive one unless you subsequently save the
 file using the wrong encoding (see below).
 
@@ -454,10 +454,8 @@ used for a given file, except in the case where the file begins with a Unicode
 byte-order mark (BOM).
 :li.If you save a file containing characters not supported by the current
 encoding, those characters will replaced by substitution markers in the saved
-file. Consequently, if you have a need to use characters not supported by the
-system codepage, you should be sure to set the current file's encoding to an
-appropriate selection. (If unsure which encoding is best, UTF-8 is generally
-a good default choice.)
+file. See the section on :link reftype=hd res=300.encodings:elink. for more
+information.
 :li.Although QE supports editing files of arbitrary size, opening or saving
 :link reftype=fn refid=large_file.extremely large files:elink. may exhibit the
 following issues&colon.

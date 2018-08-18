@@ -52,8 +52,8 @@ s/:hp5\./<u>/g
 s/:ehp5\./<\/u>/g
 s/:hp6\./<i><u>/g
 s/:ehp6\./<\/u><\/i>/g
-s/:hp7\./<b><i>/g
-s/:ehp7\./<\/i><\/b>/g
+s/:hp7\./<b><u>/g
+s/:ehp7\./<\/u><\/b>/g
 s/:hp8\./<font color="red">/g
 s/:ehp8\./<\/font>/g
 s/:hp9\./<font color="pink">/g
