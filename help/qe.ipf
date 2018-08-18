@@ -427,7 +427,7 @@ for the file.
 :p.:hp7.Potential Pitfalls:ehp7.
 
 :p.:hp5.Opening a file with the wrong encoding:ehp5.
-:p.If you open a file with the wrong encoding, certain characters with the
+:p.If you open a file with the wrong encoding, certain characters in the
 file may not display correctly. This can generally be rectified by selecting
 the correct encoding, if you know (or can determine) what that is.
 :p.This problem is not a destructive one unless you subsequently save the
