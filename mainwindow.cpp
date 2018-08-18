@@ -1904,11 +1904,9 @@ void MainWindow::createMenus()
 
     menuBar()->addSeparator();
     helpMenu = menuBar()->addMenu( tr("&Help"));
-#ifdef __OS2__
     helpMenu->addAction( helpGeneralAction );
     helpMenu->addAction( helpKeysAction );
     helpMenu->addSeparator();
-#endif
     helpMenu->addAction( aboutAction );
 
 }
