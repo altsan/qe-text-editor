@@ -4,7 +4,7 @@
     <title>QE Text Editor</title>
     <applicationIcon>../images/editor_16.png</applicationIcon>
     <cacheDirectory>altsan/qe</cacheDirectory>
-    <startPage>qthelp://altsan.qe/help/index.html</startPage>
+    <startPage>qthelp://altsan.qe/help/qe.1.html</startPage>
     <enableDocumentationManager>false</enableDocumentationManager>
     <enableAddressBar>false</enableAddressBar>
     <enableFilterFunctionality>false</enableFilterFunctionality>

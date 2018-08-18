@@ -63,9 +63,9 @@ s/:link reftype=[a-zA-Z]* res=([^.]*)\./<a href="#\1">/g
 s/:elink\./<\/a>/g
 s/:link [^.]*\.//g
 s/:elink\.//g
-s/:note.*\./<b>Note:<\/b> /g
-s/:nt.* text='(.*)'\./<b>\1:<\/b> /g
-s/:nt.*\./<b>Note:<\/b> /g
+s/:note.*\./<p><b>Note:<\/b> /g
+s/:nt.* text='(.*)'\./<p><b>\1:<\/b> /g
+s/:nt.*\./<p><b>Note:<\/b> /g
 s/:ent\./<\/p>/g
 s/:artwork runin name='([^.]*)\.bmp'\./<img src="\1.png">/g
 s/:artwork runin name='([^']*)'\./<img src="\1">/g

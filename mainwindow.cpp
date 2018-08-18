@@ -2565,9 +2565,8 @@ void MainWindow::launchAssistant( const QString &panel )
         if ( !helpProcess->waitForStarted() ) {
             showMessage( tr("Help viewer not available."));
             return;
-	}
+        }
     }
-
     QByteArray assistantInput;
     assistantInput.append("setSource " + QString( HELP_HTML_ROOT ) + panel + QString("\n"));
     helpProcess->write( assistantInput );
