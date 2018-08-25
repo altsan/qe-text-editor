@@ -261,9 +261,11 @@ text. If not checked, the found text will be replaced automatically. This only
 applies using :hp2.Replace:ehp2. or :hp2.Replace all:ehp2..
 :dt.Find (pushbutton)
 :dd.This button will perform a find operation only; no replacement will be done.
+The dialog will remain open.
 :dt.Replace (pushbutton)
 :dd.This button will initiate a find-and-replace operation. Only the first
-match found (following the current start position) will be replaced.
+match found (following the current start position) will be replaced. The dialog
+will remain open.
 :dt.Replace all (pushbutton)
 :dd.This button will find and replace all instances of the find text (following
 the current start position), and close the dialog.

@@ -63,6 +63,8 @@ s/:link reftype=[a-zA-Z]* res=([^.]*)\./<a href="#\1">/g
 s/:elink\./<\/a>/g
 s/:link [^.]*\.//g
 s/:elink\.//g
+s/(http[s]?:\/\/[-a-zA-Z0-9_~.,:;\/?#|\^@!$'\(\)*+=]+)/<a href="\1">\1<\/a>/g
+s/(ftp:\/\/[-a-zA-Z0-9_~.,:;\/?#|\^@!$'\(\)*+=]+)/<a href="\1">\1<\/a>/g
 s/:note.*\./<p><b>Note:<\/b> /g
 s/:nt.* text='(.*)'\./<p><b>\1:<\/b> /g
 s/:nt.*\./<p><b>Note:<\/b> /g
