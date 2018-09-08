@@ -2236,8 +2236,10 @@ void MainWindow::setCurrentFile( const QString &fileName )
 void MainWindow::updateRecentFileActions()
 {
     QMutableStringListIterator i( recentFiles );
+    int fileCount = 0;
     while ( i.hasNext() ) {
-        if ( !QFile::exists( i.next() )) {
+        fileCount++;
+        if ( !QFile::exists( i.next() ) || ( fileCount > MaxRecentFiles )) {
             i.remove();
         }
     }

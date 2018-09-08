@@ -32,7 +32,7 @@
 
 #define PROGRAM_VERSION     VER_FILEVERSION_STR
 #define SETTINGS_VENDOR     "ATutils"
-#define SETTINGS_APP        "QuickEditor"
+#define SETTINGS_APP        "QE"
 #define ENCODING_EA_NAME    ".CODEPAGE"
 
 // Constants for QtAssistant-based cross-platform help
@@ -70,6 +70,7 @@
     "WWW files (*.htm *.html *.css *.cgi *.js *.php);;"     \
     "All files (*)"
 #endif
+
 
 class QAction;
 class QActionGroup;
@@ -326,9 +327,12 @@ private:
     bool    detectUpdate;
     bool    quickFindCS;
     bool    quickFindWords;
+    int     ctrlSBehaviour;
 
 
     // Other class variables
+
+    enum { MaxRecentFinds = 10 };
 
     QStringList recentFiles;
     QString     currentFile;
@@ -339,6 +343,8 @@ private:
     bool        encodingChanged;
     int         lastGoTo;
     FindParams  lastFind;
+    QStringList recentFinds;
+
 
 #ifdef USE_IO_THREADS
     QeOpenThread *openThread;
