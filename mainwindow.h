@@ -146,6 +146,7 @@ private slots:
     void replacePreviousRegExp( const QString &str, const QString &repl, bool cs, bool absolute, bool confirm );
     void replaceAll( const QString &str, const QString &repl, bool cs, bool words, bool absolute, bool confirm, bool backwards );
     void replaceAllRegExp( const QString &str, const QString &repl, bool cs, bool absolute, bool confirm, bool backwards );
+    void updateFindHistory( const QString &findString );
     void goToLine();
     void setTextEncoding();
     void readProgress( int percent );

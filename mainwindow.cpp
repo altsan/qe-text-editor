@@ -737,6 +737,8 @@ void MainWindow::findNext( const QString &str, bool cs, bool words, bool fromSta
     lastFind.bBackward = false;
     lastFind.bRe       = false;
 
+    updateFindHistory( str );
+
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
@@ -757,6 +759,8 @@ void MainWindow::findNextRegExp( const QString &str, bool cs, bool fromStart )
     lastFind.bBackward = false;
     lastFind.bRe       = true;
 
+    updateFindHistory( str );
+
     QRegExp regexp( str );
     regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
 
@@ -774,6 +778,8 @@ void MainWindow::findPrevious( const QString &str, bool cs, bool words, bool fro
     lastFind.bWords    = words;
     lastFind.bBackward = true;
     lastFind.bRe       = false;
+
+    updateFindHistory( str );
 
     QTextDocument::FindFlags flags = QTextDocument::FindBackward;
     if ( cs )
@@ -794,6 +800,8 @@ void MainWindow::findPreviousRegExp( const QString &str, bool cs, bool fromEnd )
     lastFind.bBackward = true;
     lastFind.bRe       = true;
 
+    updateFindHistory( str );
+
     QRegExp regexp( str );
     regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
 
@@ -806,6 +814,7 @@ void MainWindow::findPreviousRegExp( const QString &str, bool cs, bool fromEnd )
 
 void MainWindow::replaceNext( const QString &str, const QString &repl, bool cs, bool words, bool fromStart, bool confirm )
 {
+    updateFindHistory( str );
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
@@ -840,6 +849,7 @@ void MainWindow::replaceNextRegExp( const QString &str, const QString &repl, boo
     replaceStr.replace("\\r", "\r");
     replaceStr.replace("\\v", "\v");
 
+    updateFindHistory( str );
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     int pos = fromStart ? 0 :
                           editor->textCursor().selectionStart();
@@ -861,6 +871,7 @@ void MainWindow::replaceNextRegExp( const QString &str, const QString &repl, boo
 
 void MainWindow::replacePrevious( const QString &str, const QString &repl, bool cs, bool words, bool fromEnd, bool confirm )
 {
+    updateFindHistory( str );
     QTextDocument::FindFlags flags = QTextDocument::FindBackward;
     if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
@@ -896,6 +907,7 @@ void MainWindow::replacePreviousRegExp( const QString &str, const QString &repl,
     replaceStr.replace("\\r", "\r");
     replaceStr.replace("\\v", "\v");
 
+    updateFindHistory( str );
     QTextDocument::FindFlags flags = QTextDocument::FindBackward;
     int pos = fromEnd ? editor->document()->characterCount() :
                         editor->textCursor().selectionEnd();
@@ -917,6 +929,7 @@ void MainWindow::replacePreviousRegExp( const QString &str, const QString &repl,
 
 void MainWindow::replaceAll( const QString &str, const QString &repl, bool cs, bool words, bool fromStart, bool confirm, bool backwards )
 {
+    updateFindHistory( str );
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
@@ -992,6 +1005,7 @@ void MainWindow::replaceAllRegExp( const QString &str, const QString &repl, bool
     replaceStr.replace("\\r", "\r");
     replaceStr.replace("\\v", "\v");
 
+    updateFindHistory( str );
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
@@ -1050,6 +1064,16 @@ void MainWindow::replaceAllRegExp( const QString &str, const QString &repl, bool
     found = editor->textCursor();
     found.clearSelection();
     editor->setTextCursor( found );
+}
+
+
+void MainWindow::updateFindHistory( const QString &findString )
+{
+    if ( recentFinds.startsWith( findString )) return;
+    recentFinds.removeAll( findString );
+    recentFinds.prepend( findString );
+    while ( recentFinds.size() > MaxRecentFinds )
+        recentFinds.removeLast();
 }
 
 

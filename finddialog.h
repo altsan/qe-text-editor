@@ -30,6 +30,7 @@ class FindDialog : public QDialog, public Ui::FindDialog
 
 public:
     FindDialog( QWidget *parent = 0 );
+    void populateText( const QString &findString, const QStringList &findHistory );
     void doFind();
 
 signals:

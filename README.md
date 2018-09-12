@@ -1,4 +1,5 @@
-# QE Text Editor
+QE Text Editor
+==============
 
   QE is a simple text editor modelled after IBM's OS/2 System Editor
   and Aaron Lawrence's AE.  It is written using Qt4 and is therefore
@@ -20,13 +21,15 @@
   More information is available at:
   https://github.com/altsan/quick-text-editor/wiki
 
-## Installation
+
+Installation
+------------
 
 ### OS/2
 
   Make sure you have the following runtime packages installed (either the
   WarpIN or yum/rpm distributions):
-  - Qt4 runtime version 4.7.3 or later 
+  - Qt4 runtime version 4.7.3 or later
   - kLIBC (LIBC066.DLL) and LIBGCC (GCC1.DLL)
 
   Copy QE.EXE to a directory in your PATH, and QE.HLP to a directory in your
@@ -34,27 +37,30 @@
 
 ### Windows
 
-  Create a directory for QE and copy QE.EXE into it. Create a shortcut for 
+  Create a directory for QE and copy QE.EXE into it. Create a shortcut for
   QE.EXE.
 
   If you do not have the Qt4 and GCC/MingW 4.8.2 runtime libraries installed,
   you must also extract the contents of qe_win32-mingw-qt4_libs.zip either
-  into the same directory, or to a directory on your PATH.  
+  into the same directory, or to a directory on your PATH.
 
   To enable online help support, copy QE.QCH and QE.QHC into the same
   directory as QE.EXE. If you do not have Qt installed system-wide, you must
   also extract the contents of qe_win32-mingw-qt4_assistant.zip either into
-  the same directory, or to a directory on your PATH.  
+  the same directory, or to a directory on your PATH.
 
 ### Linux
 
   Make sure the Qt4 and gcc runtime libraries are installed (using your
-  distribution's package manager). 
+  distribution's package manager), along with QtAssistant if you want online
+  help support.
 
-  Copy qe into a pathed directory (such as /usr/local/bin), along with
-  qe.qch and qe.qhc if you want online help support.
+  Copy `qe` into a pathed directory (such as /usr/local/bin), along with
+  `qe.qch` and `qe.qhc` if you want online help support.
 
-## Notices
+
+Notices
+-------
 
   QE Text Editor
   Copyright (C) 2018 Alexander Taylor
