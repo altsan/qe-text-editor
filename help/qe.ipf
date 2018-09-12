@@ -98,6 +98,15 @@ encodings are supported&colon.
  1386    GB18030-0
  4992    ISO-2022-JP
 :exmp.
+:p.Note that if the encoding name contains spaces, you will need to wrap it
+in double quotes (unless you are using a shell which supports other
+workarounds such as escape sequences).  On OS/2, for example, to specify
+Apple Roman on the command line, any of the following should work:
+:xmp.
+qe /enc&colon."Apple Roman"
+qe "/enc&colon.Apple Roman"
+qe /enc&colon.1275
+:exmp.
 :efn.
 
 
@@ -415,10 +424,11 @@ most text files generally do), this should not be a problem.
 :p.You can select a new encoding at any time using the :hp2.File &bxh.&rahead.
 Encoding:ehp2. menu.
 
-:p.If you change the current encoding after opening an existing file, but before
-any changes have been made, you will be asked if you want to reload that file
-using the new encoding. If you know that the file in question uses that encoding,
-then you should do so.
+:p.If you change the current encoding after opening an existing file, but
+:hp1.before:ehp1. any changes have been made, you will be asked if you want to
+reload that file using the new encoding. If you know that the file in question
+uses that encoding, then you should do so.  Note that you will not be offered
+this choice if you have made any changes to the file since opening it.
 
 :p.If, after making changes to a file, you save it using a different encoding
 from the one with which the file was originally opened, you will be shown a
@@ -452,8 +462,8 @@ to select UTF-8, which supports all known characters.
 :li.OS/2 bitmap fonts are not supported.
 :li.The OS/2 version does not currently support printing to non-CUPS printers.
 :li.The Windows and Linux versions will not remember the character encoding
-used for a given file, except in the case where the file begins with a Unicode
-byte-order mark (BOM).
+used for a given file after that file is closed, except in the case where the
+file begins with a Unicode byte-order mark (BOM).
 :li.If you save a file containing characters not supported by the current
 encoding, those characters will replaced by substitution markers in the saved
 file. See the section on :link reftype=hd res=300.encodings:elink. for more
@@ -488,7 +498,7 @@ may cause significant delays.
 :p.QE is written in C++ using the Qt toolkit. It has been built using Qt4 and
 the GNU Compiler Collection (GCC).
 
-:p.Project home page&colon. https&colon.//github.com/altsan/quick-text-editor/
+:p.Project home page&colon. https&colon.//github.com/altsan/qe-text-editor/
 :p.
 
 :lm margin=4.
