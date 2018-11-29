@@ -474,6 +474,13 @@ void MainWindow::find()
         findDialog->raise();
         findDialog->activateWindow();
     }
+    QString selected = editor->textCursor().selectedText();
+    if ( ! selected.trimmed().isEmpty() )
+        findDialog->setFindText( selected );
+/*
+    if ( recentFinds.count() > 0 )
+        findDialog->populateHistory( recentFinds );
+*/
 }
 
 
@@ -559,6 +566,9 @@ void MainWindow::replace()
         replaceDialog->raise();
         replaceDialog->activateWindow();
     }
+    QString selected = editor->textCursor().selectedText();
+    if ( ! selected.trimmed().isEmpty() )
+        replaceDialog->setFindText( selected );
 }
 
 void MainWindow::goToLine()
@@ -815,6 +825,7 @@ void MainWindow::findPreviousRegExp( const QString &str, bool cs, bool fromEnd )
 void MainWindow::replaceNext( const QString &str, const QString &repl, bool cs, bool words, bool fromStart, bool confirm )
 {
     updateFindHistory( str );
+    updateReplaceHistory( repl );
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
@@ -850,6 +861,7 @@ void MainWindow::replaceNextRegExp( const QString &str, const QString &repl, boo
     replaceStr.replace("\\v", "\v");
 
     updateFindHistory( str );
+    updateReplaceHistory( replaceStr );
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     int pos = fromStart ? 0 :
                           editor->textCursor().selectionStart();
@@ -872,6 +884,7 @@ void MainWindow::replaceNextRegExp( const QString &str, const QString &repl, boo
 void MainWindow::replacePrevious( const QString &str, const QString &repl, bool cs, bool words, bool fromEnd, bool confirm )
 {
     updateFindHistory( str );
+    updateReplaceHistory( repl );
     QTextDocument::FindFlags flags = QTextDocument::FindBackward;
     if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
@@ -908,6 +921,7 @@ void MainWindow::replacePreviousRegExp( const QString &str, const QString &repl,
     replaceStr.replace("\\v", "\v");
 
     updateFindHistory( str );
+    updateReplaceHistory( replaceStr );
     QTextDocument::FindFlags flags = QTextDocument::FindBackward;
     int pos = fromEnd ? editor->document()->characterCount() :
                         editor->textCursor().selectionEnd();
@@ -1077,6 +1091,16 @@ void MainWindow::updateFindHistory( const QString &findString )
 }
 
 
+void MainWindow::updateReplaceHistory( const QString &replaceString )
+{
+    if ( recentReplaces.startsWith( replaceString )) return;
+    recentReplaces.removeAll( replaceString );
+    recentReplaces.prepend( replaceString );
+    while ( recentReplaces.size() > MaxRecentFinds )
+        recentReplaces.removeLast();
+}
+
+
 void MainWindow::setTextEncoding()
 {
     QAction *action = qobject_cast<QAction *>( sender() );
@@ -1179,6 +1203,9 @@ void MainWindow::openAsEncoding( QString fileName, bool createIfNew, QString enc
 
 void MainWindow::createActions()
 {
+    // NOTE: Since we don't have an OS/2-native Qt theme, we have to use some
+    // #ifdef's to specify a few OS/2-specific shortcuts.  Other platforms can
+    // mostly use the standard aliases.
 
     // File menu actions
 
@@ -1197,7 +1224,11 @@ void MainWindow::createActions()
 //    QList<QKeySequence> saveShortcuts;
 //    saveShortcuts << QKeySequence("F2") << QKeySequence("Ctrl+S");
 //    saveAction->setShortcuts( saveShortcuts );
+#ifdef __OS2__
     saveAction->setShortcut( tr("F2"));
+#else
+    saveAction->setShortcut( QKeySequence::Save );
+#endif
     saveAction->setStatusTip( tr("Save the current file") );
     connect( saveAction, SIGNAL( triggered() ), this, SLOT( save() ));
 

@@ -30,7 +30,12 @@ class ReplaceDialog : public QDialog, public Ui::ReplaceDialog
 
 public:
     ReplaceDialog( QWidget *parent = 0 );
+    void setFindText( const QString &text );
+    void populateHistory( const QStringList &findHistory, const QStringList &replaceHistory );
     void doReplace();
+
+public slots:
+    void show();
 
 signals:
     void findNext( const QString &str, bool cs, bool words, bool absolute );

@@ -83,7 +83,7 @@
          <item row="2" column="0">
           <widget class="QCheckBox" name="wordCheckBox">
            <property name="text">
-            <string>Match whole words</string>
+            <string>Match whole &amp;words</string>
            </property>
           </widget>
          </item>

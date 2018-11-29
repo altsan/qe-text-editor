@@ -90,7 +90,7 @@
          <item row="2" column="1">
           <widget class="QCheckBox" name="verifyCheckBox">
            <property name="text">
-            <string>&amp;Confirm replacement</string>
+            <string>C&amp;onfirm replacement</string>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -148,7 +148,7 @@
           <bool>false</bool>
          </property>
          <property name="text">
-          <string>Replace</string>
+          <string>Re&amp;place</string>
          </property>
          <property name="default">
           <bool>false</bool>

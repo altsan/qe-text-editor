@@ -35,6 +35,14 @@ ReplaceDialog::ReplaceDialog( QWidget *parent )
 }
 
 
+void ReplaceDialog::show()
+{
+    findEdit->clear();
+    replaceEdit->clear();
+    QDialog::show();
+}
+
+
 void ReplaceDialog::doReplace()
 {
     on_replaceButton_clicked();
@@ -131,4 +139,10 @@ bool ReplaceDialog::eventFilter( QObject *target, QEvent *event )
     return ok;
 }
 
+
+void ReplaceDialog::setFindText( const QString &text )
+{
+    findEdit->setText( text );
+    findEdit->selectAll();
+}
 

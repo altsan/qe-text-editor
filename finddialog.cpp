@@ -35,6 +35,13 @@ FindDialog::FindDialog( QWidget *parent )
 }
 
 
+void FindDialog::show()
+{
+    findEdit->clear();
+    QDialog::show();
+}
+
+
 void FindDialog::doFind()
 {
     if ( !findEdit->text().isEmpty() )
@@ -91,4 +98,10 @@ bool FindDialog::eventFilter( QObject *target, QEvent *event )
     return ok;
 }
 
+
+void FindDialog::setFindText( const QString &text )
+{
+    findEdit->setText( text );
+    findEdit->selectAll();
+}
 
