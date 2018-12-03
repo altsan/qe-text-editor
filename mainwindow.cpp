@@ -734,8 +734,10 @@ void MainWindow::updateModified( bool isModified )
 void MainWindow::setEditorFont() {
     bool fontSelected;
     QFont font = QFontDialog::getFont( &fontSelected, editor->font(), this );
-    if ( fontSelected )
+    if ( fontSelected ) {
         editor->setFont( font );
+        editor->adjustSize();
+    }
 }
 
 
