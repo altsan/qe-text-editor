@@ -475,12 +475,10 @@ void MainWindow::find()
         findDialog->activateWindow();
     }
     QString selected = editor->textCursor().selectedText();
-    if ( ! selected.trimmed().isEmpty() )
-        findDialog->setFindText( selected );
-/*
     if ( recentFinds.count() > 0 )
         findDialog->populateHistory( recentFinds );
-*/
+    if ( ! selected.trimmed().isEmpty() )
+        findDialog->setFindText( selected );
 }
 
 
@@ -2033,6 +2031,8 @@ void MainWindow::readSettings()
     updateRecentFileActions();
 
     currentFilter = settings.value("lastFilter", tr("All files (*)")).toString();
+    recentFinds = settings.value("recentFinds").toStringList();
+    recentReplaces = settings.value("recentReplaces").toStringList();
 
     toggleEditMode( settings.value("overwrite", false ).toBool() );
     editModeAction->setChecked( editor->overwriteMode() );
@@ -2060,15 +2060,17 @@ void MainWindow::writeSettings()
 {
     QSettings settings( SETTINGS_VENDOR, SETTINGS_APP );
 
-    settings.setValue("geometry",    saveGeometry() );
-    settings.setValue("lastFilter",  currentFilter );
-    settings.setValue("recentFiles", recentFiles );
-    settings.setValue("overwrite",   editor->overwriteMode() );
+    settings.setValue("geometry",       saveGeometry() );
+    settings.setValue("lastFilter",     currentFilter );
+    settings.setValue("recentFinds",    recentFinds );
+    settings.setValue("recentReplaces", recentReplaces );
+    settings.setValue("recentFiles",    recentFiles );
+    settings.setValue("overwrite",      editor->overwriteMode() );
     settings.setValue("wrapMode",
                       (editor->wordWrapMode() == QTextOption::WrapAtWordBoundaryOrAnywhere )?
                       true: false
                      );
-    settings.setValue("editorFont",  editor->font().toString() );
+    settings.setValue("editorFont",     editor->font().toString() );
 }
 
 

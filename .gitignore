@@ -5,6 +5,8 @@
 *.[Ee][Xx][Ee]
 *.[Hh][Ll][Pp]
 *.[Ii][Nn][Ff]
+*.[Qq][Cc][Hh]
+*.[Qq][Hh][Cc]
 *.[Mm][Aa][Pp]
 *.[Oo][Bb][Jj]
 *.[Rr][Ee][Ss]
@@ -21,3 +23,8 @@ object_script*
 moc_*
 qrc_*.cpp
 ui_*.h
+#
+# Other stuff
+#
+*.diff
+test*.txt

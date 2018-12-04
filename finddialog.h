@@ -44,7 +44,8 @@ signals:
     void findPreviousRegExp( const QString &str, bool cs, bool absolute );
 
 private slots:
-    void on_findEdit_textChanged( const QString &text );
+    void on_findEdit_editTextChanged( const QString &text );
+    void on_findEdit_currentIndexChanged( int index );
     void on_reCheckBox_toggled( bool checked );
     void on_backCheckBox_toggled( bool checked );
     void on_findButton_clicked();
