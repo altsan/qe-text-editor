@@ -30,15 +30,14 @@ ReplaceDialog::ReplaceDialog( QWidget *parent )
 {
     setupUi( this );
     connect( cancelButton, SIGNAL( clicked() ), this, SLOT( close() ));
-    findEdit->installEventFilter( this );
-    replaceEdit->installEventFilter( this );
+    findEdit->lineEdit()->installEventFilter( this );
+    replaceEdit->lineEdit()->installEventFilter( this );
 }
 
 
 void ReplaceDialog::show()
 {
-    findEdit->clear();
-    replaceEdit->clear();
+    findEdit->setFocus();
     QDialog::show();
 }
 
@@ -49,11 +48,23 @@ void ReplaceDialog::doReplace()
 }
 
 
-void ReplaceDialog::on_findEdit_textChanged( const QString &text )
+void ReplaceDialog::on_findEdit_editTextChanged( const QString &text )
 {
     findButton->setEnabled( !text.isEmpty() );
     replaceButton->setEnabled( !text.isEmpty() );
     replaceAllButton->setEnabled( !text.isEmpty() );
+}
+
+
+void ReplaceDialog::on_findEdit_currentIndexChanged( int index )
+{
+    findEdit->lineEdit()->selectAll();
+}
+
+
+void ReplaceDialog::on_replaceEdit_currentIndexChanged( int index )
+{
+    replaceEdit->lineEdit()->selectAll();
 }
 
 
@@ -72,7 +83,7 @@ void ReplaceDialog::on_backCheckBox_toggled( bool checked )
 
 void ReplaceDialog::on_findButton_clicked()
 {
-    QString text  = findEdit->text();
+    QString text  = findEdit->currentText();
     bool cs       = caseCheckBox->isChecked();
     bool words    = wordCheckBox->isChecked();
     bool absolute = startCheckBox->isChecked();
@@ -89,8 +100,8 @@ void ReplaceDialog::on_findButton_clicked()
 
 void ReplaceDialog::on_replaceButton_clicked()
 {
-    QString text = findEdit->text();
-    QString replacement = replaceEdit->text();
+    QString text = findEdit->currentText();
+    QString replacement = replaceEdit->currentText();
     bool cs = caseCheckBox->isChecked();
     bool words = wordCheckBox->isChecked();
     bool absolute = startCheckBox->isChecked();
@@ -111,8 +122,8 @@ void ReplaceDialog::on_replaceButton_clicked()
 
 void ReplaceDialog::on_replaceAllButton_clicked()
 {
-    QString text = findEdit->text();
-    QString replacement = replaceEdit->text();
+    QString text = findEdit->currentText();
+    QString replacement = replaceEdit->currentText();
     bool cs = caseCheckBox->isChecked();
     bool words = wordCheckBox->isChecked();
     bool absolute = startCheckBox->isChecked();
@@ -142,7 +153,21 @@ bool ReplaceDialog::eventFilter( QObject *target, QEvent *event )
 
 void ReplaceDialog::setFindText( const QString &text )
 {
-    findEdit->setText( text );
-    findEdit->selectAll();
+    findEdit->lineEdit()->setText( text );
+    findEdit->lineEdit()->selectAll();
+}
+
+
+void ReplaceDialog::populateHistory( const QStringList &findHistory, const QStringList &replaceHistory )
+{
+    findEdit->clear();
+    findEdit->addItem("");
+    findEdit->addItems( findHistory );
+    findEdit->clearEditText();
+    replaceEdit->clear();
+    replaceEdit->addItem("");
+    if ( replaceHistory.count() > 0 )
+        replaceEdit->addItems( replaceHistory );
+    replaceEdit->clearEditText();
 }
 

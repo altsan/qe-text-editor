@@ -50,7 +50,9 @@ signals:
     void replaceAllRegExp( const QString &str, const QString &repl, bool cs, bool fromStart, bool confirm, bool backwards );
 
 private slots:
-    void on_findEdit_textChanged( const QString &text );
+    void on_findEdit_editTextChanged( const QString &text );
+    void on_findEdit_currentIndexChanged( int index );
+    void on_replaceEdit_currentIndexChanged( int index );
     void on_reCheckBox_toggled( bool checked );
     void on_backCheckBox_toggled( bool checked );
     void on_findButton_clicked();

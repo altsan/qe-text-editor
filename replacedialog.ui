@@ -34,9 +34,6 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="findEdit"/>
-       </item>
        <item row="2" column="0">
         <spacer name="spacer">
          <property name="orientation">
@@ -122,8 +119,25 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="findEdit">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <property name="insertPolicy">
+          <enum>QComboBox::NoInsert</enum>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="replaceEdit"/>
+        <widget class="QComboBox" name="replaceEdit">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <property name="insertPolicy">
+          <enum>QComboBox::NoInsert</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>

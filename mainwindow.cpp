@@ -565,9 +565,12 @@ void MainWindow::replace()
         replaceDialog->activateWindow();
     }
     QString selected = editor->textCursor().selectedText();
+    if ( recentFinds.count() > 0 )
+        replaceDialog->populateHistory( recentFinds, recentReplaces );
     if ( ! selected.trimmed().isEmpty() )
         replaceDialog->setFindText( selected );
 }
+
 
 void MainWindow::goToLine()
 {
