@@ -852,6 +852,9 @@ void MainWindow::replaceNext( const QString &str, const QString &repl, bool cs, 
 
 void MainWindow::replaceNextRegExp( const QString &str, const QString &repl, bool cs, bool fromStart, bool confirm )
 {
+    updateFindHistory( str );
+    updateReplaceHistory( repl );
+
     QRegExp regexp( str );
     regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
     QString replaceStr = repl;
@@ -863,8 +866,6 @@ void MainWindow::replaceNextRegExp( const QString &str, const QString &repl, boo
     replaceStr.replace("\\r", "\r");
     replaceStr.replace("\\v", "\v");
 
-    updateFindHistory( str );
-    updateReplaceHistory( replaceStr );
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     int pos = fromStart ? 0 :
                           editor->textCursor().selectionStart();
@@ -912,6 +913,9 @@ void MainWindow::replacePrevious( const QString &str, const QString &repl, bool 
 
 void MainWindow::replacePreviousRegExp( const QString &str, const QString &repl, bool cs, bool fromEnd, bool confirm )
 {
+    updateFindHistory( str );
+    updateReplaceHistory( repl );
+
     QRegExp regexp( str );
     regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
     QString replaceStr = repl;
@@ -923,8 +927,6 @@ void MainWindow::replacePreviousRegExp( const QString &str, const QString &repl,
     replaceStr.replace("\\r", "\r");
     replaceStr.replace("\\v", "\v");
 
-    updateFindHistory( str );
-    updateReplaceHistory( replaceStr );
     QTextDocument::FindFlags flags = QTextDocument::FindBackward;
     int pos = fromEnd ? editor->document()->characterCount() :
                         editor->textCursor().selectionEnd();
@@ -1011,6 +1013,9 @@ void MainWindow::replaceAll( const QString &str, const QString &repl, bool cs, b
 
 void MainWindow::replaceAllRegExp( const QString &str, const QString &repl, bool cs, bool fromStart, bool confirm, bool backwards )
 {
+    updateFindHistory( str );
+    updateReplaceHistory( repl );
+
     QRegExp regexp( str );
     regexp.setCaseSensitivity( cs? Qt::CaseSensitive: Qt::CaseInsensitive );
     QString replaceStr = repl;
@@ -1022,7 +1027,6 @@ void MainWindow::replaceAllRegExp( const QString &str, const QString &repl, bool
     replaceStr.replace("\\r", "\r");
     replaceStr.replace("\\v", "\v");
 
-    updateFindHistory( str );
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
@@ -1071,7 +1075,7 @@ void MainWindow::replaceAllRegExp( const QString &str, const QString &repl, bool
             count++;
             newText = found.selectedText();
             newText.replace( regexp, replaceStr );
-            found.insertText( replaceStr );
+            found.insertText( newText );
         }
         found = editor->document()->find( regexp,
                                           (backwards? found.selectionStart(): found.selectionEnd()),
@@ -1086,6 +1090,7 @@ void MainWindow::replaceAllRegExp( const QString &str, const QString &repl, bool
 
 void MainWindow::updateFindHistory( const QString &findString )
 {
+    if ( findString.isEmpty() ) return;
     if ( recentFinds.startsWith( findString )) return;
     recentFinds.removeAll( findString );
     recentFinds.prepend( findString );
@@ -1096,6 +1101,7 @@ void MainWindow::updateFindHistory( const QString &findString )
 
 void MainWindow::updateReplaceHistory( const QString &replaceString )
 {
+    if ( replaceString.isEmpty() ) return;
     if ( recentReplaces.startsWith( replaceString )) return;
     recentReplaces.removeAll( replaceString );
     recentReplaces.prepend( replaceString );
