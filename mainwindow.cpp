@@ -760,7 +760,7 @@ void MainWindow::findNext( const QString &str, bool cs, bool words, bool fromSta
     int pos = fromStart ? 0 :
                           editor->textCursor().selectionEnd();
 
-    showFindResult( editor->document()->find( str, pos, flags ));
+    showFindResult( editor->document()->find( str, pos, flags ), str );
 }
 
 
@@ -780,7 +780,7 @@ void MainWindow::findNextRegExp( const QString &str, bool cs, bool fromStart )
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     int pos = fromStart ? 0 :
                           editor->textCursor().selectionEnd();
-    showFindResult( editor->document()->find( regexp, pos, flags ));
+    showFindResult( editor->document()->find( regexp, pos, flags ), str );
 }
 
 
@@ -801,7 +801,7 @@ void MainWindow::findPrevious( const QString &str, bool cs, bool words, bool fro
         flags |= QTextDocument::FindWholeWords;
     int pos = fromEnd ? editor->document()->characterCount() :
                         editor->textCursor().selectionStart();
-    showFindResult( editor->document()->find( str, pos, flags ));
+    showFindResult( editor->document()->find( str, pos, flags ), str );
 }
 
 
@@ -821,7 +821,7 @@ void MainWindow::findPreviousRegExp( const QString &str, bool cs, bool fromEnd )
     QTextDocument::FindFlags flags = QTextDocument::FindBackward;
     int pos = fromEnd ? editor->document()->characterCount() :
                         editor->textCursor().selectionStart();
-    showFindResult( editor->document()->find( regexp, pos, flags ));
+    showFindResult( editor->document()->find( regexp, pos, flags ), str );
 }
 
 
@@ -837,7 +837,7 @@ void MainWindow::replaceNext( const QString &str, const QString &repl, bool cs, 
     int pos = fromStart ? 0 :
                           editor->textCursor().selectionStart();
     QTextCursor found = editor->document()->find( str, pos, flags );
-    if ( showFindResult( found )) {
+    if ( showFindResult( found, str )) {
         if ( ! replaceFindResult( editor->textCursor(), repl, confirm )) {
             // Clear selection but move the cursor position to its end
             pos = found.selectionEnd();
@@ -870,7 +870,7 @@ void MainWindow::replaceNextRegExp( const QString &str, const QString &repl, boo
     int pos = fromStart ? 0 :
                           editor->textCursor().selectionStart();
     QTextCursor found = editor->document()->find( regexp, pos, flags );
-    if ( showFindResult( found )) {
+    if ( showFindResult( found, str )) {
         QString newText = found.selectedText();
         newText.replace( regexp, replaceStr );
         if ( !replaceFindResult( editor->textCursor(), newText, confirm )) {
@@ -898,7 +898,7 @@ void MainWindow::replacePrevious( const QString &str, const QString &repl, bool 
                         editor->textCursor().selectionEnd();
 
     QTextCursor found = editor->document()->find( str, pos, flags );
-    if ( showFindResult( found )) {
+    if ( showFindResult( found, str )) {
         if ( ! replaceFindResult( editor->textCursor(), repl, confirm )) {
             // Move the cursor to the selection start, then clear the selection
             pos = found.selectionStart();
@@ -931,7 +931,7 @@ void MainWindow::replacePreviousRegExp( const QString &str, const QString &repl,
     int pos = fromEnd ? editor->document()->characterCount() :
                         editor->textCursor().selectionEnd();
     QTextCursor found = editor->document()->find( regexp, pos, flags );
-    if ( showFindResult( found )) {
+    if ( showFindResult( found, str )) {
         QString newText = found.selectedText();
         newText.replace( regexp, replaceStr );
         if ( !replaceFindResult( editor->textCursor(), newText, confirm )) {
@@ -963,7 +963,7 @@ void MainWindow::replaceAll( const QString &str, const QString &repl, bool cs, b
     QTextCursor found = editor->document()->find( str, pos, flags );
 
     if ( found.isNull() ) {
-        showMessage( tr("No matches."));
+        showMessage( tr("No matches found for: %1").arg( str ));
         found = editor->textCursor();
         found.clearSelection();
         return;
@@ -1037,7 +1037,7 @@ void MainWindow::replaceAllRegExp( const QString &str, const QString &repl, bool
                                        editor->textCursor().selectionStart() );
     QTextCursor found = editor->document()->find( regexp, pos, flags );
     if ( found.isNull() ) {
-        showMessage( tr("No matches."));
+        showMessage( tr("No matches found for: %1").arg( str ));
         found = editor->textCursor();
         found.clearSelection();
         return;
@@ -2386,12 +2386,12 @@ void MainWindow::updateEncoding()
 }
 
 
-bool MainWindow::showFindResult( QTextCursor found )
+bool MainWindow::showFindResult( QTextCursor found, const QString &str )
 {
     bool isFound = false;
     findAgainAction->setEnabled( true );
     if ( found.isNull() ) {
-        showMessage( tr("No matches."));
+        showMessage( tr("No matches found for: %1").arg( str ));
         found = editor->textCursor();
         found.clearSelection();
     }

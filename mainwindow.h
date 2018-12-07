@@ -177,7 +177,7 @@ private:
     void updateRecentFileActions();
     QString strippedName( const QString &fullFileName );
     void showMessage( const QString &message );
-    bool showFindResult( QTextCursor found );
+    bool showFindResult( QTextCursor found, const QString &str );
     bool replaceFindResult( QTextCursor found, const QString newText, bool confirm );
     QString getFileCodepage( const QString &fileName );
     void setFileCodepage( const QString &fileName, const QString &encodingName );
