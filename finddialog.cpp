@@ -31,6 +31,7 @@ FindDialog::FindDialog( QWidget *parent )
     setupUi( this );
     connect( cancelButton, SIGNAL( clicked() ), this, SLOT( close() ));
     findEdit->lineEdit()->installEventFilter( this );
+    findEdit->installEventFilter( this );
 }
 
 
@@ -95,10 +96,23 @@ bool FindDialog::eventFilter( QObject *target, QEvent *event )
 {
     bool ok = QDialog::eventFilter( target, event );
 
-    if (( target == findEdit ) && ( event->type() == QEvent::MouseButtonPress )) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        QLineEdit *lineEdit = static_cast<QLineEdit *>(target);
-        mouseAction( mouseEvent, lineEdit );
+    if ( target == findEdit->lineEdit() ) {
+        // Support clipboard mouse actions in the entryfield
+        if ( event->type() == QEvent::MouseButtonPress ) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+            mouseAction( mouseEvent, findEdit->lineEdit() );
+        }
+    }
+    else if ( target == findEdit ) {
+        // Prevent QComboBox from intercepting Enter, let the dialog handle it
+        if ( event->type() == QEvent::KeyPress ) {
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+            int pressedKey = keyEvent->key();
+            if (( pressedKey == Qt::Key_Return ) || ( pressedKey == Qt::Key_Enter )) {
+                keyPressEvent( keyEvent );
+                ok = true;
+            }
+        }
     }
     return ok;
 }
