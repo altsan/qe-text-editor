@@ -201,9 +201,10 @@ last line in the current text.
 .br
 :p.The Find dialog contains the following controls.
 :dl break=fit tsize=30.
-:dt.Find (entry field)
-:dd.Enter the text (or regular expression &mdash. see below) that you want
-to search for.
+:dt.Find (combo-box)
+:dd.Enter the text (or regular expression &mdash. see below) that you want to
+search for. The drop-down list portion contains a history of previous search
+terms that you can select from.
 :dt.Regular expression
 :dd.Normally, QE will search for the text as entered, verbatim. Checking this box
 will cause QE to interpret that text as a :link reftype=fn refid=regex.regular
@@ -238,17 +239,19 @@ consecutive searches using different search terms.
 .br
 :p.The Find/Replace dialog contains the following controls.
 :dl break=fit tsize=30.
-:dt.Find (entry field)
+:dt.Find (combo-box)
 :dd.Enter the text (or regular expression &mdash. see below) that you want
-to search for.
-:dt.Replace with (entry field)
+to search for. The drop-down list portion contains a history of previous search terms
+that you can select from.
+:dt.Replace with (combo-box)
 :dd.Enter the text with which the find results will be replaced. This only applies
-when using :hp2.Replace:ehp2. or :hp2.Replace all:ehp2..
+when using :hp2.Replace:ehp2. or :hp2.Replace all:ehp2.. The drop-down list portion
+contains a history of previously-entered replacement text.
 :dt.Regular expression
 :dd.Normally, QE will search for the text as entered, verbatim. Checking this box
 will cause QE to interpret that text as a :link reftype=fn refid=regex.regular
 expression:elink. instead.
-:p.Note that the text in the &osq.Replace with&csq. entry field will :hp1.not:ehp1. be
+:p.Note that the text in the &osq.Replace with&csq. field will :hp1.not:ehp1. be
 treated as a regular expression, except that regex-style substitution variables
 (\1, \2, etc.) may be used.
 :dt.Match case
@@ -297,25 +300,29 @@ file. More information on regular expressions in general can be found at&colon.
 
 .*****************************************************************************
 :h1 x=left y=bottom width=100% height=100% res=200.Keyboard commands
-:p.QE supports the following keyboard commands and shortcuts.
+:p.QE uses platform-defined keyboard shortcuts for several common commands.
+Therefore, certain specific shortcuts may vary depending on the operating
+system.
 
-:p.:hp5.File and program commands:ehp5.
-:dl compact tsize=30 break=fit.
+:p.The following keyboard commands and shortcuts are common to all platforms.
 
-:dt.F2
-:dd.Save file
+.* :p.:hp5.File and program commands:ehp5.
+.* :dl compact tsize=30 break=fit.
 
-:dt.F3
-:dd.Exit QE
+.* :dt.F2
+.* :dd.Save file
 
-:dt.Ctrl+N
-:dd.New file
+.* :dt.Ctrl+N
+.* :dd.New file
 
-:dt.Ctrl+O
-:dd.Open file
+.* :dt.Ctrl+O
+.* :dd.Open file
 
-:dt.Ctrl+P
-:dd.Print file
+.* :dt.Ctrl+P
+.* :dd.Print file
+
+.* :dt.F3
+.* :dd.Exit QE
 
 :edl.
 
@@ -348,32 +355,32 @@ file. More information on regular expressions in general can be found at&colon.
 :p.:hp5.Editing commands:ehp5.
 :dl compact tsize=30 break=fit.
 
-:dt.Ctrl+A  or  Ctrl+/
-:dd.Select all
+:dt.Ctrl+/
+:dd.Select all (this is in addition to any platform-specific shortcut)
 
-:dt.Ctrl+F
-:dd.Find text
+.* :dt.Ctrl+F
+.* :dd.Find text
 
 :dt.Ctrl+G
-:dd.Find again
-
-:dt.Ctrl+Ins  or  Ctrl+C
-:dd.Copy selected text
+:dd.Find again (repeat last search)
 
 :dt.Ctrl+R
 :dd.Find and replace text
 
-:dt.Ctrl+Y  or  Shift+Alt+Bksp
-:dd.Redo edit
+.* :dt.Ctrl+Ins  or  Ctrl+C
+.* :dd.Copy selected text
 
-:dt.Ctrl+Z  or  Alt+Bksp
-:dd.Undo edit
+.* :dt.Ctrl+Y  or  Shift+Alt+Bksp
+.* :dd.Redo edit
 
-:dt.Shift+Del  or  Ctrl+X
-:dd.Cut selected text
+.* :dt.Ctrl+Z  or  Alt+Bksp
+.* :dd.Undo edit
 
-:dt.Shift+Ins  or  Ctrl+V
-:dd.Paste selected text
+.* :dt.Shift+Del  or  Ctrl+X
+.* :dd.Cut selected text
+
+.* :dt.Shift+Ins  or  Ctrl+V
+.* :dd.Paste selected text
 
 :edl.
 
@@ -395,8 +402,13 @@ file. More information on regular expressions in general can be found at&colon.
 
 :p.:hp5.Other commands:ehp5.
 :dl compact tsize=30 break=fit.
+
 :dt.F1
 :dd.Show help
+
+:dt.F3
+:dd.Exit QE
+
 :edl.
 
 
