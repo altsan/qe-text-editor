@@ -229,6 +229,7 @@ MainWindow::MainWindow()
     editor = new QeTextEdit( this );
 
     editor->setBackgroundVisible( true );
+    editor->document()->setUseDesignMetrics( false );
     QPalette p = editor->palette();
     p.setColor( QPalette::Background, QColor("#F0F0F0"));
     editor->setPalette(p);
@@ -1007,7 +1008,9 @@ void MainWindow::replaceAll( const QString &str, const QString &repl, bool cs, b
     showMessage( tr("%1 occurences replaced.").arg( count ));
     found = editor->textCursor();
     found.clearSelection();
+    editor->setCenterOnScroll( true );
     editor->setTextCursor( found );
+    editor->setCenterOnScroll( false );
 }
 
 
@@ -2401,7 +2404,9 @@ bool MainWindow::showFindResult( QTextCursor found, const QString &str )
         showMessage( tr("Found match at %1:%2").arg( temp.blockNumber() + 1 ).arg( temp.positionInBlock() ));
         isFound = true;
     }
+    editor->setCenterOnScroll( true );
     editor->setTextCursor( found );
+    editor->setCenterOnScroll( false );
     return isFound;
 }
 
