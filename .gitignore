@@ -14,6 +14,8 @@
 *.[Bb][Aa][Kk]
 *.[Ll][Oo][Gg]
 *.[Zz][Ii][Pp]
+*.o
+*.tar.gz
 #
 # Files created dynamically by the Qt build process
 #

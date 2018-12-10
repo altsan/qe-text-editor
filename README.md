@@ -59,6 +59,30 @@ Installation
   `qe.qch` and `qe.qhc` if you want online help support.
 
 
+Building
+--------
+
+GCC, GNU Make, and the Qt4 development libraries for your platform are 
+required.  As long as these are all installed correctly, building the
+executable should be as simple as running `qmake qe.pro` followed by `make`
+(or `make release` under Windows, if you are building the non-debug version).
+
+Building the help is somewhat more complicated.  The help file source is in
+IBM IPF format.  Under OS/2 this is compiled to HLP using the IPFC compiler:
+run `ipfc qe.ipf` from inside the `help` subdirectory.  
+
+However, on Windows and Linux the help must be converted to QtAssistant
+format, which involves converting the IPF file to HTML and then running
+`qcollectiongenerator`.  The script `makehtml.cmd` performs the first part of
+this task; it is written in REXX and only tested under OS/2 (although it may
+work with Open Object REXX on other platforms).  All this script really does
+is run `qe.ipf` through the SED script `ipfhtml.sed`, split the resulting
+output into single-section HTML files, and ensure that any IPF links are
+converted to the proper URIs.  Once this is done, you will have a series of
+`qe.*.html` files; running `qcollectiongenerator qe.qhcp -o qe.qhc` should
+then generate the final QtAssistant help files.
+
+
 Notices
 -------
 
