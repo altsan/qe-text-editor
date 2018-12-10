@@ -324,7 +324,7 @@ system.
 .* :dt.F3
 .* :dd.Exit QE
 
-:edl.
+.* :edl.
 
 :p.:hp5.Navigation commands:ehp5.
 :dl compact tsize=30 break=fit.
