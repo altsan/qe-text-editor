@@ -13,8 +13,8 @@ viewing and editing plain text.
 
 :p.Refer to the following sections for information about using QE&colon.
 :ul compact.
-:li.:link res=100 reftype=hd.User interface:elink.
-:li.:link res=200 reftype=hd.Keyboard commands:elink.
+:li.:link reftype=hd res=100.User interface:elink.
+:li.:link reftype=hd res=200.Keyboard commands:elink.
 :eul.
 
 :note.The name &osq.QE&csq. was chosen for continuity with other basic OS/2 text
