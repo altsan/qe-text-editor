@@ -231,7 +231,8 @@ private:
     // East Asian
     QMenu   *eastAsiaMenu;
     QAction *big5Action;        // Big-5                                (codepage 950)
-    QAction *gbkAction;         // GBK/GB18030                          (codepage 1386)
+    QAction *gb18030Action;     // GB18030                              (codepage 54936)
+    QAction *gbkAction;         // GBK                                  (codepage 1386)
     QAction *gbAction;          // GB2312                               (codepage 1381)
     QAction *eucJpAction;       // EUC-JP                               (codepage 954)
     QAction *iso2022JpAction;   // ISO-2022-JP (Japanese mail encoding) (codepage 4992)

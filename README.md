@@ -59,8 +59,8 @@ Installation
   `qe.qch` and `qe.qhc` if you want online help support.
 
 
-Building
---------
+Building from Source
+--------------------
 
 GCC, GNU Make, and the Qt4 development libraries for your platform are 
 required.  As long as these are all installed correctly, building the
@@ -86,26 +86,26 @@ then generate the final QtAssistant help files.
 Notices
 -------
 
-  QE Text Editor
-  Copyright (C) 2018 Alexander Taylor
+QE Text Editor  
+Copyright (C) 2018-2019 Alexander Taylor
 
-  Some code snippets are derived from examples in "C++ GUI Programming
-  with Qt4" (Second Edition) by Jasmin Blanchette & Mark Summerfield.
+Some code snippets are derived from examples in "C++ GUI Programming
+with Qt4" (Second Edition) by Jasmin Blanchette & Mark Summerfield.
 
-  OS/2 version includes the public domain "EAString" module by Roger Orr.
+OS/2 version includes the public domain "EAString" module by Roger Orr.
 
-  OS/2 native file dialog code is derived in part from the Mozilla for OS/2
-  project.
+OS/2 native file dialog code is derived in part from the Mozilla for OS/2
+project.
 
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.

@@ -95,8 +95,9 @@ encodings are supported&colon.
  1275    Apple Roman
  1363    cp949
  1381    GB2312
- 1386    GB18030-0
+ 1386    GBK
  4992    ISO-2022-JP
+ 54936   GB18030
 :exmp.
 :p.Note that if the encoding name contains spaces, you will need to wrap it
 in double quotes (unless you are using a shell which supports other
@@ -516,7 +517,7 @@ the GNU Compiler Collection (GCC).
 :lm margin=4.
 :p.:hp2.QE Text Editor:ehp2.
 .br
-Copyright (C) 2018 Alexander Taylor
+Copyright (C) 2019 Alexander Taylor
 
 :p.Contains some code derived from examples in :hp1.C++ GUI Programming
 with Qt4 (Second Edition):ehp1. by Jasmin Blanchette &amp. Mark Summerfield.

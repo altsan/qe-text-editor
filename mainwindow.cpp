@@ -1,7 +1,7 @@
 /******************************************************************************
 ** QE - mainwindow.cpp
 **
-**  Copyright (C) 2018 Alexander Taylor
+**  Copyright (C) 2018-2019 Alexander Taylor
 **  Some parts based on sample code from Blanchette & Summerfield, "C++ GUI
 **  Programming with Qt4" (Second Edition), Pearson 2007.
 **
@@ -118,8 +118,9 @@ unsigned int Codepage_CCSIDs[] = {
     1275,  // "Apple Roman"
     1363,  // "cp949"
     1381,  // "GB2312"
-    1386,  // "GB18030-0"
-    4992   // "ISO-2022-JP"
+    1386,  // "GBK"
+    4992,  // "ISO-2022-JP"
+    54936  // "GB18030"
 };
 
 QString Codepage_Mappings[] = {
@@ -171,8 +172,9 @@ QString Codepage_Mappings[] = {
     "Apple Roman",
     "cp949",
     "GB2312",
-    "GB18030-0",
-    "ISO-2022-JP"
+    "GBK",
+    "ISO-2022-JP",
+    "GB18030"
 };
 
 // #endif
@@ -266,7 +268,6 @@ MainWindow::MainWindow()
     icon.addFile(":/images/editor_64.png", QSize( 64, 64 ), QIcon::Normal, QIcon::On );
     icon.addFile(":/images/editor_80.png", QSize( 80, 80 ), QIcon::Normal, QIcon::On );
     setWindowIcon( icon );
-
 #endif
 
     helpInstance = NULL;
@@ -594,7 +595,7 @@ void MainWindow::about()
     QMessageBox::about( this,
                         tr("Product Information"),
                         tr("<b>QE Text Editor</b><br>Version %1<hr>"
-                           "Copyright &copy;2018 Alexander Taylor"
+                           "Copyright &copy;2019 Alexander Taylor"
                            "<p>Licensed under the GNU General Public License "
                            "version 3.0&nbsp;<br>"
                            "<a href=\"https://www.gnu.org/licenses/gpl.html\">"
@@ -1672,11 +1673,18 @@ void MainWindow::createEncodingActions()
     big5Action->setStatusTip( tr("Big-5 (with HKSCS supplement) is a Chinese text encoding used in Taiwan and Hong Kong."));
     connect( big5Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
-    gbkAction = new QAction( tr("Chinese (GB18030)"), this );
+    gb18030Action = new QAction( tr("Chinese (GB18030)"), this );
+    encodingGroup->addAction( gb18030Action );
+    gb18030Action->setCheckable( true );
+    gb18030Action->setData("GB18030");
+    gb18030Action->setStatusTip( tr("This is used for Chinese text encoding in mainland China; it is a relatively recent replacement for GBK."));
+    connect( gb18030Action, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
+
+    gbkAction = new QAction( tr("Chinese (GBK)"), this );
     encodingGroup->addAction( gbkAction );
     gbkAction->setCheckable( true );
-    gbkAction->setData("GB18030-0");
-    gbkAction->setStatusTip( tr("This is used for Chinese text encoding in mainland China; it is a superset of a previous standard called GBK."));
+    gbkAction->setData("GBK");
+    gbkAction->setStatusTip( tr("This is used for Chinese text encoding in mainland China; also known as codepage 936 and IBM-1386."));
     connect( gbkAction, SIGNAL( triggered() ), this, SLOT( setTextEncoding() ));
 
     gbAction = new QAction( tr("Chinese (GB2312)"), this );
@@ -1871,6 +1879,8 @@ void MainWindow::createMenus()
 
     eastAsiaMenu = encodingMenu->addMenu( tr("&East Asian"));
     eastAsiaMenu->addAction( big5Action );
+    if ( QTextCodec::codecForName("GB18030") != 0 )
+    eastAsiaMenu->addAction( gb18030Action );
     eastAsiaMenu->addAction( gbkAction );
     if ( QTextCodec::codecForName("GB2312") != 0 )
         eastAsiaMenu->addAction( gbAction );
