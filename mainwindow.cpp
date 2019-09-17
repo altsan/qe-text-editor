@@ -1350,6 +1350,11 @@ void MainWindow::createActions()
     goToAction->setStatusTip( tr("Go to the specified line of the file") );
     connect( goToAction, SIGNAL( triggered() ), this, SLOT( goToLine() ));
 
+    deleteLineAction = new QAction( tr("&Delete line"), this );
+    deleteLineAction->setShortcut( tr("Ctrl+Backspace"));
+    deleteLineAction->setStatusTip( tr("Delete the line (including any wrapped portions) at the current cursor position") );
+    connect( deleteLineAction, SIGNAL( triggered() ), this, SLOT( deleteLine() ));
+
     // Options menu actions
 
     wrapAction = new QAction( tr("&Word wrap"), this );
@@ -1967,6 +1972,7 @@ void MainWindow::createMenus()
     editMenu->addAction( selectAllAction );
     editMenu->addSeparator();
     editMenu->addAction( goToAction );
+    editMenu->addAction( deleteLineAction );
     editMenu->addSeparator();
     editMenu->addAction( findAction );
     editMenu->addAction( findAgainAction );
@@ -2396,6 +2402,16 @@ void MainWindow::updateEncoding()
         }
     }
     updateEncodingLabel();
+}
+
+
+void MainWindow::deleteLine()
+{
+    QTextCursor cursor;
+
+    cursor = editor->textCursor();
+    cursor.select( QTextCursor::BlockUnderCursor );
+    cursor.removeSelectedText();
 }
 
 

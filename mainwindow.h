@@ -126,6 +126,7 @@ private slots:
     void showKeysHelp();
     void openRecentFile();
     void clearRecentFiles();
+    void deleteLine();
     bool toggleEditMode( bool ovr );
     bool toggleReadOnly( bool readOnly );
     bool toggleWordWrap( bool bWrap );
@@ -306,6 +307,7 @@ private:
     QAction *findAgainAction;
     QAction *replaceAction;
     QAction *goToAction;
+    QAction *deleteLineAction;
 
     QMenu   *optionsMenu;
     QAction *wrapAction;
