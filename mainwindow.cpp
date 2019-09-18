@@ -2410,7 +2410,15 @@ void MainWindow::deleteLine()
     QTextCursor cursor;
 
     cursor = editor->textCursor();
-    cursor.select( QTextCursor::BlockUnderCursor );
+    cursor.setPosition( cursor.block().position(), QTextCursor::MoveAnchor );
+
+    // Need to handle the last line specially if it doesn't end in a newline
+    if ( 1 + cursor.blockNumber() == editor->blockCount() )
+        // If last line, delete to end of document
+        cursor.movePosition( QTextCursor::End, QTextCursor::KeepAnchor );
+    else
+        // Otherwise delete to start of next block (including newline)
+        cursor.movePosition( QTextCursor::NextBlock, QTextCursor::KeepAnchor );
     cursor.removeSelectedText();
 }
 
