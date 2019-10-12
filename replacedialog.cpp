@@ -30,8 +30,18 @@ ReplaceDialog::ReplaceDialog( QWidget *parent )
 {
     setupUi( this );
     connect( cancelButton, SIGNAL( clicked() ), this, SLOT( close() ));
+
+    QCompleter *completer = findEdit->completer();
+    completer->setCompletionMode( QCompleter::PopupCompletion );
+
+    findEdit->setCompleter( completer );
     findEdit->lineEdit()->installEventFilter( this );
     findEdit->installEventFilter( this );
+
+    completer = replaceEdit->completer();
+    completer->setCompletionMode( QCompleter::PopupCompletion );
+
+    replaceEdit->setCompleter( completer );
     replaceEdit->lineEdit()->installEventFilter( this );
     replaceEdit->installEventFilter( this );
 }
@@ -80,6 +90,18 @@ void ReplaceDialog::on_backCheckBox_toggled( bool checked )
 {
     startCheckBox->setText( checked? tr("Fro&m end of file"):
                                      tr("Fro&m start of file") );
+}
+
+
+void ReplaceDialog::on_caseCheckBox_toggled( bool checked )
+{
+    QCompleter *completer = findEdit->completer();
+    completer->setCaseSensitivity( checked? Qt::CaseSensitive: Qt::CaseInsensitive );
+    findEdit->setCompleter( completer );
+
+    completer = replaceEdit->completer();
+    completer->setCaseSensitivity( checked? Qt::CaseSensitive: Qt::CaseInsensitive );
+    replaceEdit->setCompleter( completer );
 }
 
 

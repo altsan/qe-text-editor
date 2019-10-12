@@ -55,6 +55,7 @@ private slots:
     void on_replaceEdit_currentIndexChanged( int index );
     void on_reCheckBox_toggled( bool checked );
     void on_backCheckBox_toggled( bool checked );
+    void on_caseCheckBox_toggled( bool checked );
     void on_findButton_clicked();
     void on_replaceButton_clicked();
     void on_replaceAllButton_clicked();

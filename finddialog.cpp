@@ -30,10 +30,13 @@ FindDialog::FindDialog( QWidget *parent )
 {
     setupUi( this );
     connect( cancelButton, SIGNAL( clicked() ), this, SLOT( close() ));
+
+    QCompleter *completer = findEdit->completer();
+    completer->setCompletionMode( QCompleter::PopupCompletion );
+
     findEdit->lineEdit()->installEventFilter( this );
     findEdit->installEventFilter( this );
 }
-
 
 void FindDialog::show()
 {
@@ -71,6 +74,14 @@ void FindDialog::on_backCheckBox_toggled( bool checked )
 {
     startCheckBox->setText( checked? tr("Fro&m end of file"):
                                      tr("Fro&m start of file") );
+}
+
+
+void FindDialog::on_caseCheckBox_toggled( bool checked )
+{
+    QCompleter *completer = findEdit->completer();
+    completer->setCaseSensitivity( checked? Qt::CaseSensitive: Qt::CaseInsensitive );
+    findEdit->setCompleter( completer );
 }
 
 
