@@ -75,3 +75,6 @@ s/:artwork align=([a-zA-Z]*) name='([^.]*)\.bmp'\./<p align="\1"><img src="\2.pn
 s/:artwork align=([a-zA-Z]*) name='([^']*)'\./<p align="\1"><img src="\2"><\/p>/g
 s/:lm margin=[2-9]*\./<blockquote>/g
 s/:lm margin=1\./<\/blockquote>/g
+s/:dt.\//:dt.-/g
+s/&argprefix\./-/g
+s/^\.nameit(.*)$/<!-- \1 -->/g
