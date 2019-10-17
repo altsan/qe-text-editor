@@ -74,13 +74,14 @@ run `ipfc qe.ipf` from inside the `help` subdirectory.
 However, on Windows and Linux the help must be converted to QtAssistant
 format, which involves converting the IPF file to HTML and then running
 `qcollectiongenerator`.  The script `makehtml.cmd` performs the first part of
-this task; it is written in REXX and only tested under OS/2 (although it
-might work with Open Object REXX or Regina on other platforms).  All this
-script really does is run `qe.ipf` through the SED script `ipfhtml.sed`,
-split the resulting output into single-section HTML files, and ensure that
-any IPF links are converted to the proper URIs.  Once this is done, you will
-have a series of `qe.*.html` files; running `qcollectiongenerator qe.qhcp -o
-qe.qhc` should then generate the final QtAssistant help files.
+this task; it is written in REXX and has been confirmed to work with classic
+REXX under OS/2, and Regina REXX under Windows.  It also requires the SED 
+utility (GNU sed or the equivalent) to run.  This script runs `qe.ipf` 
+through the SED script `ipfhtml.sed`, splits the resulting output into 
+single-section HTML files, and ensures that any IPF links are converted to 
+the proper URIs.  Once this is done, you will have a series of `qe.*.html` 
+files; running `qcollectiongenerator qe.qhcp -o qe.qhc` should then generate 
+the final QtAssistant help files.
 
 
 Notices

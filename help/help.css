@@ -1,12 +1,11 @@
 body {
-    font-face: sans-serif;
+    font-family: sans-serif;
 }
 h1, h2, h3 {
     display: none;
 }
 dt {
-    font-weight: italic;
-
+    font-style: italic;
 }
 dd, li {
     margin-bottom: 1em;
