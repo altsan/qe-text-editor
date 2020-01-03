@@ -951,6 +951,7 @@ void MainWindow::replacePreviousRegExp( const QString &str, const QString &repl,
 void MainWindow::replaceAll( const QString &str, const QString &repl, bool cs, bool words, bool fromStart, bool confirm, bool backwards )
 {
     updateFindHistory( str );
+    updateReplaceHistory( repl );
     QTextDocument::FindFlags flags = QTextDocument::FindFlags( 0 );
     if ( cs )
         flags |= QTextDocument::FindCaseSensitively;
