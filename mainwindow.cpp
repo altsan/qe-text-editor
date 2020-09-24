@@ -2269,7 +2269,7 @@ bool MainWindow::saveFile( const QString &fileName )
     if ( !currentEncoding.isEmpty() ) {
         setFileCodepage( fileName, currentEncoding );
     }
-#else
+#else       // USE_IO_THREADS
 
     QApplication::setOverrideCursor( Qt::WaitCursor );
     menuBar()->setEnabled( false );
@@ -2280,8 +2280,8 @@ bool MainWindow::saveFile( const QString &fileName )
         saveThread = new QeSaveThread();
     connect( saveThread, SIGNAL( updateProgress( int )), this, SLOT( saveProgress( int )));
     connect( saveThread, SIGNAL( saveComplete( qint64 )), this, SLOT( saveDone( qint64 )));
-    QTextCodec codec = QTextCodec::codecForName( currentEncoding.toLatin1().data() );
-    saveThread->setFile( file, codec, fileName );
+    QTextCodec *codec = QTextCodec::codecForName( currentEncoding.toLatin1().data() );
+    saveThread->setFile( &file, codec, fileName );
     saveThread->fullText = editor->toPlainText();
     saveThread->start();
     isSaveThreadActive = true;
