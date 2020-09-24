@@ -29,6 +29,15 @@
 
 #define FILE_CHUNK_SIZE  0x100000
 
+#define EOL_LF      0
+#define EOL_CRLF    1
+
+#if defined( Q_OS_UNIX )
+#define PLATFORM_NEWLINE EOL_LF
+#else
+#define PLATFORM_NEWLINE EOL_CRLF
+#endif
+
 
 // ============================================================================
 // QeOpenThread

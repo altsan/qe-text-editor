@@ -112,6 +112,14 @@ void QeSaveThread::run()
     if ( outputFile != NULL ) {
         bool bExists = ( outputFile->exists() );
         QTextStream out( outputFile );
+
+        /* TODO
+        if platform_newline == DOS and requested_newline == UNIX:
+            fulltext.replace("\r\n", "\n");
+        else if platform_newline == UNIX and requested_newline == DOS:
+            fulltext.replace("\n", "\r\n");
+        */
+
         qint64 total = fullText.size();
         qint64 written = 0;
         if ( outputEncoding != NULL )

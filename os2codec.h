@@ -31,8 +31,8 @@ template <typename T> class QAtomicPointer;
 class QeOS2Codec : public QTextCodec
 {
     public:
-        enum { numCodecs = 16 };
-        enum { IBM437, IBM852, IBM855, IBM857, IBM858, IBM859, IBM860, IBM861, IBM863, IBM864, IBM865, IBM867, IBM869, IBM922, IBM1125, IBM1131 };
+        enum { numCodecs = 17 };
+        enum { IBM437, IBM852, IBM855, IBM857, IBM858, IBM859, IBM860, IBM861, IBM863, IBM864, IBM865, IBM867, IBM869, IBM922, IBM1125, IBM1131, MEMJA };
         QeOS2Codec( int );
         ~QeOS2Codec();
         QList<QByteArray> aliases() const;

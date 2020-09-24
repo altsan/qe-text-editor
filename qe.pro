@@ -7,7 +7,7 @@ TEMPLATE = app
 TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
-os2:QMAKE_CXXFLAGS += -Wno-unused-local-typedefs
+os2:QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-literal-suffix
 
 # Input
 HEADERS += finddialog.h replacedialog.h gotolinedialog.h eastring.h os2codec.h mainwindow.h qetextedit.h ctlutils.h threads.h

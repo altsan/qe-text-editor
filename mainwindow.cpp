@@ -102,6 +102,7 @@ unsigned int Codepage_CCSIDs[] = {
     1090,  // "ISO 8859-14"
     1091,  // "ISO 8859-16"
     1092,  // "TSCII"
+    1111,  // "MEMDISK-JA"
     1168,  // "KOI8-U"
     1200,  // "UTF-16BE"
     1202,  // "UTF-16LE"
@@ -156,6 +157,7 @@ QString Codepage_Mappings[] = {
     "ISO 8859-14",
     "ISO 8859-16",
     "TSCII",
+    "MEMDISK-JA",
     "KOI8-U",
     "UTF-16BE",
     "UTF-16LE",
@@ -206,6 +208,7 @@ MainWindow::MainWindow()
     QeOS2Codec *codec922  = new QeOS2Codec( QeOS2Codec::IBM922 );
     QeOS2Codec *codec1125 = new QeOS2Codec( QeOS2Codec::IBM1125 );
     QeOS2Codec *codec1131 = new QeOS2Codec( QeOS2Codec::IBM1131 );
+    QeOS2Codec *codecmemj = new QeOS2Codec( QeOS2Codec::MEMJA );
 
     // Keep the compiler happy
     if ( codec437 ) {;}
@@ -224,6 +227,7 @@ MainWindow::MainWindow()
     if ( codec922 ) {;}
     if ( codec1125) {;}
     if ( codec1131) {;}
+    if ( codecmemj) {;}
 #endif
 
     setAttribute( Qt::WA_DeleteOnClose );
@@ -2276,7 +2280,7 @@ bool MainWindow::saveFile( const QString &fileName )
         saveThread = new QeSaveThread();
     connect( saveThread, SIGNAL( updateProgress( int )), this, SLOT( saveProgress( int )));
     connect( saveThread, SIGNAL( saveComplete( qint64 )), this, SLOT( saveDone( qint64 )));
-    QTextCodec codec( QTextCodec::codecForName( currentEncoding.toLatin1().data() ));
+    QTextCodec codec = QTextCodec::codecForName( currentEncoding.toLatin1().data() );
     saveThread->setFile( file, codec, fileName );
     saveThread->fullText = editor->toPlainText();
     saveThread->start();
