@@ -363,7 +363,7 @@ void MainWindow::dropEvent (QDropEvent *event )
 
 void MainWindow::newFile()
 {
-    if ( okToContinue() ) {
+    if ( okToContinue() && clearReadOnlyOnNew() ) {
         editor->clear();
         setCurrentFile("");
     }
@@ -2107,6 +2107,21 @@ void MainWindow::writeSettings()
 }
 
 
+bool MainWindow::clearReadOnlyOnNew()
+{
+    if ( editor->isReadOnly() ) {
+        int r = QMessageBox::question( this,
+                    tr("Turn Off Read-Only?"),
+                    tr("Creating a new file will cause read-only mode to be turned off. Proceed?"),
+                    QMessageBox::Ok | QMessageBox::Cancel
+                );
+        if ( r != QMessageBox::Ok ) return false;
+        setReadOnly( false );
+    }
+    return true;
+}
+
+
 bool MainWindow::okToContinue()
 {
     if ( isWindowModified() ) {
@@ -2393,6 +2408,10 @@ void MainWindow::setReadOnly( bool readOnly )
                                         Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard :
                                         Qt::TextEditorInteraction
                                    );
+    // These might be out of sync if we got here from somewhere other than the action event
+    if ( readOnly != readOnlyAction->isChecked() )
+        readOnlyAction->setChecked( readOnly );
+
     updateModeLabel();
 }
 

@@ -174,6 +174,7 @@ private:
     bool saveFile( const QString &fileName );
 
     // Misc methods
+    bool clearReadOnlyOnNew();
     void setCurrentFile( const QString &fileName );
     void updateRecentFileActions();
     QString strippedName( const QString &fullFileName );
