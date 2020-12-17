@@ -430,6 +430,12 @@ void OS2Native::showHelpPanel( void *help_instance, unsigned short id )
 // ---------------------------------------------------------------------------
 // Get a widget's Presentation Manager window numeric identifier (resource ID).
 //
+// PARAMETERS:
+//     QWidget *window: The window to be queried
+//
+// RETURNS: unsigned short
+//     The PM resource ID, or 0 on error
+//
 unsigned short OS2Native::getWindowId( QWidget *window )
 {
     HWND   hwnd;
@@ -441,5 +447,29 @@ unsigned short OS2Native::getWindowId( QWidget *window )
 
     usID = WinQueryWindowUShort( hwnd, QWS_ID );
     return usID;
+}
+
+
+// ---------------------------------------------------------------------------
+// Set a frame window's icon to the specified OS/2-native icon resource.
+//
+// PARAMETERS:
+//     QWidget *window    : The window in question (should be a frame window
+//                          class like QDialog)
+//     void    *module    : The module (EXE or DLL) handle containing the
+//                          resource, or NULL for the current executable
+//     unsigned short usID: The PM resource ID of the icon resource
+//
+void OS2Native::setFrameIcon( QWidget *window, void *module, unsigned short usID )
+{
+    HWND     hwnd;
+    HPOINTER hIcon;
+
+    if ( !window ) return;
+    hwnd = WinQueryWindow( window->winId(), QW_PARENT );
+    if ( !hwnd ) return;
+
+    hIcon = WinLoadPointer( HWND_DESKTOP, (HMODULE) module, usID );
+    WinSendMsg( hwnd, WM_SETICON, (MPARAM) hIcon, (MPARAM) 0L );
 }
 
