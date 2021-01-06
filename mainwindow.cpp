@@ -1,7 +1,7 @@
 /******************************************************************************
 ** QE - mainwindow.cpp
 **
-**  Copyright (C) 2018-2019 Alexander Taylor
+**  Copyright (C) 2018-2021 Alexander Taylor
 **  Some parts based on sample code from Blanchette & Summerfield, "C++ GUI
 **  Programming with Qt4" (Second Edition), Pearson 2007.
 **
@@ -599,7 +599,7 @@ void MainWindow::about()
     QMessageBox::about( this,
                         tr("Product Information"),
                         tr("<b>QE Text Editor</b><br>Version %1<hr>"
-                           "Copyright &copy;2019 Alexander Taylor"
+                           "Copyright &copy;2021 Alexander Taylor"
                            "<p>Licensed under the GNU General Public License "
                            "version 3.0&nbsp;<br>"
                            "<a href=\"https://www.gnu.org/licenses/gpl.html\">"
@@ -2228,8 +2228,8 @@ bool MainWindow::saveFile( const QString &fileName )
             return false;
     }
 
-    QFile file( fileName );
-    bool bExists = ( file.exists() );
+    QFile *file = new QFile( fileName );
+    bool bExists = ( file->exists() );
 
     if ( bExists ) {
         QDateTime fileTime = QFileInfo( fileName ).lastModified();
@@ -2249,21 +2249,24 @@ bool MainWindow::saveFile( const QString &fileName )
         }
     }
 
-    // Opening in read/write mode seems to preserve EAs on existing files.
-    if ( !file.open( QIODevice::ReadWrite | QFile::Text )) {
+    // Always open in read/write mode, as it seems to preserve EAs on existing files.
+    if ( !file->open( QIODevice::ReadWrite | QFile::Text )) {
         QMessageBox::critical( this, tr("Error"), tr("Error writing file"));
         return false;
     }
-#ifdef USE_IO_THREADS
-    QTextStream out( &file );
+
+    QApplication::setOverrideCursor( Qt::WaitCursor );
+
+#ifndef USE_IO_THREADS
+    QTextStream out( file );
     out.setCodec( QTextCodec::codecForName( currentEncoding.toLatin1().data() ));
     QString text = editor->toPlainText();
     out << text;
     out.flush();
     qint64 iSize = out.pos();
-    if ( iSize != -1 ) file.resize( iSize );
-    file.flush();
-    file.close();
+    if ( iSize != -1 ) file->resize( iSize );
+    file->flush();
+    file->close();
 
     showMessage( tr("Saved file: %1 (%2 bytes written)").arg( QDir::toNativeSeparators( fileName )).arg( iSize ));
     setCurrentFile( fileName );
@@ -2284,9 +2287,10 @@ bool MainWindow::saveFile( const QString &fileName )
     if ( !currentEncoding.isEmpty() ) {
         setFileCodepage( fileName, currentEncoding );
     }
+    QApplication::restoreOverrideCursor();
+
 #else       // USE_IO_THREADS
 
-    QApplication::setOverrideCursor( Qt::WaitCursor );
     menuBar()->setEnabled( false );
     editor->setEnabled( false );
 
@@ -2296,8 +2300,8 @@ bool MainWindow::saveFile( const QString &fileName )
     connect( saveThread, SIGNAL( updateProgress( int )), this, SLOT( saveProgress( int )));
     connect( saveThread, SIGNAL( saveComplete( qint64 )), this, SLOT( saveDone( qint64 )));
     QTextCodec *codec = QTextCodec::codecForName( currentEncoding.toLatin1().data() );
-    saveThread->setFile( &file, codec, fileName );
-    saveThread->fullText = editor->toPlainText();
+    saveThread->setFile( file, codec, fileName );
+    saveThread->setText( editor->toPlainText() );
     saveThread->start();
     isSaveThreadActive = true;
 

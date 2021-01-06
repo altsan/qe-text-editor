@@ -4,7 +4,7 @@
 # CONFIG += debug console
 
 TEMPLATE = app
-TARGET =
+TARGET = qe
 DEPENDPATH += .
 INCLUDEPATH += .
 os2:QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-literal-suffix

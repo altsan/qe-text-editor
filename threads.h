@@ -83,10 +83,10 @@ class QeSaveThread : public QThread
 public:
     QeSaveThread();
     void    setFile( QFile *file, QTextCodec *codec, QString fileName );
+    void    setText( const QString &text );
     void    cancel();
 
     QString outputFileName;
-    QString fullText;
 
 signals:
     void updateProgress( int percentage );
@@ -97,6 +97,7 @@ protected:
 
 private:
     void        setProgress( qint64 progress, qint64 total );
+    QString     fullText;
     QFile      *outputFile;
     QTextCodec *outputEncoding;
 

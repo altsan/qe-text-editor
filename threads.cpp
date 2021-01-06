@@ -1,6 +1,7 @@
 #include "threads.h"
 #include "eastring.h"
 
+
 // ============================================================================
 // QeOpenThread
 //
@@ -140,11 +141,13 @@ void QeSaveThread::run()
             out.flush();
             written = out.pos();
         }
+
         // In case an existing file is being shrunk, make sure it's resized to the new contents
         if ( written != -1 ) outputFile->resize( written );
 
         outputFile->flush();
         outputFile->close();
+        delete outputFile;
 
         if ( !bExists ) {
 #ifdef __OS2__
@@ -170,6 +173,13 @@ void QeSaveThread::setFile( QFile *file, QTextCodec *codec, QString fileName )
     outputFile     = file;
     outputEncoding = codec;
     outputFileName = fileName;
+}
+
+
+// ----------------------------------------------------------------------------
+void QeSaveThread::setText( const QString &text )
+{
+    fullText = text;
 }
 
 
