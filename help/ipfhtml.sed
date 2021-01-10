@@ -23,7 +23,7 @@ s/:dl.*\./<dl>/g
 s/:edl\./<\/dl>/g
 s/:dt\./<dt>/g
 s/:dd\./<dd>/g
-s/\.br[:blank:]*$/<br>/g
+s/\.br[[:blank:]]*$/<br>/g
 s/\.ce (.*)$/<p align="center">\1<\/p>/g
 s/\.im (.*)$/<!-- include file: \1 -->/g
 s/:h1.* id=([a-zA-Z0-9]*)[^.]*\.(.*)/<!-- begin section l1 -->\n<a name="\1"><\/a><h1>\2<\/h1>/g
