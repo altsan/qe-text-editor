@@ -102,6 +102,7 @@ QeSaveThread::QeSaveThread()
     outputFile     = NULL;
     outputEncoding = NULL;
     outputFileName = "";
+    bExists        = FALSE;
 }
 
 
@@ -109,9 +110,7 @@ QeSaveThread::QeSaveThread()
 void QeSaveThread::run()
 {
     stop = false;
-
     if ( outputFile != NULL ) {
-        bool bExists = ( outputFile->exists() );
         QTextStream out( outputFile );
 
         /* TODO
@@ -151,6 +150,7 @@ void QeSaveThread::run()
 
         if ( !bExists ) {
 #ifdef __OS2__
+printf("Clearing default EAs\n");
             // If this is a new file, get rid of the useless default EAs added by klibc
             EASetString( (PSZ) outputFileName.toLocal8Bit().data(), (PSZ) "UID",   (PSZ) "");
             EASetString( (PSZ) outputFileName.toLocal8Bit().data(), (PSZ) "GID",   (PSZ) "");
@@ -168,11 +168,12 @@ void QeSaveThread::run()
 
 
 // ----------------------------------------------------------------------------
-void QeSaveThread::setFile( QFile *file, QTextCodec *codec, QString fileName )
+void QeSaveThread::setFile( QFile *file, QTextCodec *codec, QString fileName, bool bExisting )
 {
     outputFile     = file;
     outputEncoding = codec;
     outputFileName = fileName;
+    bExists        = bExisting;
 }
 
 

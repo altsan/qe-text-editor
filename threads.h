@@ -82,7 +82,7 @@ class QeSaveThread : public QThread
 
 public:
     QeSaveThread();
-    void    setFile( QFile *file, QTextCodec *codec, QString fileName );
+    void    setFile( QFile *file, QTextCodec *codec, QString fileName, bool bExisting );
     void    setText( const QString &text );
     void    cancel();
 
@@ -102,6 +102,7 @@ private:
     QTextCodec *outputEncoding;
 
     bool        stop;
+    bool        bExists;
 };
 
 
