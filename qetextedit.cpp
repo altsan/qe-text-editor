@@ -77,9 +77,19 @@ void QeTextEdit::mousePressEvent( QMouseEvent *event )
         isChording = true;
     }
 
+    // Prevent drag and drop of selected text using left button - force deselect instead
+    else if (( clicked == Qt::LeftButton ) && cursor.hasSelection() )
+    {
+        int textPos = cursorForPosition( event->pos() ).position();
+        //cursor.clearSelection();
+        cursor.setPosition( textPos, QTextCursor::MoveAnchor );
+        setTextCursor( cursor );
+    }
+
     // Pass any other mouse events to the default handler
     else
         QPlainTextEdit::mousePressEvent( event );
+
 }
 
 /*
@@ -89,6 +99,7 @@ void QeTextEdit::mouseReleaseEvent( QMouseEvent *event )
     QPlainTextEdit::mouseReleaseEvent( event );
 }
 */
+
 
 /* On certain platforms (but not on OS/2), context menus seem to trigger
  * after the mouse release event.  This prevents the chording action from
@@ -164,6 +175,7 @@ void QeTextEdit::paste()
 {
     QPlainTextEdit::paste();
 }
+
 
 
 
