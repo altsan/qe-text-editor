@@ -1,8 +1,8 @@
 QE Text Editor
 ==============
 
-  QE is a simple text editor modelled after IBM's OS/2 System Editor
-  and Aaron Lawrence's AE.  It is written using Qt4 and is therefore
+  QE is a simple text editor loosely modelled after IBM's E Editor and 
+  Aaron Lawrence's AE.  It is written using Qt4 and is therefore
   reasonably cross-platform.
 
   The philosophy behind QE is to provide a simple tool for quickly
@@ -88,7 +88,7 @@ Notices
 -------
 
 QE Text Editor  
-Copyright (C) 2018-2019 Alexander Taylor
+Copyright (C) 2018-2021 Alexander Taylor
 
 A few routines were derived from examples in "C++ GUI Programming with 
 Qt4" (Second Edition) by Jasmin Blanchette & Mark Summerfield.

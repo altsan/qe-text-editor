@@ -27,6 +27,7 @@
 #include <QMainWindow>
 #include <QDateTime>
 #include <QProcess>
+#include <QPrinter>
 #include "version.h"
 
 
@@ -110,7 +111,7 @@ public:
 protected:
     void closeEvent( QCloseEvent *event );
     void dragEnterEvent( QDragEnterEvent *event );
-    void dropEvent (QDropEvent *event );
+    void dropEvent( QDropEvent *event );
 
 private slots:
     void newFile();
@@ -351,7 +352,7 @@ private:
     FindParams  lastFind;
     QStringList recentFinds;
     QStringList recentReplaces;
-
+    QPrinter    printer;
 
 #ifdef USE_IO_THREADS
     QeOpenThread *openThread;

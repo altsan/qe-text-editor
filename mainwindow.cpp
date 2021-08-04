@@ -186,7 +186,7 @@ QString Codepage_Mappings[] = {
 // PUBLIC CONSTRUCTOR
 //
 
-MainWindow::MainWindow()
+MainWindow::MainWindow() : printer( QPrinter::HighResolution )
 {
     // Instantiate our new text codecs (must be created on the heap; Qt takes
     // over responsibility for these objects so we do nothing more with them).
@@ -344,7 +344,7 @@ void MainWindow::dragEnterEvent( QDragEnterEvent *event )
 }
 
 
-void MainWindow::dropEvent (QDropEvent *event )
+void MainWindow::dropEvent( QDropEvent *event )
 {
     QList<QUrl> urls = event->mimeData()->urls();
     if ( !urls.isEmpty() ) {
@@ -2313,7 +2313,6 @@ bool MainWindow::saveFile( const QString &fileName )
 
 bool MainWindow::print()
 {
-    QPrinter printer( QPrinter::HighResolution );
     QPrintDialog printDialog( &printer, this );
     if ( printDialog.exec() ) {
         editor->print( &printer );
