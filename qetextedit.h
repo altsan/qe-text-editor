@@ -34,6 +34,7 @@ public:
     void contextMenuEvent( QContextMenuEvent *event );
 
 protected:
+    //bool event( QEvent *event );
     void dropEvent( QDropEvent *event );
 
 private slots:

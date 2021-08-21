@@ -154,6 +154,13 @@ void QeTextEdit::dropEvent( QDropEvent *event )
     QPlainTextEdit::dropEvent( event );
 }
 
+/*
+bool QeTextEdit::event( QEvent *event )
+{
+    return QPlainTextEdit::event( event );
+}
+*/
+
 
 // ---------------------------------------------------------------------------
 // Slots
