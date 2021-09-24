@@ -8,7 +8,8 @@ TEMPLATE = app
 TARGET = qe
 DEPENDPATH += .
 INCLUDEPATH += .
-os2:QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-literal-suffix -march=i686
+os2:QMAKE_CFLAGS   = -Zomf -march=i686 -Wno-pointer-sign
+os2:QMAKE_CXXFLAGS = -Zomf -march=i686 -Wno-unused-local-typedefs -Wno-literal-suffix
 
 # Input
 HEADERS += finddialog.h replacedialog.h gotolinedialog.h eastring.h os2codec.h mainwindow.h qetextedit.h ctlutils.h threads.h
