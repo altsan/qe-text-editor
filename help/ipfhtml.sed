@@ -10,8 +10,13 @@ s/&gt./\&gt;/g
 s/&colon\./:/g
 s/&osq\./\&#x2018;/g
 s/&csq\./\&#x2019;/g
+s/&asterisk\./\&ast;/g
 s/&mdash\./\&mdash;/g
 s/&ndash\./\&ndash;/g
+s/&minus\./\&#x2212;/g
+s/&divide\./\&divide;/g
+s/ž/\&times;/g
+s/&lnot\./\&not;/g
 s/&bxh\./\&#x2014;/g
 s/&rahead\./\&#x25BA;/g
 s/:ol.*\./<ol>/g
