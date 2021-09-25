@@ -18,6 +18,8 @@
 **
 *******************************************************************************/
 
+#define INCL_DOSERRORS
+#define INCL_DOSFILEMGR
 #define INCL_WIN
 #define INCL_WINHELP
 #include <os2.h>
@@ -92,7 +94,8 @@ MRESULT EXPENTRY EnhancedFileDlgProc( HWND hwndDlg, ULONG msg, MPARAM mp1, MPARA
                 pfdextra = (PFDDATA)pfiledlg->ulUser;
                 pfdextra->ulCurExt = (ULONG) WinSendMsg( hwndTypeCombo, LM_QUERYSELECTION,
                                                          (MPARAM)LIT_FIRST, (MPARAM)0 );
-                if (pfiledlg->fl & FDS_OPEN_DIALOG) {
+                //if (pfiledlg->fl & FDS_OPEN_DIALOG)
+                {
                     WinSetWindowText(WinWindowFromID(hwndDlg,DID_FILENAME_ED), *(pfdextra->papszIFilterList[pfdextra->ulCurExt]));
                     WinSendMsg(WinWindowFromID(hwndDlg,DID_FILENAME_ED), EM_SETSEL, MPFROM2SHORT(0, 32000), (MPARAM)0 );
                     WinSendMsg(hwndDlg, WM_CONTROL, MPFROM2SHORT(DID_FILTER_CB, CBN_LBSELECT), (MPARAM)0 );
@@ -375,8 +378,8 @@ void *OS2Native::setNativeHelp(       QWidget *parent,
     memset( &hinit, 0, sizeof( HELPINIT ));
     hinit.cb = sizeof( HELPINIT );
     hinit.phtHelpTable = NULL;
-    hinit.pszHelpWindowTitle = (PSZ)( help_title.toLocal8Bit().data() );
-    hinit.pszHelpLibraryName = (PSZ)( QDir::toNativeSeparators( help_library ).toLocal8Bit().data() );
+    hinit.pszHelpWindowTitle = QSTRING_TO_PSZ( help_title );
+    hinit.pszHelpLibraryName = QSTRING_TO_PSZ( QDir::toNativeSeparators( help_library ));
     hwndHelp = WinCreateHelpInstance( hab, &hinit );
     if ( hwndHelp )
         WinAssociateHelpInstance( hwndHelp, hwndFrame );
@@ -471,5 +474,41 @@ void OS2Native::setFrameIcon( QWidget *window, void *module, unsigned short usID
 
     hIcon = WinLoadPointer( HWND_DESKTOP, (HMODULE) module, usID );
     WinSendMsg( hwnd, WM_SETICON, (MPARAM) hIcon, (MPARAM) 0L );
+}
+
+
+// ---------------------------------------------------------------------------
+// Delete an extended attribute of a file or directory.
+//
+// PARAMETERS:
+//     PSZ  pszPathName: Name of the file or directory
+//     PCSZ pszEAName  : Name of the extended attribute to delete
+//
+// RETURNS: APIRET
+//     Return code from DosSetPathInfo
+//
+unsigned long OS2Native::deleteEA( char *pszPathName, const char *pszEAName )
+{
+    PFEA2LIST pFEA2List = NULL;
+    PFEA2     pFEA2 = NULL;
+    EAOP2     eaop2 = {0};
+    size_t    cb = 0;
+    APIRET    rc = ERROR_NOT_ENOUGH_MEMORY;
+
+    cb = sizeof( FEA2LIST ) + strlen( pszEAName );
+    pFEA2List = (PFEA2LIST) calloc( cb, 1 );
+    if ( pFEA2List ) {
+        pFEA2List->cbList = cb;
+        pFEA2 = pFEA2List->list;
+        pFEA2->cbName = (BYTE) strlen( pszEAName );
+        strcpy( pFEA2->szName, pszEAName );
+        pFEA2->cbValue = 0;
+
+        eaop2.fpFEA2List = pFEA2List;
+        rc = DosSetPathInfo( (PCSZ) pszPathName, FIL_QUERYEASIZE,
+                             (PBYTE) &eaop2, sizeof( eaop2 ), DSPI_WRTTHRU );
+        free( pFEA2List );
+    }
+    return (unsigned long) rc;
 }
 

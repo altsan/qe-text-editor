@@ -23,17 +23,24 @@
 
 #include <QFileDialog>
 
+
+#define QSTRING_TO_PSZ( qs )      ( (PSZ) (qs.toLocal8Bit().data()) )
+#define QSTRING_TO_PCSZ( qs )     ( (PCSZ)(qs.toLocal8Bit().constData()) )
+
+
 namespace OS2Native {
     QString    	getOpenFileName( QWidget *parent = 0, const QString & caption = QString(), const QString & dir = QString(), const QString & filter = QString(), QString * selectedFilter = 0, QFileDialog::Options options = 0 );
     QStringList	getOpenFileNames( QWidget *parent = 0, const QString & caption = QString(), const QString & dir = QString(), const QString & filter = QString(), QString * selectedFilter = 0, QFileDialog::Options options = 0 );
     QString	    getSaveFileName( QWidget *parent = 0, const QString & caption = QString(), const QString & dir = QString(), const QString & filter = QString(), QString * selectedFilter = 0, QFileDialog::Options options = 0 );
     void        buildFilterString( QString filter, char *pszBuffer, ULONG ulBufSize );
 
+    unsigned long  deleteEA( char *pszPathName, const char *pszEAName );
     unsigned short getWindowId( QWidget *window );
     void           setFrameIcon( QWidget *window, void *module, unsigned short usID );
     void         * setNativeHelp( QWidget *parent, const QString &help_library, const QString &help_title );
     void           destroyNativeHelp( void *help_instance );
     void           showHelpPanel( void *help_instance, unsigned short id );
+
 };
 
 #endif
