@@ -9,7 +9,7 @@ TARGET = qe
 DEPENDPATH += .
 INCLUDEPATH += .
 os2:QMAKE_CFLAGS   = -Zomf -march=i686 -Wno-pointer-sign
-os2:QMAKE_CXXFLAGS = -Zomf -march=i686 -Wno-unused-local-typedefs -Wno-literal-suffix
+os2:QMAKE_CXXFLAGS = -Zomf -march=i686 -Wno-unused-local-typedefs -Wno-literal-suffix -D OS2EMX_PLAIN_CHAR
 
 # Input
 HEADERS += finddialog.h replacedialog.h gotolinedialog.h eastring.h os2codec.h mainwindow.h qetextedit.h ctlutils.h threads.h
@@ -21,3 +21,12 @@ os2:SOURCES += os2native.cpp
 os2:RC_FILE = qe.rc
 win32:RC_FILE = qe_win.rc
 
+TRANSLATIONS = 	language/qe_de.ts \
+		language/qe_es.ts \
+		language/qe_fr.ts \
+		language/qe_it.ts \
+		language/qe_ja.ts \
+		language/qe_nl.ts \
+		language/qe_ru.ts \
+		language/qe_zh_cn.ts \
+		language/qe_zh_tw.ts

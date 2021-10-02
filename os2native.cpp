@@ -20,6 +20,7 @@
 
 #define INCL_DOSERRORS
 #define INCL_DOSFILEMGR
+#define INCL_DOSMISC
 #define INCL_WIN
 #define INCL_WINHELP
 #include <os2.h>
@@ -348,13 +349,21 @@ QString OS2Native::getSaveFileName(       QWidget *parent,
 //
 // Enables OS/2 native (compiled IPF) help for an application window.  This
 // function initializes the OS/2 Help Manager and associates the specified help
-// library (i.e. .hlp file) with the specified window.  (The application should
-// call OS2Native::destroyNativeHelp on shutdown/cleanup.)
+// library (i.e. .hlp file) with the specified window.
+//
+// The help_library parameter can be specified with or without the ".hlp"
+// extension.  If included, it will be used as-is for the help file name.  If
+// omitted, this function will attempt to locate the help file by appending "_"
+// plus the value of %LANG% (first in full, then just the language portion),
+// plus the ".hlp" extension.  If a matching filename is not found for either
+// of these, it will fall back to using just the parameter as-is plus ".hlp".
+//
+// The application should call OS2Native::destroyNativeHelp on shutdown/cleanup.
 //
 // PARAMETERS:
-//     QWidget *parent      : The application window to be help-enabled
-//     QString &help_library: Filename of the help library (*.hlp)
-//     QString &help_title  : Title to be displayed on the help window
+//     QWidget *parent       : The application window to be help-enabled
+//     QString &help_library : Filename of the help library (*.hlp)
+//     QString &help_title   : Title to be displayed on the help window
 //
 // RETURNS: void *
 //     Help instance handle which can be passed to other functions.
@@ -367,6 +376,7 @@ void *OS2Native::setNativeHelp(       QWidget *parent,
     HWND     hwndFrame,
              hwndHelp;
     HELPINIT hinit;
+    QString  help_file;
 
     if ( !parent ) return NULL;
 
@@ -375,11 +385,42 @@ void *OS2Native::setNativeHelp(       QWidget *parent,
     hab = WinQueryAnchorBlock( hwndFrame );
     if ( !hab ) hab = 1;
 
+    /* Check the help file name and adjust for language if appropriate */
+    if ( help_library.endsWith(".hlp", Qt::CaseInsensitive ))
+        // Full filename specified, just use that
+        help_file = help_library;
+    else {
+        // Partial filename specified, try to derive full name based on language
+        PSZ pszEnv = getenv("LANG");
+        if ( pszEnv ) {
+            CHAR    achFound[ CCHMAXPATH ] = {0};
+            APIRET  rc;
+            QString language = QString( pszEnv ).mid( 0, 5 );
+
+            // See if a language-specific filename exists
+            help_file = help_library + "_" + language + ".hlp";
+            rc = DosSearchPath( SEARCH_IGNORENETERRS | SEARCH_ENVIRONMENT | SEARCH_CUR_DIRECTORY,
+                                "HELP", QSTRING_TO_PSZ( help_file ), achFound, sizeof( achFound ));
+            if ( rc != NO_ERROR ) {
+                // Full match on %LANG% not found, try just the language portion
+                language = language.mid( 0, language.indexOf("_"));
+                help_file = help_library + "_" + language + ".hlp";
+                rc = DosSearchPath( SEARCH_IGNORENETERRS | SEARCH_ENVIRONMENT | SEARCH_CUR_DIRECTORY,
+                                    "HELP", QSTRING_TO_PSZ( help_file ), achFound, sizeof( achFound ));
+                if ( rc != NO_ERROR )
+                    // Still not found, so fall back to the language-neutral filename
+                    help_file = help_library + ".hlp";
+            }
+        }
+        else
+            help_file = help_library + ".hlp";
+    }
+
     memset( &hinit, 0, sizeof( HELPINIT ));
     hinit.cb = sizeof( HELPINIT );
     hinit.phtHelpTable = NULL;
     hinit.pszHelpWindowTitle = QSTRING_TO_PSZ( help_title );
-    hinit.pszHelpLibraryName = QSTRING_TO_PSZ( QDir::toNativeSeparators( help_library ));
+    hinit.pszHelpLibraryName = QSTRING_TO_PSZ( QDir::toNativeSeparators( help_file ));
     hwndHelp = WinCreateHelpInstance( hab, &hinit );
     if ( hwndHelp )
         WinAssociateHelpInstance( hwndHelp, hwndFrame );
