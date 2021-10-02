@@ -19,18 +19,21 @@ QE Text Editor
   Unicode text.
 
   More information is available at:
-  https://github.com/altsan/quick-text-editor/wiki
+  https://github.com/altsan/qe-text-editor/wiki
 
 
 Installation
 ------------
 
+Manual installation for various platforms is described below.  RPM or
+other installable packages may be available elsewhere.
+
 ### OS/2
 
-  Make sure you have the following runtime packages installed (either the
-  WarpIN or yum/rpm distributions):
+  Make sure you have the following runtime packages installed. Most of 
+  these are available in zip, WarpIN, and/or yum/rpm distributions:
   - Qt4 runtime version 4.7.3 or later
-  - kLIBC (LIBC066.DLL) and LIBGCC (GCC1.DLL)
+  - klibc (1:0.1.4) and libgcc (9.2.0)
 
   Copy QE.EXE to a directory in your PATH, and QE.HLP to a directory in your
   HELP path.  Create a program object for QE.EXE if you wish.
@@ -82,6 +85,24 @@ single-section HTML files, and ensures that any IPF links are converted to
 the proper URIs.  Once this is done, you will have a series of `qe.*.html` 
 files; running `qcollectiongenerator qe.qhcp -o qe.qhc` should then generate 
 the final QtAssistant help files.
+
+
+Translation
+-----------
+
+Message file sources for various languages are in the language/ subdirectory.
+These can be translated using QtLinguist or a text editor. To make sure the
+files are in sync with the latest English sources before translating, run
+`lupdate qe.pro`. To compile the message files, run `lrelease qe.pro'.  (On 
+OS/2, both of these may require the %UNIXROOT%/usr/lib/qt4/bin directory to
+either be be prefixed to the command, else be in your PATH.  On Linux, they
+are normally available on the path.)
+
+Help file source in help/ should also be translated. Copy qe.ipf to either
+qe_xx.ipf or qe_xx_yy.ipf (where 'xx' is the two-letter ISO code for your 
+language, and 'yy' is the two-letter code for a particular country or region)
+and use your preferred text or INF editor to translate the contents.  See
+'Building from Source' (above) for build instructions.
 
 
 Notices
