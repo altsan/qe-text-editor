@@ -483,9 +483,13 @@ file begins with a Unicode byte-order mark (BOM).
 encoding, those characters will replaced by substitution markers in the saved
 file. See the section on :link reftype=hd res=300.encodings:elink. for more
 information.
-:li.Although QE supports editing files of arbitrary size, opening or saving
-:link reftype=fn refid=large_file.extremely large files:elink. may exhibit the
-following issues&colon.
+:li.Although QE has no specific limit on file size, it uses straightforward
+logic which loads the entire file into memory when opening it. Therefore, its
+ability to open extremely large files may be limited by memory, address space,
+or other factors that vary by system. For this reason, using QE to work with
+files much larger than 100 MB or so is not recommended.
+:p.In addition, opening or saving :link reftype=fn refid=large_file.large
+files:elink. may exhibit the following issues&colon.
 :ul.
 :li.Depending on the speed of the disk and/or processor, large files may take a
 long time to open or save.
@@ -499,12 +503,12 @@ is very large.
 
 
 :fn id=large_file.
-:p.Precisely what constitutes an &osq.extremely large file&csq. in the context
-described here may depend greatly on your computer. When using a solid state
-drive (SSD) or flash drive on a system with a Core-series processor and multiple
-GB of RAM, files of 100 MB or more may load and save within a second or two.
-On older hardware using a mechanical hard disk, files of only a few megabytes
-may cause significant delays.
+:p.Precisely what constitutes a &osq.large file&csq. in the context described
+here may depend greatly on your computer. When using a solid state drive (SSD)
+or flash drive on a system with a Core-series processor and multiple GB of RAM,
+files of 100 MB or more may load and save within a second or two.  On older
+hardware using a mechanical hard disk, files of only a few megabytes may cause
+significant delays.
 :efn.
 
 

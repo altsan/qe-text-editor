@@ -86,6 +86,10 @@ the proper URIs.  Once this is done, you will have a series of `qe.*.html`
 files; running `qcollectiongenerator qe.qhcp -o qe.qhc` should then generate 
 the final QtAssistant help files.
 
+To compile the message files, if required, run `lrelease qe.pro` (if the
+Qt4 binaries are not in your path, you may have to prefix the command with
+the path to the appropriate directory, e.g. /usr/lib/qt4/bin). 
+
 
 Translation
 -----------
@@ -93,10 +97,7 @@ Translation
 Message file sources for various languages are in the language/ subdirectory.
 These can be translated using QtLinguist or a text editor. To make sure the
 files are in sync with the latest English sources before translating, run
-`lupdate qe.pro`. To compile the message files, run `lrelease qe.pro'.  (On 
-OS/2, both of these may require the %UNIXROOT%/usr/lib/qt4/bin directory to
-either be be prefixed to the command, else be in your PATH.  On Linux, they
-are normally available on the path.)
+`lupdate qe.pro` (see the note above about the path to the Qt4 binaries).
 
 Help file source in help/ should also be translated. Copy qe.ipf to either
 qe_xx.ipf or qe_xx_yy.ipf (where 'xx' is the two-letter ISO code for your 
