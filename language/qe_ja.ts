@@ -87,12 +87,6 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../mainwindow.cpp" line="263"/>
-        <location filename="../mainwindow.cpp" line="2130"/>
-        <source>Text Editor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="398"/>
         <location filename="../mainwindow.cpp" line="405"/>
         <source>Open File</source>
@@ -117,9 +111,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="263"/>
+        <location filename="../mainwindow.cpp" line="2130"/>
+        <source>Text Editor</source>
+        <translation>テキスト・エディター</translation>
+    </message>
+    <message>
         <location filename="../mainwindow.cpp" line="601"/>
         <source>&lt;b&gt;QE Text Editor&lt;/b&gt;&lt;br&gt;Version %1&lt;hr&gt;Copyright &amp;copy;2021 Alexander Taylor&lt;p&gt;Licensed under the GNU General Public License version 3.0&amp;nbsp;&lt;br&gt;&lt;a href=&quot;https://www.gnu.org/licenses/gpl.html&quot;&gt;https://www.gnu.org/licenses/gpl.html&lt;/a&gt;&lt;br&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;QE テキスト・エディター&lt;/b&gt;&lt;br&gt;Version %1&lt;hr&gt;Copyright &amp;copy;2021 Alexander Taylor&lt;p&gt;Licensed under the GNU General Public License version 3.0&amp;nbsp;&lt;br&gt;&lt;a href=&quot;https://www.gnu.org/licenses/gpl.html&quot;&gt;https://www.gnu.org/licenses/gpl.html&lt;/a&gt;&lt;br&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="648"/>
@@ -1085,7 +1085,22 @@
     <message>
         <location filename="../mainwindow.cpp" line="1849"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>ファイル(&amp;F)</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1969"/>
+        <source>&amp;Edit</source>
+        <translation>編集(&amp;E)</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1986"/>
+        <source>&amp;Options</source>
+        <translation>オプション(&amp;O)</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1994"/>
+        <source>&amp;Help</source>
+        <translation>ヘルプ(&amp;H)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1857"/>
@@ -1135,21 +1150,6 @@
     <message>
         <location filename="../mainwindow.cpp" line="1964"/>
         <source>&amp;Unicode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1969"/>
-        <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1986"/>
-        <source>&amp;Options</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1994"/>
-        <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

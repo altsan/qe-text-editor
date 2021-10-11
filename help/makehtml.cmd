@@ -6,14 +6,36 @@ SIGNAL ON NOVALUE
 CALL RxFuncAdd 'SysLoadFuncs', 'REXXUTIL', 'SysLoadFuncs'
 CALL SysLoadFuncs
 
+input_langs = 'EN    ZH_CN DE    ES    FI    FR    IT    JA    KO    NL    RU    ZH_TW'
+input_encs  = 'CP850 CP936 CP850 CP850 CP850 CP850 CP850 CP932 CP949 CP850 CP866 CP950'
+
 /* Pass 1: convert all IPF files into HTML files.
  */
 CALL SysFileTree '*.ipf', 'ipfs.', 'FO'
 h = 0
 DO i = 1 TO ipfs.0
+    /* Get the base filename */
     lp = LASTPOS('.', ipfs.i )
-    outfile = SUBSTR( ipfs.i, 1, lp ) || 'html'
-    'sed -r -f ipfhtml.sed' ipfs.i '>' outfile
+    basename = STRIP( SUBSTR( ipfs.i, 1, lp ), 'T', '.')
+
+    /* Check for a language suffix */
+    p = POS('_', basename ) + 1
+    IF p > 1 THEN DO
+        PARSE VAR basename 1 =(p) suffix
+        language = TRANSLATE( STRIP( suffix, 'L', '_'))
+    END
+    ELSE language = 'EN'
+
+    /* Use the language to identify the input encoding */
+    wp = WORDPOS( language, input_langs )
+    IF wp > 0 THEN
+        codepage = WORD( input_encs, wp )
+    ELSE
+        codepage = 'CP850'
+    iconv_cmd = 'iconv -f' codepage '-t UTF-8'
+
+    outfile = basename'.html'
+    'sed -r -f ipfhtml.sed' ipfs.i '|' iconv_cmd '>' outfile
     IF STREAM( outfile, 'C', 'QUERY EXISTS') <> '' THEN DO
         h = h + 1
         htms.h = outfile
@@ -40,7 +62,10 @@ DO i = 1 TO htms.0
                 CALL LINEOUT outfile
                 outfile = SUBSTR( htms.i, 1, lp ) || secs
                 CALL LINEOUT outfile, '<html>'
-                CALL LINEOUT outfile, '<head><link rel="stylesheet" type="text/css" href="help.css"></head><body>'
+                CALL LINEOUT outfile, '<head>'
+                CALL LINEOUT outfile, '  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">'
+                CALL LINEOUT outfile, '  <link rel="stylesheet" type="text/css" href="help.css">'
+                CALL LINEOUT outfile, '</head><body>'
             END
             secs = secs + 1
         END
@@ -50,8 +75,12 @@ DO i = 1 TO htms.0
 
         CALL LINEOUT outfile, l
 
-        IF l == '<html>' THEN
-            CALL LINEOUT outfile, '<head><link rel="stylesheet" type="text/css" href="help.css"></head><body>'
+        IF l == '<html>' THEN DO
+            CALL LINEOUT outfile, '<head>'
+            CALL LINEOUT outfile, '  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">'
+            CALL LINEOUT outfile, '  <link rel="stylesheet" type="text/css" href="help.css">'
+            CALL LINEOUT outfile, '</head><body>'
+        END
 
         /* Save any target anchors found */
         IF POS('<a name=', l ) <> 0 THEN DO

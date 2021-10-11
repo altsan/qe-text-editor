@@ -21,6 +21,9 @@
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
+#include <QLocale>
+#include <QTextCodec>
+#include <QTranslator>
 
 #include "mainwindow.h"
 
@@ -31,6 +34,18 @@
 int main( int argc, char *argv[] )
 {
     QApplication app( argc, argv );
+    QString locale = QLocale::system().name();
+    QTranslator translator;
+
+    QTextCodec::setCodecForTr( QTextCodec::codecForName("utf8"));
+    if ( !translator.load( QString("qe_") + locale )) {
+#ifdef __OS2__
+        char *pszEnv = getenv("UNIXROOT");
+        translator.load( QString("qe_") + locale, QString("%1/usr/share/os2/lang").arg( pszEnv ));
+#endif
+    }
+    app.installTranslator( &translator );
+
     MainWindow *qe = new MainWindow;
     bool openReadOnly = false;
     bool showUsage    = false;

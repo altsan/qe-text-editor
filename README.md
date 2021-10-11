@@ -79,12 +79,12 @@ format, which involves converting the IPF file to HTML and then running
 `qcollectiongenerator`.  The script `makehtml.cmd` performs the first part of
 this task; it is written in REXX and has been confirmed to work with classic
 REXX under OS/2, and Regina REXX under Windows.  It also requires the SED 
-utility (GNU sed or the equivalent) to run.  This script runs `qe.ipf` 
-through the SED script `ipfhtml.sed`, splits the resulting output into 
-single-section HTML files, and ensures that any IPF links are converted to 
-the proper URIs.  Once this is done, you will have a series of `qe.*.html` 
-files; running `qcollectiongenerator qe.qhcp -o qe.qhc` should then generate 
-the final QtAssistant help files.
+utility (GNU sed or the equivalent) and GNU iconv to run.  This script runs 
+`qe.ipf` through the SED script `ipfhtml.sed`, converts the encoding to UTF-8,
+splits the resulting output into single-section HTML files, and ensures that 
+any IPF links are converted to the proper URIs.  Once this is done, you will 
+have a series of `qe.*.html` files; running `qcollectiongenerator qe.qhcp -o 
+qe.qhc` should then generate the final QtAssistant help files.
 
 To compile the message files, if required, run `lrelease qe.pro` (if the
 Qt4 binaries are not in your path, you may have to prefix the command with
@@ -99,11 +99,20 @@ These can be translated using QtLinguist or a text editor. To make sure the
 files are in sync with the latest English sources before translating, run
 `lupdate qe.pro` (see the note above about the path to the Qt4 binaries).
 
+All message files should use UTF-8 encoding.
+
 Help file source in help/ should also be translated. Copy qe.ipf to either
 qe_xx.ipf or qe_xx_yy.ipf (where 'xx' is the two-letter ISO code for your 
 language, and 'yy' is the two-letter code for a particular country or region)
-and use your preferred text or INF editor to translate the contents.  See
-'Building from Source' (above) for build instructions.
+and use your preferred text or INF editor to translate the contents.  
+
+Unlike message files, translated IPF files should use the native OS/2 
+codepage for the target language (this is CP850 for most Latin languages).
+
+You will also need to translate the files `qe.qhp` and `qe.qhcp` to update
+the titles and keywords. These files should be UTF-8 encoded.
+
+See 'Building from Source' (above) for help file build instructions.
 
 
 Notices
