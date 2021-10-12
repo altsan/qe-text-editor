@@ -168,6 +168,7 @@ private:
     void createStatusBar();
     void createHelp();
     void readSettings();
+    void setDialogFont();
     void writeSettings();
 
     // Action methods
