@@ -36,6 +36,7 @@ namespace OS2Native {
 
     unsigned long  deleteEA( char *pszPathName, const char *pszEAName );
     unsigned short getWindowId( QWidget *window );
+    QString        getFontForLocale( const QString &locale = QString() );
     void           setFrameIcon( QWidget *window, void *module, unsigned short usID );
     void         * setNativeHelp( QWidget *parent, const QString &help_library, const QString &help_title );
     void           destroyNativeHelp( void *help_instance );

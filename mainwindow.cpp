@@ -2010,47 +2010,9 @@ void MainWindow::setDialogFont()
      * it's necessary to set a different application font.  This mainly applies
      * to CJK languages.
      */
-    QFontDatabase fontdb;
-    QStringList   languageFonts,
-                  matching;
-    QString       fontName = "";
-    QString       locale   = QLocale::system().name();
-    QString       language = locale.mid( 0, locale.indexOf("_"));
-
-    // Check for some commonly-installed pan-Unicode fonts
-    languageFonts << "Times New Roman MT 30" << "Arial Unicode MS" << "Droid Sans Combined";
-
-    // Check for specific system fonts for each language
-    if ( language == "ja") {
-        languageFonts << "MS PMincho" << "MS PGothic";
-        languageFonts << "IPAMincho" << "IPAPMincho" << "IPAGothic" << "IPAPGothic";
-    }
-    else if ( language == "ko") {
-        languageFonts << QString::fromUtf8("명조");          // Myeongjo
-    }
-    else if ( locale == "zh_CN") {
-        languageFonts << QString::fromUtf8("宋体常规");    // Songti changgui
-    }
-    else if ( language == "zh") {
-        languageFonts << QString::fromUtf8("標準宋體");    // Biaozhun songti
-    }
-
-    // No action needed for other languages
-    else return;
-
-    // Look for the best-matching installed font from our list
-    // (last entry has highest match priority).
-    for ( int i = languageFonts.size() - 1; i >= 0; i-- ) {
-        printf("%s\n", QSTRING_TO_PSZ( languageFonts.at(i) ));
-        matching = fontdb.families().filter( languageFonts.at(i) );
-        if ( !matching.isEmpty() ) {
-            fontName = matching.at( 0 );
-            break;
-        }
-    }
-    if ( fontName.isEmpty() ) return;
-
-    QApplication::setFont( QFont( fontName ));
+    QString fontName = OS2Native::getFontForLocale( QLocale::system().name() );
+    if ( !fontName.isEmpty() )
+        QApplication::setFont( QFont( fontName ));
 #endif
 }
 

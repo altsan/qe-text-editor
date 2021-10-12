@@ -25,6 +25,8 @@
 #define INCL_WINHELP
 #include <os2.h>
 
+#include <QFontDatabase>
+#include <QLocale>
 #include <QMessageBox>
 #include "os2native.h"
 
@@ -551,5 +553,63 @@ unsigned long OS2Native::deleteEA( char *pszPathName, const char *pszEAName )
         free( pFEA2List );
     }
     return (unsigned long) rc;
+}
+
+
+// ---------------------------------------------------------------------------
+// Get a suitable application font according to the current locale. This is
+// needed to handle languages which aren't supported by Workplace Sans.
+//
+// PARAMETERS:
+//     QString locale: Name of the locale
+//
+// RETURNS: QString
+//     Name of the application font
+//
+QString OS2Native::getFontForLocale( const QString &locale )
+{
+    QFontDatabase fontdb;
+    QStringList   languageFonts,
+                  matching;
+    QString       fontName = "";
+    QString       language;
+
+    if ( locale.isEmpty() )
+        language = QLocale::system().name().left( 2 );
+    else
+        language = locale.left( 2 );
+
+    // Check for some commonly-installed pan-Unicode fonts
+    languageFonts << "Times New Roman MT 30" << "Arial Unicode MS" << "Droid Sans Combined";
+
+    // Check for specific system fonts for each language
+    if ( language == "ja") {
+        languageFonts << "MS PMincho" << "MS PGothic" << "Meiryo";
+        languageFonts << "IPAMincho" << "IPAPMincho" << "IPAGothic" << "IPAPGothic";
+    }
+    else if ( language == "ko") {
+        languageFonts << QString::fromUtf8("명조");          // Myeongjo
+    }
+    else if ( locale == "zh_CN") {
+        languageFonts << QString::fromUtf8("宋体常规");    // Songti changgui
+    }
+    else if ( language == "zh") {
+        languageFonts << QString::fromUtf8("標準宋體");    // Biaozhun songti
+    }
+    else {          // No action needed for other languages
+        return fontName;
+    }
+
+    // Look for the best-matching installed font from our list (the last entry
+    // has the highest priority).
+    for ( int i = languageFonts.size() - 1; i >= 0; i-- ) {
+        printf("%s\n", QSTRING_TO_PSZ( languageFonts.at( i )));
+        matching = fontdb.families().filter( languageFonts.at(i) );
+        if ( !matching.isEmpty() ) {
+            fontName = matching.at( 0 );
+            break;
+        }
+    }
+    return fontName;
 }
 

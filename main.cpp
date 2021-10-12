@@ -41,7 +41,9 @@ int main( int argc, char *argv[] )
     if ( !translator.load( QString("qe_") + locale )) {
 #ifdef __OS2__
         char *pszEnv = getenv("UNIXROOT");
-        translator.load( QString("qe_") + locale, QString("%1/usr/share/os2/lang").arg( pszEnv ));
+        translator.load( QString("qe_") + locale, QString("%1/usr/share/qe/locale").arg( pszEnv ));
+#else
+        translator.load( QString("qe_") + locale, QString("/usr/share/qe/locale"));
 #endif
     }
     app.installTranslator( &translator );
