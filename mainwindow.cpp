@@ -251,8 +251,12 @@ MainWindow::MainWindow() : printer( QPrinter::HighResolution )
 
     readSettings();
 
+#ifdef USE_IO_THREADS
     openThread = 0;
+    saveThread = 0;
     isReadThreadActive = false;
+    isSaveThreadActive = false;
+#endif
     findDialog = 0;
     replaceDialog = 0;
     lastGoTo = 1;
