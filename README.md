@@ -110,7 +110,7 @@ Unlike message files, translated IPF files should use the native OS/2
 codepage for the target language (this is CP850 for most Latin languages).
 
 You will also need to translate the files `qe.qhp` and `qe.qhcp` to update
-the titles and keywords. These files should be UTF-8 encoded.
+the titles and keywords. These two files should be UTF-8 encoded.
 
 See 'Building from Source' (above) for help file build instructions.
 
