@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QtHelpProject version="1.0">
+  <namespace>altsan.qe</namespace>
+  <virtualFolder>help</virtualFolder>
+  <filterSection>
+    <toc>
+      <section title="Editor de texto QE" ref="qe_es.1.html">
+        <section title="Parámetros de ejecución" ref="qe_es.2.html"></section>
+      </section>
+      <section title="Interfaz de usuario" ref="qe_es.4.html">
+        <section title="Diálogo Ir a línea" ref="qe_es.5.html"></section>
+        <section title="Diálogo Buscar" ref="qe_es.6.html"></section>
+        <section title="Diálogo Buscar y sustituir" ref="qe_es.7.html"></section>
+        <section title="Expresiones regulares" ref="qe_es.8.html"></section>
+      </section>
+      <section title="Asignaciones de teclado" ref="qe_es.9.html"></section>
+      <section title="Uso de codificaciones" ref="qe_es.10.html"></section>
+      <section title="Limitaciones" ref="qe_es.11.html"></section>
+      <section title="Avisos" ref="qe_es.13.html">
+        <section title="COPYING" ref="qe_es.14.html"></section>
+      </section>
+    </toc>
+    <keywords>
+      <keyword name="Indicador de mandatos" ref="qe_es.2.html"/>
+      <keyword name="Derechos de copia" ref="qe_es.13.html"/>
+      <keyword name="Nombres de codificación" ref="qe_es.3.html"/>
+      <keyword name="Codificaciones" ref="qe_es.10.html"/>
+      <keyword name="Buscar" ref="qe_es.6.html"/>
+      <keyword name="Ir a línea" ref="qe_es.5.html"/>
+      <keyword name="Interfaz" ref="qe_es.4.html"/>
+      <keyword name="Introducción" ref="qe_es.1.html"/>
+      <keyword name="Teclas" ref="qe_es.9.html"/>
+      <keyword name="Teclado" ref="qe_es.9.html"/>
+      <keyword name="Archivos grandes" ref="qe_es.12.html"/>
+      <keyword name="Licencia" ref="qe_es.14.html"/>
+      <keyword name="Limitaciones" ref="qe_es.11.html"/>
+      <keyword name="Parámetros" ref="qe_es.2.html"/>
+      <keyword name="Expresión regular" ref="qe_es.8.html"/>
+      <keyword name="Sustituir" ref="qe_es.7.html"/>
+      <keyword name="Teclas rápidas" ref="qe_es.9.html"/>
+    </keywords>
+    <files>
+      <file>edit_linebreak.png</file>
+      <file>edit_nolinebreak.png</file>
+      <file>find_dialog.png</file>
+      <file>goto_dialog.png</file>
+      <file>menu.png</file>
+      <file>replace_dialog.png</file>
+      <file>status.png</file>
+      <file>help.css</file>
+      <file>qe_es.1.html</file>
+      <file>qe_es.2.html</file>
+      <file>qe_es.3.html</file>
+      <file>qe_es.4.html</file>
+      <file>qe_es.5.html</file>
+      <file>qe_es.6.html</file>
+      <file>qe_es.7.html</file>
+      <file>qe_es.8.html</file>
+      <file>qe_es.9.html</file>
+      <file>qe_es.10.html</file>
+      <file>qe_es.11.html</file>
+      <file>qe_es.12.html</file>
+      <file>qe_es.13.html</file>
+      <file>qe_es.14.html</file>
+    </files>
+  </filterSection>
+</QtHelpProject>
