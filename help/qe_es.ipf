@@ -129,7 +129,7 @@ La ventana principal de QE consiste en la barra de men£s arriba, la ventana de
 edici¢n en s° y la barra de estado en la parte inferior.
 
 :p.:hp7.Barra de men£s:ehp7.
-:p.:artwork runin name='.\es\menu.bmp'.
+:p.:artwork runin name='./es/menu.bmp'.
 .br
 
 :p.La barra de men£s comprende los men£s :hp2.Archivo:ehp2., :hp2.Editar:ehp2.,
@@ -188,7 +188,7 @@ men£ :hp2.Opciones:ehp2..
 existentes y un fondo gris p†lido en las †reas donde el texto actual no ocupa
 la altura completa de la ventana.
 
-:p.:artwork runin name='.\es\edit_linebreak.bmp'. :artwork runin name='.\es\edit_nolinebreak.bmp'.
+:p.:artwork runin name='./es/edit_linebreak.bmp'. :artwork runin name='./es/edit_nolinebreak.bmp'.
 .br
 
 :p.Note que el fondo blanco se extender† :hp1.m†s all†:ehp1. del £ltimo fin de
@@ -198,7 +198,7 @@ mostrar† una l°nea en blanco bajo Çl (como se ilustra arriba).
 :p.
 :p.:hp7.Barra de estado:ehp7.
 
-:p.:artwork runin name='.\es\status.bmp'.
+:p.:artwork runin name='./es/status.bmp'.
 .br
 :p.En la parte inferior de la ventana est† la barra de estado. êsta contiene
 cinco secciones, que de izquierda a derecha son&colon.
@@ -215,7 +215,7 @@ cinco secciones, que de izquierda a derecha son&colon.
 .*----------------------------------------------------------------------------
 :h2 x=left y=bottom width=100% height=100% res=110.Di†logo ÆIr a la l°nea...Ø
 
-:artwork align=left name='.\es\goto_dialog.bmp'.
+:artwork align=left name='./es/goto_dialog.bmp'.
 .br
 :p.Introduzca el n£mero de l°nea del texto actual a la que quiera llegar.
 Cuando pulse :hp2.Bien:ehp2., el cursor se mover† hasta el inicio de la
@@ -229,7 +229,7 @@ otras palabras, el mayor n£mero que se puede introducir es el n£mero de la
 .*----------------------------------------------------------------------------
 :h2 x=left y=bottom width=100% height=100% res=120.Di†logo ÆBuscarØ
 
-:artwork align=left name='.\es\find_dialog.bmp'.
+:artwork align=left name='./es/find_dialog.bmp'.
 
 :p.El di†logo ÆBuscarØ contiene los siguientes controles.
 
@@ -289,7 +289,7 @@ b£squedas seguidas de distintos tÇrminos.
 .*----------------------------------------------------------------------------
 :h2 x=left y=bottom width=100% height=100% res=130.Di†logo ÆBuscar / SustituirØ
 
-:artwork align=left name='.\es\replace_dialog.bmp'.
+:artwork align=left name='./es/replace_dialog.bmp'.
 
 :p.El di†logo ÆBuscar / SustituirØ contiene los siguientes controles.
 
