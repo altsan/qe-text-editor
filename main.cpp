@@ -24,6 +24,7 @@
 #include <QLocale>
 #include <QTextCodec>
 #include <QTranslator>
+#include <QLibraryInfo>
 
 #include "mainwindow.h"
 
@@ -35,7 +36,8 @@ int main( int argc, char *argv[] )
 {
     QApplication app( argc, argv );
     QString locale = QLocale::system().name();
-    QTranslator translator;
+    QTranslator translator,
+                qtTranslator;
 
     QTextCodec::setCodecForTr( QTextCodec::codecForName("utf8"));
     if ( !translator.load( QString("qe_") + locale )) {
@@ -47,6 +49,9 @@ int main( int argc, char *argv[] )
 #endif
     }
     app.installTranslator( &translator );
+
+    qtTranslator.load( QString("qt_") + locale, QLibraryInfo::location( QLibraryInfo::TranslationsPath ));
+    app.installTranslator( &qtTranslator );
 
     MainWindow *qe = new MainWindow;
     bool openReadOnly = false;
