@@ -707,11 +707,11 @@ void MainWindow::updateEncodingLabel()
 void MainWindow::updateModeLabel()
 {
     if ( editor->isReadOnly() )
-        editModeLabel->setText(" RO ");
+        editModeLabel->setText( tr(" RO "));
     else if ( editor->overwriteMode() )
-        editModeLabel->setText(" OVR ");
+        editModeLabel->setText( tr(" OVR "));
     else
-        editModeLabel->setText(" INS ");
+        editModeLabel->setText( tr(" INS "));
 }
 
 
@@ -2068,7 +2068,7 @@ void MainWindow::createStatusBar()
 void MainWindow::createHelp()
 {
 #ifdef __OS2__
-    helpInstance = OS2Native::setNativeHelp( this, QString("qe.hlp"), tr("QE Help") );
+    helpInstance = OS2Native::setNativeHelp( this, QString("qe"), tr("QE Help") );
 #else
     helpProcess = new QProcess( this );
 #endif
