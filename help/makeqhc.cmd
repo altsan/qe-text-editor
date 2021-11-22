@@ -1,6 +1,8 @@
 /* REXX script
  * Generate the QtAssistant collection and compressed help files.
  */
+PARSE ARG basename .
+IF basename == '' THEN basename = 'qe'
 PARSE SOURCE _os .
 IF _os == 'OS/2' THEN DO
     uxroot = VALUE('UNIXROOT',,'OS2ENVIRONMENT')
@@ -8,5 +10,5 @@ IF _os == 'OS/2' THEN DO
 END
 ELSE qcg_cmd = 'qcollectiongenerator'
 
-ADDRESS CMD qcg_cmd 'qe.qhcp -o qe.qhc'
+ADDRESS CMD qcg_cmd basename'.qhcp -o' basename'.qhc'
 EXIT rc

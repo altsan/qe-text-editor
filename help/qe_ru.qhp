@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QtHelpProject version="1.0">
+  <namespace>altsan.qe</namespace>
+  <virtualFolder>help</virtualFolder>
+  <filterSection>
+    <toc>
+      <section title="Текстовый редактор QE" ref="qe_ru.1.html">
+        <section title="Параметры командной строки" ref="qe_ru.2.html"></section>
+      </section>
+      <section title="Интерфейс пользователя" ref="qe_ru.4.html">
+        <section title="Диалог \"Перейти к строке\"" ref="qe_ru.5.html"></section>
+        <section title="Диалог \"Найти\"" ref="qe_ru.6.html"></section>
+        <section title="Диалог \"Найти/Заменить\"" ref="qe_ru.7.html"></section>
+        <section title="Регулярные выражения" ref="qe_ru.8.html"></section>
+      </section>
+      <section title="Команды клавиатуры" ref="qe_ru.9.html"></section>
+      <section title="Использование кодировок" ref="qe_ru.10.html"></section>
+      <section title="Ограничения" ref="qe_ru.11.html"></section>
+      <section title="Уведомления" ref="qe_ru.13.html">
+        <section title="Лицензия GNU" ref="qe_ru.14.html"></section>
+      </section>
+    </toc>
+    <keywords>
+      <keyword name="Командная строка" ref="qe_ru.2.html"/>
+      <keyword name="Авторское право" ref="qe_ru.13.html"/>
+      <keyword name="Кодировка имён" ref="qe_ru.3.html"/>
+      <keyword name="Кодировки" ref="qe_ru.10.html"/>
+      <keyword name="Найти" ref="qe_ru.6.html"/>
+      <keyword name="Перейти к строке" ref="qe_ru.5.html"/>
+      <keyword name="Интерфейс" ref="qe_ru.4.html"/>
+      <keyword name="Введение" ref="qe_ru.1.html"/>
+      <keyword name="Клавиши" ref="qe_ru.9.html"/>
+      <keyword name="Клавиатура" ref="qe_ru.9.html"/>
+      <keyword name="Большие файлы" ref="qe_ru.12.html"/>
+      <keyword name="Лицензия" ref="qe_ru.14.html"/>
+      <keyword name="Ограничения" ref="qe_ru.11.html"/>
+      <keyword name="Параметры" ref="qe_ru.2.html"/>
+      <keyword name="Регулярные выражения" ref="qe_ru.8.html"/>
+      <keyword name="Заменить" ref="qe_ru.7.html"/>
+      <keyword name="Горячие клавиши" ref="qe_ru.9.html"/>
+    </keywords>
+    <files>
+      <file>edit_linebreak.png</file>
+      <file>edit_nolinebreak.png</file>
+      <file>find_dialog.png</file>
+      <file>goto_dialog.png</file>
+      <file>menu.png</file>
+      <file>replace_dialog.png</file>
+      <file>status.png</file>
+      <file>help.css</file>
+      <file>qe_ru.1.html</file>
+      <file>qe_ru.2.html</file>
+      <file>qe_ru.3.html</file>
+      <file>qe_ru.4.html</file>
+      <file>qe_ru.5.html</file>
+      <file>qe_ru.6.html</file>
+      <file>qe_ru.7.html</file>
+      <file>qe_ru.8.html</file>
+      <file>qe_ru.9.html</file>
+      <file>qe_ru.10.html</file>
+      <file>qe_ru.11.html</file>
+      <file>qe_ru.12.html</file>
+      <file>qe_ru.13.html</file>
+      <file>qe_ru.14.html</file>
+    </files>
+  </filterSection>
+</QtHelpProject>

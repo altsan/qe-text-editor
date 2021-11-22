@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QHelpCollectionProject version="1.0">
+  <assistant>
+    <title>Текстовый редактор QE</title>
+    <applicationIcon>../images/editor_16.png</applicationIcon>
+    <cacheDirectory>altsan/qe</cacheDirectory>
+    <startPage>qthelp://altsan.qe/help/qe_ru.1.html</startPage>
+    <enableDocumentationManager>false</enableDocumentationManager>
+    <enableAddressBar>false</enableAddressBar>
+    <enableFilterFunctionality>false</enableFilterFunctionality>
+  </assistant>
+  <docFiles>
+    <generate>
+      <file>
+        <input>qe_ru.qhp</input>
+        <output>qe_ru.qch</output>
+      </file>
+    </generate>
+    <register>
+      <file>qe_ru.qch</file>
+    </register>
+  </docFiles>
+</QHelpCollectionProject>
+
