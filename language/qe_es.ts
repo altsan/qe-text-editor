@@ -140,17 +140,17 @@
     <message>
         <location filename="../mainwindow.cpp" line="710"/>
         <source> RO </source>
-        <translation type="unfinished"></translation>
+        <translation> SL </translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="712"/>
         <source> OVR </source>
-        <translation type="unfinished"></translation>
+        <translation> SOB </translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="714"/>
         <source> INS </source>
-        <translation type="unfinished"></translation>
+        <translation> INS </translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="735"/>
@@ -506,7 +506,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1395"/>
         <source>F1</source>
-        <translation type="unfinished">F1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1398"/>
@@ -1076,7 +1076,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1823"/>
         <source>UTF-16 (little endian) is a multi-byte Unicode encoding. It is rarely used for text files, and is not directly compatible with basic ASCII.</source>
-        <translation type="unfinished">UTF-16 (fin de menor peso) es una codificación Unicode de byte múltiple. Rara vez se usa para archivos de texto y no es directamente compatible con el ASCII básico.</translation>
+        <translation>UTF-16 (fin de menor peso) es una codificación Unicode de byte múltiple. Rara vez se usa para archivos de texto y no es directamente compatible con el ASCII básico.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1826"/>
@@ -1086,7 +1086,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1830"/>
         <source>UTF-16 (big endian) is a multi-byte Unicode encoding. It is rarely used for text files, and is not directly compatible with basic ASCII.</source>
-        <translation type="unfinished">UTF-16 (fin de mayor peso) es una codificación Unicode de byte múltiple. Rara vez se usa para archivos de texto y no es directamente compatible con el ASCII básico.</translation>
+        <translation>UTF-16 (fin de mayor peso) es una codificación Unicode de byte múltiple. Rara vez se usa para archivos de texto y no es directamente compatible con el ASCII básico.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1833"/>
