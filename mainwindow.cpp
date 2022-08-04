@@ -2012,11 +2012,16 @@ void MainWindow::setDialogFont()
     /* Glyph substitution is broken in the OS/2 port of Qt4. So for languages
      * which aren't supported by the platform default font "Workplace Sans",
      * it's necessary to set a different application font.  This mainly applies
-     * to CJK languages.
+     * to CJK languages.  We also take the opportunity to set the font size
+     * dynamically based on the PM default dialog font.
      */
     QString fontName = OS2Native::getFontForLocale( QLocale::system().name() );
     if ( !fontName.isEmpty() )
-        QApplication::setFont( QFont( fontName ));
+        QApplication::setFont( QFont( fontName, OS2Native::getSystemFontSize() ));
+    else {
+        QApplication::setFont( QFont("WarpSans", OS2Native::getSystemFontSize()-1 ), "QDialog");
+        QApplication::setFont( QFont("WarpSans", OS2Native::getSystemFontSize()-1 ), "QMainWindow");
+    }
 #endif
 }
 

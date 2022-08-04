@@ -34,9 +34,12 @@ namespace OS2Native {
     QString	    getSaveFileName( QWidget *parent = 0, const QString & caption = QString(), const QString & dir = QString(), const QString & filter = QString(), QString * selectedFilter = 0, QFileDialog::Options options = 0 );
     void        buildFilterString( QString filter, char *pszBuffer, ULONG ulBufSize );
 
+    bool           createDesktopObject( const char *pcszClass, const char *pcszTitle, const char *pcszSetup, const char *pcszLocation, bool bReplace=false );
     unsigned long  deleteEA( char *pszPathName, const char *pszEAName );
-    unsigned short getWindowId( QWidget *window );
+    bool           destroyDesktopObject( const char *pcszObject );
     QString        getFontForLocale( const QString &locale = QString() );
+    int            getSystemFontSize( void );
+    unsigned short getWindowId( QWidget *window );
     void           setFrameIcon( QWidget *window, void *module, unsigned short usID );
     void         * setNativeHelp( QWidget *parent, const QString &help_library, const QString &help_title );
     void           destroyNativeHelp( void *help_instance );

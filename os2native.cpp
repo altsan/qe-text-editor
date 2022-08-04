@@ -613,3 +613,84 @@ QString OS2Native::getFontForLocale( const QString &locale )
     return fontName;
 }
 
+
+// ---------------------------------------------------------------------------
+// Get the default system font size for OS/2 Presentation Manager. This is
+// the font size that a default presentation space will use when no explicit
+// font metrics are set.
+//
+// PARAMETERS: none
+//
+// RETURNS: int
+//
+//
+int OS2Native::getSystemFontSize( void )
+{
+    HPS hps;
+    FONTMETRICS fm;
+    int iSize = 10;
+
+    hps = WinGetScreenPS( HWND_DESKTOP );
+    if ( hps ) {
+        if ( GpiQueryFontMetrics( hps, sizeof(fm), &fm ) == NO_ERROR )
+            iSize = (int)( fm.sNominalPointSize / 10 );
+        WinReleasePS( hps );
+    }
+    return ( iSize );
+}
+
+
+// ---------------------------------------------------------------------------
+// Create a desktop object.
+//
+// PARAMETERS:
+//     const char *pczClass   : WPS class name
+//     const char *pczTitle   : Object (icon) title
+//     const char *pczSetup   : Object setup string
+//     const char *pczLocation: Object location (parent folder ID)
+//     bool        bReplace   : True to replace existing object, false to fail
+//
+// RETURNS: bool
+//
+//
+bool OS2Native::createDesktopObject( const char *pcszClass, const char *pcszTitle,
+                                     const char *pcszSetup,  const char *pcszLocation,
+                                     bool bReplace )
+{
+    HOBJECT hObj;
+    ULONG   ulFlags;
+
+    ulFlags = bReplace? CO_REPLACEIFEXISTS: CO_FAILIFEXISTS;
+    hObj = WinCreateObject( (PSZ) pcszClass, (PSZ) pcszTitle, (PSZ) pcszSetup, (PSZ) pcszLocation, ulFlags );
+/*
+    if ( !hObj ) {
+        fprintf( stderr, "Unable to create object: PM error code = 0x%X\n",
+                 ERRORIDERROR( WinGetLastError( 1 )));
+    }
+*/
+    return ( hObj? true: false );
+}
+
+
+// ---------------------------------------------------------------------------
+// Destroy a desktop object.
+//
+// PARAMETERS:
+//     const char *pczObject: Object identifier
+//
+// RETURNS: bool
+//
+//
+bool OS2Native::destroyDesktopObject( const char *pcszObject )
+{
+    HOBJECT hObj;
+    bool    rc;
+
+    hObj = WinQueryObject( (PSZ) pcszObject );
+    if ( hObj )
+        rc = (bool) WinDestroyObject( hObj );
+    else
+        rc = false;
+
+    return rc;
+}
