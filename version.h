@@ -1,7 +1,7 @@
 #ifndef QE_VERSION_H
 #define QE_VERSION_H
 
-#define VER_FILEVERSION_STR         "0.9.10"
+#define VER_FILEVERSION_STR         "0.9.11"
 #define VER_PRODUCTVERSION_STR      VER_FILEVERSION_STR
 
 #define VER_LEGALTRADEMARKS1_STR    "All Rights Reserved"
@@ -17,11 +17,11 @@
 #define VER_COMPANYDOMAIN_STR       "altsan.org"
 
 #ifdef __OS2__
-#define VER_LEGALCOPYRIGHT_STR      "Copyright ¸ 2021 Alexander Taylor"
+#define VER_LEGALCOPYRIGHT_STR      "Copyright ¸ 2022 Alexander Taylor"
 
 #else
-#define VER_LEGALCOPYRIGHT_STR      "Copyright © 2021 Alexander Taylor"
-#define VER_FILEVERSION             0,9,10,0
+#define VER_LEGALCOPYRIGHT_STR      "Copyright © 2022 Alexander Taylor"
+#define VER_FILEVERSION             0,9,11,0
 #define VER_PRODUCTVERSION          VER_FILEVERSION
 
 #endif  // else

@@ -119,7 +119,7 @@ Notices
 -------
 
 QE Text Editor  
-Copyright (C) 2018-2021 Alexander Taylor
+Copyright (C) 2018-2022 Alexander Taylor
 
 A few routines were derived from examples in "C++ GUI Programming with 
 Qt4" (Second Edition) by Jasmin Blanchette & Mark Summerfield.

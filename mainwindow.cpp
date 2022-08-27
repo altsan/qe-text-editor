@@ -605,7 +605,7 @@ void MainWindow::about()
     QMessageBox::about( this,
                         tr("Product Information"),
                         tr("<b>QE Text Editor</b><br>Version %1<hr>"
-                           "Copyright &copy;2021 Alexander Taylor"
+                           "Copyright &copy;2022 Alexander Taylor"
                            "<p>Licensed under the GNU General Public License "
                            "version 3.0&nbsp;<br>"
                            "<a href=\"https://www.gnu.org/licenses/gpl.html\">"
