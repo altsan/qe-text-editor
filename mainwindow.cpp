@@ -2017,11 +2017,7 @@ void MainWindow::setDialogFont()
      */
     QString fontName = OS2Native::getFontForLocale( QLocale::system().name() );
     if ( !fontName.isEmpty() )
-        QApplication::setFont( QFont( fontName, OS2Native::getSystemFontSize() ));
-    else {
-        QApplication::setFont( QFont("WarpSans", OS2Native::getSystemFontSize()-1 ), "QDialog");
-        QApplication::setFont( QFont("WarpSans", OS2Native::getSystemFontSize()-1 ), "QMainWindow");
-    }
+        QApplication::setFont( QFont( fontName ));
 #endif
 }
 
